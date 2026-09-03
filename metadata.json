@@ -1,0 +1,6 @@
+{
+  "name": "TAMENG - Ruang Aman Pelaporan & Konseling Siswa",
+  "description": "Platform pelaporan anonim berkeamanan tinggi, enkripsi end-to-end, mode kios bebas jejak, dan ruang komunikasi aman dengan Guru BK untuk pencegahan kekerasan di sekolah.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

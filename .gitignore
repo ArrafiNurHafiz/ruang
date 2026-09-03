@@ -1,0 +1,13 @@
+build/
+coverage/
+.DS_Store
+*.log
+!.env.example
+node_modules/
+dist/
+.vercel/
+.env
+~/
+.playwright-mcp/
+.commandcode/
+.claude-flow/

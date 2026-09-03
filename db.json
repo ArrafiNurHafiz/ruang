@@ -1,0 +1,135 @@
+{
+  "schools": [
+    {
+      "id": "default-school",
+      "name": "SMA Negeri 1 Jakarta",
+      "npsn": "12345678",
+      "district": "Jakarta Pusat",
+      "province": "DKI Jakarta"
+    }
+  ],
+  "users": [
+    {
+      "id": "usr-guru-01",
+      "name": "Dra. Hj. Nurjanah, M.Pd",
+      "email": "guru.bk@sekolah.sch.id",
+      "password_hash": "JTI0MmElMTAkcmU3YVl2WkV3VlphcWRSNmFhRldIeS5Nai8ueHVsVzh3LlEuWjYuNHZ2Lnp5dnZ2dnZ2dg==", 
+      "role": "guru",
+      "roleTitle": "Koordinator Guru BK & Satgas PPKSP",
+      "organization": "SMA Negeri 1 Jakarta",
+      "identifier": "NIP: 19780412 200501 2 003",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80",
+      "permissions": ["Triage Laporan", "Chat Siswa", "Catatan Rahasia", "Eskalasi Kasus"]
+    },
+    {
+      "id": "usr-admin-01",
+      "name": "Bambang Prasetyo, S.Kom",
+      "email": "admin.ppksp@sekolah.sch.id",
+      "password_hash": "JTI0MmElMTAkcmU3YVl2WkV3VlphcWRSNmFhRldIeS5Nai8ueHVsVzh3LlEuWjYuNHZ2Lnp5dnZ2dnZ2dg==",
+      "role": "admin",
+      "roleTitle": "Administrator Sistem & Satgas IT Sekolah",
+      "organization": "SMA Negeri 1 Jakarta",
+      "identifier": "ID ADMIN: ADM-SMAN1-091",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
+      "permissions": ["Manajemen Token", "Kelola Petugas BK", "Audit Log", "Konfigurasi Sistem"]
+    },
+    {
+      "id": "usr-disdik-01",
+      "name": "Dr. H. Hendro Wicaksono, M.Pd",
+      "email": "h.hendro@disdik.prov.go.id",
+      "password_hash": "JTI0MmElMTAkcmU3YVl2WkV3VlphcWRSNmFhRldIeS5Nai8ueHVsVzh3LlEuWjYuNHZ2Lnp5dnZ2dnZ2dg==",
+      "role": "dinas-pendidikan",
+      "roleTitle": "Kabid Pembinaan SMA & Pengawas PPKSP Wilayah",
+      "organization": "Dinas Pendidikan Provinsi DKI Jakarta",
+      "identifier": "NIP: 19710815 199603 1 002",
+      "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80",
+      "permissions": ["Pengawasan Wilayah", "Monitoring Respon Sekolah", "Indeks Kerawanan", "Pemberian Supervisi"]
+    },
+    {
+      "id": "usr-dinas-pppa-01",
+      "name": "Sri Rahayu, S.Psi., M.Si",
+      "email": "sri.rahayu@uptd-ppa.go.id",
+      "password_hash": "JTI0MmElMTAkcmU3YVl2WkV3VlphcWRSNmFhRldIeS5Nai8ueHVsVzh3LlEuWjYuNHZ2Lnp5dnZ2dnZ2dg==",
+      "role": "dinas-perlindungan",
+      "roleTitle": "Kepala Satuan Pelaksana Penanganan Kasus UPTD PPA",
+      "organization": "Dinas PPPA / UPTD Perlindungan Perempuan & Anak",
+      "identifier": "NIP: 19820520 200801 2 015",
+      "avatar": "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=200&q=80",
+      "permissions": ["Intervensi Kritis", "Disposisi Psikolog", "Layanan Rumah Aman", "Pendampingan Hukum"]
+    }
+  ],
+  "tokens": [
+    {
+      "id": "tok-01",
+      "token_code": "SCH-X1-8831",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-INIT-01",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Initial Token Batch",
+      "created_at": "2025-03-01T08:00:00Z"
+    }
+  ],
+  "tickets": [],
+  "audit_logs": [],
+  "interventions": [],
+  "news_articles": [
+    {
+      "id": "news-1",
+      "title": "Sosialisasi Permendikbudristek No. 46 Tahun 2023: Sekolah Wajib Bentuk Satgas PPKSP",
+      "category": "Regulasi & PPKSP",
+      "publishedAt": "2 Maret 2025",
+      "author": "Satgas PPKSP Nasional",
+      "authorRole": "Puspeka Kemendikbudristek",
+      "readTime": "4 menit baca",
+      "illustrationType": "ppksp",
+      "excerpt": "Setiap satuan pendidikan kini diwajibkan membentuk Tim Pencegahan dan Penanganan Kekerasan (TPPK).",
+      "content": [
+        "Sesuai dengan amanat Permendikbudristek No. 46 Tahun 2023, sekolah harus menjadi ruang aman bagi seluruh warga pendidikan.",
+        "Pembentukan Satgas PPKSP bertujuan untuk merespon laporan kekerasan secara cepat, rahasia, dan berpihak pada korban."
+      ]
+    }
+  ],
+  "regional_schools": [
+    {
+      "id": "sch-01",
+      "schoolName": "SMA Negeri 1 Jakarta",
+      "district": "Jakarta Pusat",
+      "level": "SMA",
+      "activeSatgasCount": 6,
+      "totalReports": 14,
+      "resolvedReports": 12,
+      "avgResponseHours": 1.8,
+      "complianceStatus": "Patuh (A)",
+      "principalName": "Drs. H. Mulyadi, M.M",
+      "lastActive": "10 menit lalu"
+    }
+  ],
+  "help_articles": [
+    {
+      "id": "art-1",
+      "title": "Bagaimana Cara Melapor Secara Anonim di TAMENG?",
+      "category": "Cara Melapor",
+      "readTime": "3 menit",
+      "iconName": "ShieldAlert",
+      "excerpt": "Panduan 4 langkah mudah melapor tanpa khawatir identitas bocor atau diketahui teman sekelas.",
+      "content": [
+        "1. Masuk ke halaman Lapor Anonim (Ruang Aman).",
+        "2. Pilih kategori kejadian dan status keterlibatan Anda (sebagai korban atau saksi).",
+        "3. Tuliskan kronologi dengan jelas. Fitur deteksi cerdas TAMENG akan otomatis mendeteksi nama atau kelas yang tidak sengaja tertulis untuk disamarkan.",
+        "4. Unggah bukti jika ada (foto/rekaman suara). Sistem kami otomatis membersihkan data lokasi GPS (EXIF) dari file.",
+        "5. Simpan Nomor Tiket dan Kode Pemulihan unik Anda untuk memantau status dan berkomunikasi 2-arah dengan Guru BK."
+      ]
+    }
+  ],
+  "faq_items": [
+    {
+      "id": "faq-1",
+      "question": "Apakah Guru BK atau Wali Kelas bisa mengetahui siapa yang mengirim laporan?",
+      "answer": "Tidak. Sistem TAMENG tidak menyimpan identitas pelapor, email, nomor ponsel, nama perangkat, maupun alamat IP. Laporan hanya berisi nomor acak (Tiket). Guru BK hanya menerima informasi mengenai kejadian yang Anda ceritakan tanpa mengetahui siapa Anda.",
+      "category": "Privasi & Kerahasiaan"
+    }
+  ]
+}
