@@ -699,10 +699,6 @@ export const AnonymousReportForm: React.FC<AnonymousReportFormProps> = ({
                           {studentSession.tokenCode}
                         </span>
                       </div>
-                      <p className="text-[11px] text-slate-600 mt-0.5">
-                        {studentSession.schoolName} •{" "}
-                        {studentSession.studentLevel}
-                      </p>
                     </div>
                   </div>
 

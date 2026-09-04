@@ -184,8 +184,7 @@ export const DesktopLandingHero: React.FC<DesktopLandingHeroProps> = ({
                     Kode Siswa Sah:{" "}
                     <strong className="font-mono text-white">
                       {studentSession.tokenCode}
-                    </strong>{" "}
-                    ({studentSession.studentLevel})
+                    </strong>
                   </span>
                 </div>
               ) : onOpenTokenGate ? (
