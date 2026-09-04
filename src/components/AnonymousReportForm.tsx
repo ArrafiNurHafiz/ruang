@@ -801,8 +801,7 @@ export const AnonymousReportForm: React.FC<AnonymousReportFormProps> = ({
                           className="px-2 py-0.5 rounded bg-white hover:bg-blue-100 text-blue-800 font-mono font-bold border border-blue-200 transition-colors cursor-pointer"
                           title="Klik untuk langsung verifikasi"
                         >
-                          {t.tokenCode} (
-                          {t.studentLevel?.split("(")[0]?.trim() || "Kelas"})
+                          {t.tokenCode}
                         </button>
                       ))}
                     </div>

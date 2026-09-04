@@ -228,9 +228,6 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                           {t.status || (t.isActivated ? "Aktif" : "Tersedia")}
                         </span>
                       </div>
-                      <div className="text-[11px] text-slate-500 mt-1 truncate">
-                        {t.studentLevel}
-                      </div>
                     </button>
                   ))}
                 </div>
@@ -257,18 +254,10 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
               <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 text-left space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-slate-500 font-medium">
-                    Asal Sekolah:
+                    Status Proteksi:
                   </span>
-                  <span className="text-xs font-bold text-slate-800">
-                    {verifiedToken.schoolName}
-                  </span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-slate-500 font-medium">
-                    Jenjang / Rombel:
-                  </span>
-                  <span className="text-xs font-bold text-slate-800">
-                    {verifiedToken.studentLevel}
+                  <span className="text-xs font-bold text-emerald-700">
+                    ✓ Siswa Terverifikasi Resmi
                   </span>
                 </div>
                 <div className="flex items-center justify-between">
