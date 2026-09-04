@@ -783,29 +783,6 @@ export const AnonymousReportForm: React.FC<AnonymousReportFormProps> = ({
                       <span>{inlineCodeSuccess}</span>
                     </p>
                   )}
-
-                  {/* Quick demo pills */}
-                  {tokens.length > 0 && (
-                    <div className="pt-2 border-t border-blue-100 flex flex-wrap items-center gap-1.5 text-[10px]">
-                      <span className="text-slate-500 font-medium">
-                        Contoh Kode Sekolah:
-                      </span>
-                      {tokens.slice(0, 3).map((t) => (
-                        <button
-                          key={t.tokenCode}
-                          type="button"
-                          onClick={() => {
-                            setInlineCode(t.tokenCode);
-                            handleInlineVerify(t.tokenCode);
-                          }}
-                          className="px-2 py-0.5 rounded bg-white hover:bg-blue-100 text-blue-800 font-mono font-bold border border-blue-200 transition-colors cursor-pointer"
-                          title="Klik untuk langsung verifikasi"
-                        >
-                          {t.tokenCode}
-                        </button>
-                      ))}
-                    </div>
-                  )}
                 </div>
               )}
             </div>
