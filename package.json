@@ -9,7 +9,10 @@
     "preview": "vite preview",
     "server": "node server.js",
     "clean": "rm -rf dist server.js",
-    "lint": "tsc --noEmit"
+    "lint": "tsc --noEmit",
+    "test:security": "tsx tests/security-regression.test.ts",
+    "test:security:live": "tsx tests/security-live-smoke.test.ts",
+    "test": "pnpm test:security"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",
