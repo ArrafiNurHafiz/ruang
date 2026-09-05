@@ -9,12 +9,15 @@ import {
 } from "lucide-react";
 import { AppUserRole, CounselorUser } from "../types";
 import { MOCK_USERS } from "../data/mockData";
+import { api } from "../lib/api";
 
 interface UnifiedLoginPageProps {
   onLogin: (role: AppUserRole, counselor?: CounselorUser) => void;
 }
 
-export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({ onLogin }) => {
+export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({
+  onLogin,
+}) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -42,8 +45,7 @@ export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({ onLogin }) =
         const candidate = MOCK_USERS[role];
         if (
           candidate &&
-          candidate.email.toLowerCase() === email.trim().toLowerCase() &&
-          (password === "password123" || password === "admin123")
+          candidate.email.toLowerCase() === email.trim().toLowerCase()
         ) {
           matched = role;
           matchedUser = candidate;
@@ -52,9 +54,19 @@ export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({ onLogin }) =
       }
 
       if (!matched || !matchedUser) {
-        setError(
-          "Email atau password salah. Coba lagi dengan akun demo (lihat catatan di bawah).",
-        );
+        setError("User dengan email tersebut tidak terdaftar.");
+        return;
+      }
+
+      // Authenticate via backend to obtain secure JWT token
+      try {
+        await api.login({
+          email: email.trim().toLowerCase(),
+          password,
+          role: matched,
+        });
+      } catch (authErr: any) {
+        setError(authErr.message || "Email atau password salah.");
         return;
       }
 
@@ -105,7 +117,10 @@ export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({ onLogin }) =
                   type="email"
                   required
                   value={email}
-                  onChange={(e) => { setEmail(e.target.value); setError(""); }}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setError("");
+                  }}
                   placeholder="nama@sekolah.sch.id"
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all"
                 />
@@ -120,7 +135,10 @@ export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({ onLogin }) =
                     type={showPassword ? "text" : "password"}
                     required
                     value={password}
-                    onChange={(e) => { setPassword(e.target.value); setError(""); }}
+                    onChange={(e) => {
+                      setPassword(e.target.value);
+                      setError("");
+                    }}
                     placeholder="••••••••"
                     className="w-full px-4 py-3 pr-10 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all"
                   />
@@ -129,7 +147,11 @@ export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({ onLogin }) =
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
                   >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
                   </button>
                 </div>
               </div>

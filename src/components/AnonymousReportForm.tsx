@@ -197,7 +197,7 @@ export const AnonymousReportForm: React.FC<AnonymousReportFormProps> = ({
       setInlineCodeError("Harap masukkan kode akses resmi dari sekolah.");
       return;
     }
-    
+
     try {
       const found = await api.verifyToken(clean);
       if (found.status === "Kedaluwarsa") {
@@ -328,7 +328,9 @@ export const AnonymousReportForm: React.FC<AnonymousReportFormProps> = ({
   const handleSubmitReport = async () => {
     // Require token verification (unless kiosk mode)
     if (!studentSession && !isKioskMode) {
-      setTokenGateError("Anda harus memverifikasi kode akses sekolah terlebih dahulu sebelum mengirim laporan.");
+      setTokenGateError(
+        "Anda harus memverifikasi kode akses sekolah terlebih dahulu sebelum mengirim laporan.",
+      );
       if (onOpenTokenGate) onOpenTokenGate();
       return;
     }
@@ -373,7 +375,7 @@ export const AnonymousReportForm: React.FC<AnonymousReportFormProps> = ({
       if (createdTicket) {
         setSubmittedTicket(createdTicket);
         setZkpHash(createdTicket.hashZKP);
-        
+
         // Confetti celebration
         try {
           confetti({
@@ -1377,7 +1379,9 @@ export const AnonymousReportForm: React.FC<AnonymousReportFormProps> = ({
 
               <div className="flex items-center gap-3">
                 {!studentSession && !isKioskMode && (
-                  <span className="text-[11px] text-red-600 font-bold">Wajib verifikasi kode akses</span>
+                  <span className="text-[11px] text-red-600 font-bold">
+                    Wajib verifikasi kode akses
+                  </span>
                 )}
                 <button
                   type="button"
@@ -1386,16 +1390,16 @@ export const AnonymousReportForm: React.FC<AnonymousReportFormProps> = ({
                   onClick={handleSubmitReport}
                   className={`flex items-center gap-2 font-extrabold py-3.5 px-8 rounded-xl shadow-lg transition-all cursor-pointer ${
                     !studentSession && !isKioskMode
-                      ? 'bg-slate-300 text-slate-500 shadow-none cursor-not-allowed'
-                      : 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/25 hover:scale-102'
+                      ? "bg-slate-300 text-slate-500 shadow-none cursor-not-allowed"
+                      : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/25 hover:scale-102"
                   }`}
                 >
-                <Send className="w-4 h-4" />
-                <span>
-                  {isSubmitting
-                    ? "Memproses Enkripsi..."
-                    : "Kirim Laporan Terenkripsi"}
-                </span>
+                  <Send className="w-4 h-4" />
+                  <span>
+                    {isSubmitting
+                      ? "Memproses Enkripsi..."
+                      : "Kirim Laporan Terenkripsi"}
+                  </span>
                 </button>
               </div>
             </div>

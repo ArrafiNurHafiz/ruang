@@ -44,7 +44,9 @@ export const KioskMode: React.FC<KioskModeProps> = ({
     const isValidTUCode = sampleTUCodes.includes(code);
     const isValidRecoveryPattern = /^[A-Z]+-[A-Z]+-[A-Z]+-\d{4}$/.test(code);
     if (!isValidTUCode && !isValidRecoveryPattern) {
-      setErrorMsg("Kode sesi tidak valid. Gunakan kode TU dari petugas atau Kode Pemulihan tiket Anda.");
+      setErrorMsg(
+        "Kode sesi tidak valid. Gunakan kode TU dari petugas atau Kode Pemulihan tiket Anda.",
+      );
       return;
     }
     setErrorMsg("");

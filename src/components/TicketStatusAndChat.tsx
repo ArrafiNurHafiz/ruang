@@ -77,7 +77,7 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
 
     try {
       const found = await api.getTicketByRecoveryCode(q);
-      
+
       // Map API response to Ticket interface if needed
       const mappedFound: ReportTicket = {
         ...found,
@@ -87,16 +87,17 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
         detectedPII: (found as any).detected_pii,
         recoveryCode: (found as any).recovery_code,
         isKioskSubmission: (found as any).is_kiosk_submission,
-        messages: (found as any).messages?.map((m: any) => ({
-          id: m.id,
-          sender: m.sender_type,
-          senderTitle: m.sender_title,
-          text: m.message_text,
-          timestamp: new Date(m.created_at).toLocaleString('id-ID'),
-          isEncrypted: m.is_encrypted
-        })) || []
+        messages:
+          (found as any).messages?.map((m: any) => ({
+            id: m.id,
+            sender: m.sender_type,
+            senderTitle: m.sender_title,
+            text: m.message_text,
+            timestamp: new Date(m.created_at).toLocaleString("id-ID"),
+            isEncrypted: m.is_encrypted,
+          })) || [],
       };
-      
+
       setActiveTicket(mappedFound);
     } catch (err) {
       // Fallback search in prop tickets

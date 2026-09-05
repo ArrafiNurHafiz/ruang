@@ -82,8 +82,12 @@ export const DisguiseOverlay: React.FC<DisguiseOverlayProps> = ({
                   onClick={() => {
                     if (btn === "=") {
                       try {
-                        const expr = calcInput.replace(/×/g, "*").replace(/÷/g, "/");
-                        const result = Function('"use strict";return (' + expr + ')')();
+                        const expr = calcInput
+                          .replace(/×/g, "*")
+                          .replace(/÷/g, "/");
+                        const result = Function(
+                          '"use strict";return (' + expr + ")",
+                        )();
                         setCalcInput(String(result));
                       } catch {
                         setCalcInput("Error");

@@ -13,7 +13,7 @@ export default defineConfig(() => {
     },
     server: {
       // Mengizinkan semua domain trycloudflare.com
-      allowedHosts: ['.trycloudflare.com'],
+      allowedHosts: [".trycloudflare.com"],
 
       // HMR configuration (bawaan dari template Anda)
       hmr: process.env.DISABLE_HMR !== "true",

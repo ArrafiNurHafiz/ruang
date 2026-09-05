@@ -405,7 +405,10 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           <div className="pt-3 border-t border-slate-800 space-y-2">
             <button
-              onClick={() => { handleNavClick("login"); setMobileMenuOpen(false); }}
+              onClick={() => {
+                handleNavClick("login");
+                setMobileMenuOpen(false);
+              }}
               className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold text-sm"
             >
               <UserCheck className="w-4 h-4" />

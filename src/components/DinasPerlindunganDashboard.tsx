@@ -142,10 +142,13 @@ export const DinasPerlindunganDashboard: React.FC<
     e.preventDefault();
     setIsLoggingIn(true);
     try {
-      await api.login({ email, password, role: 'dinas-perlindungan' });
+      await api.login({ email, password, role: "dinas-perlindungan" });
       setIsLoggedIn(true);
     } catch (err: any) {
-      const msg = err.name === 'AbortError' ? 'Server tidak merespons. Pastikan backend berjalan di port 3001.' : (err.message || "Login failed");
+      const msg =
+        err.name === "AbortError"
+          ? "Server tidak merespons. Pastikan backend berjalan di port 3001."
+          : err.message || "Login failed";
       setLoginError(msg);
     } finally {
       setIsLoggingIn(false);
@@ -160,48 +163,69 @@ export const DinasPerlindunganDashboard: React.FC<
             <div className="w-16 h-16 bg-rose-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-rose-500/40">
               <HeartHandshake className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-2xl font-black text-white tracking-tight">Portal UPTD PPA</h2>
-            <p className="text-rose-300 text-xs uppercase tracking-widest font-bold">Intervensi & Perlindungan Anak</p>
+            <h2 className="text-2xl font-black text-white tracking-tight">
+              Portal UPTD PPA
+            </h2>
+            <p className="text-rose-300 text-xs uppercase tracking-widest font-bold">
+              Intervensi & Perlindungan Anak
+            </p>
           </div>
-          
+
           <div className="p-8 space-y-5">
             <form onSubmit={handleLoginForm} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Email Petugas PPA:</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Email Petugas PPA:
+                </label>
                 <input
                   type="email"
                   required
                   value={email}
-                  onChange={(e) => { setEmail(e.target.value); setLoginError(""); }}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setLoginError("");
+                  }}
                   placeholder="sri.rahayu@uptd-ppa.go.id"
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 transition-all"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Password:</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Password:
+                </label>
                 <input
                   type="password"
                   required
                   value={password}
-                  onChange={(e) => { setPassword(e.target.value); setLoginError(""); }}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setLoginError("");
+                  }}
                   placeholder="••••••••"
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-rose-500 transition-all"
                 />
               </div>
               {loginError && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700">{loginError}</div>
+                <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700">
+                  {loginError}
+                </div>
               )}
               <button
                 type="submit"
                 disabled={isLoggingIn}
                 className="w-full bg-rose-900 hover:bg-rose-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:bg-slate-300"
               >
-                {isLoggingIn ? <RefreshCw className="w-5 h-5 animate-spin" /> : <LogIn className="w-5 h-5" />}
+                {isLoggingIn ? (
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                ) : (
+                  <LogIn className="w-5 h-5" />
+                )}
                 <span>Masuk Portal Perlindungan</span>
               </button>
             </form>
             <p className="text-[10px] text-center text-slate-400 leading-relaxed">
-              Portal rujukan khusus UPTD Perlindungan Perempuan dan Anak untuk penanganan kasus kritis rujukan Satgas Sekolah.
+              Portal rujukan khusus UPTD Perlindungan Perempuan dan Anak untuk
+              penanganan kasus kritis rujukan Satgas Sekolah.
             </p>
           </div>
         </div>

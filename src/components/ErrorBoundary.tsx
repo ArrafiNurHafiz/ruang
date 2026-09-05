@@ -15,7 +15,11 @@ export class ErrorBoundary extends React.Component<
 > {
   declare props: ErrorBoundaryProps;
   declare state: ErrorBoundaryState;
-  setState!: (state: Partial<ErrorBoundaryState> | ((prevState: ErrorBoundaryState) => Partial<ErrorBoundaryState>)) => void;
+  setState!: (
+    state:
+      | Partial<ErrorBoundaryState>
+      | ((prevState: ErrorBoundaryState) => Partial<ErrorBoundaryState>),
+  ) => void;
 
   constructor(props: ErrorBoundaryProps) {
     super(props);
@@ -46,7 +50,8 @@ export class ErrorBoundary extends React.Component<
               Terjadi Kesalahan
             </h2>
             <p className="text-xs text-slate-600">
-              Halaman gagal dirender karena error internal. Coba reset dan kembali ke beranda.
+              Halaman gagal dirender karena error internal. Coba reset dan
+              kembali ke beranda.
             </p>
             <pre className="text-[10px] text-left bg-slate-50 p-3 rounded-lg overflow-auto max-h-32 text-slate-500">
               {this.state.error?.message ?? "Unknown error"}

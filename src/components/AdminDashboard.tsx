@@ -221,14 +221,14 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleSaveConfig = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await fetch('/api/config', {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+      await fetch("/api/config", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           kioskTimeout: parseInt(kioskTimeout) || 180,
           autoRedactEnabled,
-          antiInfiltratorEnforced
-        })
+          antiInfiltratorEnforced,
+        }),
       });
       setConfigSaved(true);
       setTimeout(() => setConfigSaved(false), 3000);
@@ -312,10 +312,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     e.preventDefault();
     setIsLoggingIn(true);
     try {
-      await api.login({ email, password, role: 'admin' });
+      await api.login({ email, password, role: "admin" });
       setIsLoggedIn(true);
     } catch (err: any) {
-      const msg = err.name === 'AbortError' ? 'Server tidak merespons. Pastikan backend berjalan di port 3001.' : (err.message || "Login failed");
+      const msg =
+        err.name === "AbortError"
+          ? "Server tidak merespons. Pastikan backend berjalan di port 3001."
+          : err.message || "Login failed";
       setLoginError(msg);
     } finally {
       setIsLoggingIn(false);
@@ -330,48 +333,69 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-blue-500/40">
               <ShieldCheck className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-2xl font-black text-white tracking-tight">Portal Administrator</h2>
-            <p className="text-slate-400 text-xs uppercase tracking-widest font-bold">Keamanan Sistem & Satgas IT</p>
+            <h2 className="text-2xl font-black text-white tracking-tight">
+              Portal Administrator
+            </h2>
+            <p className="text-slate-400 text-xs uppercase tracking-widest font-bold">
+              Keamanan Sistem & Satgas IT
+            </p>
           </div>
-          
+
           <div className="p-8 space-y-5">
             <form onSubmit={handleLoginForm} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Email Admin:</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Email Admin:
+                </label>
                 <input
                   type="email"
                   required
                   value={email}
-                  onChange={(e) => { setEmail(e.target.value); setLoginError(""); }}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setLoginError("");
+                  }}
                   placeholder="admin.ppksp@sekolah.sch.id"
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Password:</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Password:
+                </label>
                 <input
                   type="password"
                   required
                   value={password}
-                  onChange={(e) => { setPassword(e.target.value); setLoginError(""); }}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setLoginError("");
+                  }}
                   placeholder="••••••••"
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all"
                 />
               </div>
               {loginError && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700">{loginError}</div>
+                <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700">
+                  {loginError}
+                </div>
               )}
               <button
                 type="submit"
                 disabled={isLoggingIn}
                 className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:bg-slate-300"
               >
-                {isLoggingIn ? <RefreshCw className="w-5 h-5 animate-spin" /> : <LogIn className="w-5 h-5" />}
+                {isLoggingIn ? (
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                ) : (
+                  <LogIn className="w-5 h-5" />
+                )}
                 <span>Masuk ke Sistem</span>
               </button>
             </form>
             <p className="text-[10px] text-center text-slate-400 leading-relaxed">
-              Gunakan akun Administrator IT Sekolah untuk mengelola token siswa, petugas BK, dan audit log sistem.
+              Gunakan akun Administrator IT Sekolah untuk mengelola token siswa,
+              petugas BK, dan audit log sistem.
             </p>
           </div>
         </div>
@@ -886,45 +910,54 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
-              {users.filter(u => u.role === 'guru').map((u) => (
-                <div
-                  key={u.id}
-                  className="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:shadow-md transition-all space-y-3"
-                >
-                  <div className="flex items-center gap-3">
-                    <img
-                      src={u.avatar || "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80"}
-                      alt={u.name}
-                      className="w-12 h-12 rounded-full object-cover border-2 border-blue-500"
-                    />
-                    <div>
-                      <h4 className="font-extrabold text-sm text-slate-900">
-                        {u.name}
-                      </h4>
-                      <p className="text-[11px] font-semibold text-blue-700">
-                        {u.roleTitle}
-                      </p>
-                      <p className="text-[10px] text-slate-400 font-mono">
-                        {u.identifier}
-                      </p>
+              {users
+                .filter((u) => u.role === "guru")
+                .map((u) => (
+                  <div
+                    key={u.id}
+                    className="p-4 rounded-2xl border border-slate-200 bg-slate-50/50 hover:bg-white hover:shadow-md transition-all space-y-3"
+                  >
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={
+                          u.avatar ||
+                          "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80"
+                        }
+                        alt={u.name}
+                        className="w-12 h-12 rounded-full object-cover border-2 border-blue-500"
+                      />
+                      <div>
+                        <h4 className="font-extrabold text-sm text-slate-900">
+                          {u.name}
+                        </h4>
+                        <p className="text-[11px] font-semibold text-blue-700">
+                          {u.roleTitle}
+                        </p>
+                        <p className="text-[10px] text-slate-400 font-mono">
+                          {u.identifier}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
+                      <span className="text-slate-500">{u.email}</span>
+                      <button
+                        onClick={() =>
+                          onToggleUserStatus && onToggleUserStatus(u.id)
+                        }
+                        className={`px-2 py-0.5 font-bold rounded-full text-[10px] cursor-pointer ${
+                          u.status !== "Non-Aktif"
+                            ? "bg-emerald-100 text-emerald-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
+                      >
+                        {u.status !== "Non-Aktif"
+                          ? "Aktif Siaga"
+                          : "Dinonaktifkan"}
+                      </button>
                     </div>
                   </div>
-
-                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px]">
-                    <span className="text-slate-500">{u.email}</span>
-                    <button
-                      onClick={() => onToggleUserStatus && onToggleUserStatus(u.id)}
-                      className={`px-2 py-0.5 font-bold rounded-full text-[10px] cursor-pointer ${
-                        u.status !== "Non-Aktif" 
-                          ? "bg-emerald-100 text-emerald-800" 
-                          : "bg-red-100 text-red-800"
-                      }`}
-                    >
-                      {u.status !== "Non-Aktif" ? "Aktif Siaga" : "Dinonaktifkan"}
-                    </button>
-                  </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         </div>

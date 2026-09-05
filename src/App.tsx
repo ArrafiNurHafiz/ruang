@@ -78,10 +78,7 @@ const DEFAULT_SCHOOL_PROFILE: SchoolProfile = {
   satgasSkDate: "2024-08-17",
   updatedAt: new Date().toISOString(),
 };
-import {
-  MOCK_REGIONAL_SCHOOLS,
-  MOCK_COUNSELOR,
-} from "./data/mockData";
+import { MOCK_REGIONAL_SCHOOLS, MOCK_COUNSELOR } from "./data/mockData";
 import { api } from "./lib/api";
 import { supabase, isSupabaseEnabled } from "./lib/supabase";
 
@@ -127,9 +124,15 @@ export default function App() {
   );
   const [usersList, setUsersList] = useState<UserAccount[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
-  const [regionalSchools, setRegionalSchools] = useState<SchoolRegionalData[]>([]);
-  const [interventions, setInterventions] = useState<ProtectionIntervention[]>([]);
-  const [schoolProfile, setSchoolProfile] = useState<SchoolProfile>(DEFAULT_SCHOOL_PROFILE);
+  const [regionalSchools, setRegionalSchools] = useState<SchoolRegionalData[]>(
+    [],
+  );
+  const [interventions, setInterventions] = useState<ProtectionIntervention[]>(
+    [],
+  );
+  const [schoolProfile, setSchoolProfile] = useState<SchoolProfile>(
+    DEFAULT_SCHOOL_PROFILE,
+  );
 
   // Load data on mount
   useEffect(() => {
@@ -146,7 +149,7 @@ export default function App() {
         ]);
 
         const get = <T,>(r: PromiseSettledResult<T>, fallback: T): T =>
-          r.status === 'fulfilled' ? r.value : fallback;
+          r.status === "fulfilled" ? r.value : fallback;
 
         setTickets(get(results[0], []));
         setTokensList(get(results[1], []));
@@ -172,42 +175,64 @@ export default function App() {
   useEffect(() => {
     if (!supabase) return;
     const channel = supabase
-      .channel('ticket-messages-rt')
-      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'ticket_messages' }, (payload) => {
-        const m = payload.new as any;
-        const formattedMsg = {
-          id: m.id,
-          sender: m.sender_type,
-          senderTitle: m.sender_title,
-          text: m.message_text,
-          timestamp: new Date(m.created_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }),
-          isEncrypted: m.is_encrypted ?? true,
-        };
-        setTickets((prev) =>
-          prev.map((t) => {
-            if (t.id === m.ticket_id) {
-              const exists = (t.messages ?? []).some((msg) => msg.id === m.id);
-              if (exists) return t;
-              return { ...t, messages: [...(t.messages ?? []), formattedMsg] };
-            }
-            return t;
-          }),
-        );
-      })
-      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'tickets' }, (payload) => {
-        const updated = payload.new as any;
-        setTickets((prev) =>
-          prev.map((t) => {
-            if (t.id === updated.id) {
-              return { ...t, status: updated.status, updatedAt: updated.updated_at };
-            }
-            return t;
-          }),
-        );
-      })
+      .channel("ticket-messages-rt")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "ticket_messages" },
+        (payload) => {
+          const m = payload.new as any;
+          const formattedMsg = {
+            id: m.id,
+            sender: m.sender_type,
+            senderTitle: m.sender_title,
+            text: m.message_text,
+            timestamp: new Date(m.created_at).toLocaleTimeString("id-ID", {
+              hour: "2-digit",
+              minute: "2-digit",
+            }),
+            isEncrypted: m.is_encrypted ?? true,
+          };
+          setTickets((prev) =>
+            prev.map((t) => {
+              if (t.id === m.ticket_id) {
+                const exists = (t.messages ?? []).some(
+                  (msg) => msg.id === m.id,
+                );
+                if (exists) return t;
+                return {
+                  ...t,
+                  messages: [...(t.messages ?? []), formattedMsg],
+                };
+              }
+              return t;
+            }),
+          );
+        },
+      )
+      .on(
+        "postgres_changes",
+        { event: "UPDATE", schema: "public", table: "tickets" },
+        (payload) => {
+          const updated = payload.new as any;
+          setTickets((prev) =>
+            prev.map((t) => {
+              if (t.id === updated.id) {
+                return {
+                  ...t,
+                  status: updated.status,
+                  updatedAt: updated.updated_at,
+                };
+              }
+              return t;
+            }),
+          );
+        },
+      )
       .subscribe();
 
-    return () => { supabase.removeChannel(channel); };
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   // Polling fallback: refresh tickets every 8 seconds
@@ -218,10 +243,13 @@ export default function App() {
         setTickets((prev) => {
           const prevIds = new Set(prev.map((t) => t.id));
           const newOnes = fresh.filter((t) => !prevIds.has(t.id));
-          return [...newOnes, ...prev.map((t) => {
-            const updated = fresh.find((f) => f.id === t.id);
-            return updated || t;
-          })];
+          return [
+            ...newOnes,
+            ...prev.map((t) => {
+              const updated = fresh.find((f) => f.id === t.id);
+              return updated || t;
+            }),
+          ];
         });
       } catch {}
     }, 8000);
@@ -338,11 +366,11 @@ export default function App() {
         isKiosk: newTicket.isKioskSubmission,
       });
       setTickets((prev) => [created, ...prev]);
-      
+
       // Update audit logs from backend
       const logs = await api.getAuditLogs();
       setAuditLogs(logs);
-      
+
       return created;
     } catch (err) {
       console.error("Failed to submit report:", err);
@@ -361,7 +389,7 @@ export default function App() {
       const newMessage = await api.sendMessage(ticketId, {
         sender: "pelapor",
         text: messageText,
-        isEncrypted: true
+        isEncrypted: true,
       });
 
       setTickets((prev) =>
@@ -371,10 +399,13 @@ export default function App() {
               id: newMessage.id,
               sender: "pelapor" as const,
               text: newMessage.message_text,
-              timestamp: new Date(newMessage.created_at).toLocaleTimeString("id-ID", {
-                hour: "2-digit",
-                minute: "2-digit",
-              }),
+              timestamp: new Date(newMessage.created_at).toLocaleTimeString(
+                "id-ID",
+                {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                },
+              ),
               isEncrypted: true,
             };
             return {
@@ -397,7 +428,7 @@ export default function App() {
         sender: "counselor",
         senderTitle: loggedCounselor?.name || "Guru BK",
         text,
-        isEncrypted: true
+        isEncrypted: true,
       });
 
       setTickets((prev) =>
@@ -408,10 +439,13 @@ export default function App() {
               sender: "counselor" as const,
               senderTitle: newMessage.sender_title,
               text: newMessage.message_text,
-              timestamp: new Date(newMessage.created_at).toLocaleTimeString("id-ID", {
-                hour: "2-digit",
-                minute: "2-digit",
-              }),
+              timestamp: new Date(newMessage.created_at).toLocaleTimeString(
+                "id-ID",
+                {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                },
+              ),
               isEncrypted: true,
             };
             return {
@@ -435,7 +469,7 @@ export default function App() {
   ) => {
     try {
       await api.updateTicketStatus(ticketId, status, actionSummary);
-      
+
       setTickets((prev) =>
         prev.map((t) => {
           if (t.id === ticketId) {
@@ -521,10 +555,10 @@ export default function App() {
         prefix,
         studentLevel || "Semua Kelas",
         notes || "Dibuat oleh Admin",
-        SCHOOL_ID
+        SCHOOL_ID,
       );
       setTokensList((prev) => [...newTokens, ...prev]);
-      
+
       const logs = await api.getAuditLogs();
       setAuditLogs(logs);
     } catch (err) {
@@ -533,14 +567,14 @@ export default function App() {
   };
 
   const handleToggleTokenStatus = async (tokenCode: string) => {
-    const token = tokensList.find(t => t.tokenCode === tokenCode);
+    const token = tokensList.find((t) => t.tokenCode === tokenCode);
     if (!token) return;
     const nextStatus = token.status === "Aktif" ? "Kedaluwarsa" : "Aktif";
     try {
       await fetch(`/api/tokens/${tokenCode}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: nextStatus })
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: nextStatus }),
       });
     } catch (err) {
       console.error("Failed to toggle token status:", err);
@@ -558,7 +592,7 @@ export default function App() {
   const handleDeleteToken = async (tokenCode: string) => {
     try {
       await fetch(`/api/tokens/${tokenCode}`, {
-        method: 'DELETE'
+        method: "DELETE",
       });
     } catch (err) {
       console.error("Failed to delete token:", err);
@@ -577,7 +611,10 @@ export default function App() {
 
     try {
       // 1. Create intervention if needed
-      if (typeof target === "string" && (target.includes("Perlindungan") || target === "Keduanya")) {
+      if (
+        typeof target === "string" &&
+        (target.includes("Perlindungan") || target === "Keduanya")
+      ) {
         const newIntervention: Partial<ProtectionIntervention> = {
           ticketId: targetTicket.id,
           victimAlias: `Ananda (Korban #${targetTicket.id})`,
@@ -602,13 +639,13 @@ export default function App() {
         hour: "2-digit",
         minute: "2-digit",
       });
-      
+
       const systemMsgText = `[PROTOKOL PERLINDUNGAN]: Kasus ini telah resmi dieskalasi ke ${target}. Tim ahli dan pendamping telah ditugaskan untuk menjamin keselamatan Anda.`;
-      
+
       const newMessage = await api.sendMessage(ticketId, {
         sender: "system",
         text: systemMsgText,
-        isEncrypted: true
+        isEncrypted: true,
       });
 
       await api.updateTicketStatus(ticketId, "tindakan");
@@ -650,11 +687,14 @@ export default function App() {
     note?: string,
   ) => {
     try {
-      const existing = interventions.find(i => i.id === id);
+      const existing = interventions.find((i) => i.id === id);
       if (!existing) return;
 
       const updatedNotes = note ? [...existing.notes, note] : existing.notes;
-      const updated = await api.updateIntervention(id, { stage, notes: updatedNotes });
+      const updated = await api.updateIntervention(id, {
+        stage,
+        notes: updatedNotes,
+      });
 
       setInterventions((prev) =>
         prev.map((item) => {
@@ -704,14 +744,14 @@ export default function App() {
   };
 
   const handleToggleUserStatus = async (userId: string) => {
-    const user = usersList.find(u => u.id === userId);
+    const user = usersList.find((u) => u.id === userId);
     if (!user) return;
     const nextStatus = user.status === "Aktif" ? "Non-Aktif" : "Aktif";
     try {
       await fetch(`/api/users/${userId}/status`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: nextStatus })
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: nextStatus }),
       });
     } catch (err) {
       console.error("Failed to toggle user status:", err);
@@ -971,7 +1011,8 @@ export default function App() {
             onLogin={(role, counselor) => {
               setActiveRole(role);
               if (counselor) setLoggedCounselor(counselor);
-              const matchedUser = usersList.find((u) => u.role === role) || null;
+              const matchedUser =
+                usersList.find((u) => u.role === role) || null;
               setCurrentUserAccount(matchedUser);
               const roleTabMap: Record<string, string> = {
                 guru: "admin",
@@ -1062,7 +1103,9 @@ export default function App() {
             <span className="font-medium text-slate-500">TAMENG</span>
             <span>— Ruang Aman Pelaporan & Konseling Siswa</span>
           </div>
-          <span>Platform ini dihibahkan untuk satuan pendidikan Indonesia.</span>
+          <span>
+            Platform ini dihibahkan untuk satuan pendidikan Indonesia.
+          </span>
         </div>
       </footer>
 
@@ -1095,7 +1138,7 @@ export default function App() {
         onVerifyAndLogin={(token) => {
           const session: StudentSession = {
             tokenCode: token.tokenCode,
-            schoolName: token.schoolName || 'SMA Negeri 1 Jakarta',
+            schoolName: token.schoolName || "SMA Negeri 1 Jakarta",
             studentLevel: token.studentLevel,
             authenticatedAt: new Date().toISOString(),
             expiresAt: token.expiresAt,

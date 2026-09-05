@@ -47,8 +47,10 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
         api.getHelpArticles(),
         api.getFAQs(),
       ]);
-      const articlesData = results[0].status === 'fulfilled' ? results[0].value : [];
-      const faqsData = results[1].status === 'fulfilled' ? results[1].value : [];
+      const articlesData =
+        results[0].status === "fulfilled" ? results[0].value : [];
+      const faqsData =
+        results[1].status === "fulfilled" ? results[1].value : [];
       setArticles(articlesData.length > 0 ? articlesData : HELP_ARTICLES);
       setFaqs(faqsData.length > 0 ? faqsData : FAQ_ITEMS);
     } catch {

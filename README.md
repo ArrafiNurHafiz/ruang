@@ -20,33 +20,41 @@ TAMENG adalah platform digital untuk pelaporan perundungan (bullying) dan kekera
 ## Cara Menjalankan (Development/Production Ready)
 
 ### 1. Persiapan
+
 Pastikan Anda memiliki Node.js versi 18 atau lebih tinggi.
 
 ### 2. Instalasi Dependensi
+
 ```bash
 npm install
 ```
 
 ### 3. Jalankan Backend Server
+
 Buka terminal baru dan jalankan:
+
 ```bash
 node server.js
 ```
+
 Server akan berjalan di `http://localhost:3001`.
 
 ### 4. Jalankan Frontend
+
 Buka terminal lain dan jalankan:
+
 ```bash
 npm run dev
 ```
+
 Aplikasi dapat diakses di `http://localhost:3000`.
 
 ## Akun Demo Default
 
-| Role | Email | Password |
-|------|-------|----------|
-| Guru BK | `guru.bk@sekolah.sch.id` | `password123` |
-| Admin Sekolah | `admin.ppksp@sekolah.sch.id` | `admin123` |
+| Role          | Email                        | Password      |
+| ------------- | ---------------------------- | ------------- |
+| Guru BK       | `guru.bk@sekolah.sch.id`     | `password123` |
+| Admin Sekolah | `admin.ppksp@sekolah.sch.id` | `admin123`    |
 
 ## Struktur Project
 
@@ -56,4 +64,5 @@ Aplikasi dapat diakses di `http://localhost:3000`.
 - `supabase-schema.sql`: Schema untuk migrasi ke Supabase (Production).
 
 ---
+
 **Catatan Penting**: Aplikasi ini telah diubah dari prototype statis menjadi aplikasi fungsional penuh dengan backend dan database nyata. Untuk penggunaan skala besar, disarankan menghubungkan aplikasi ke instance Supabase menggunakan schema SQL yang telah disediakan.

@@ -139,18 +139,21 @@ export const AdminCounselorDashboard: React.FC<
     e.preventDefault();
     setIsLoggingIn(true);
     try {
-      const response = await api.login({ email, password, role: 'guru' });
+      const response = await api.login({ email, password, role: "guru" });
       onLogin({
         id: response.user.id,
         name: response.user.name,
         email: response.user.email,
         role: response.user.roleTitle,
-        nip: response.user.identifier.replace('NIP: ', ''),
+        nip: response.user.identifier.replace("NIP: ", ""),
         avatar: response.user.avatar,
-        schoolName: response.user.organization
+        schoolName: response.user.organization,
       });
     } catch (err: any) {
-      const msg = err.name === 'AbortError' ? 'Server tidak merespons. Pastikan backend berjalan di port 3001.' : (err.message || "Login failed");
+      const msg =
+        err.name === "AbortError"
+          ? "Server tidak merespons. Pastikan backend berjalan di port 3001."
+          : err.message || "Login failed";
       setLoginError(msg);
     } finally {
       setIsLoggingIn(false);
@@ -162,18 +165,29 @@ export const AdminCounselorDashboard: React.FC<
     setReqSubmitting(true);
     setReqError("");
     try {
-      const res = await fetch('/api/account-requests', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: reqName, email: reqEmail, role: reqRole, organization: reqOrg, identifier: reqIdentifier, reason: reqReason })
+      const res = await fetch("/api/account-requests", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: reqName,
+          email: reqEmail,
+          role: reqRole,
+          organization: reqOrg,
+          identifier: reqIdentifier,
+          reason: reqReason,
+        }),
       });
       if (!res.ok) {
         const data = await res.json();
-        throw new Error(data.error || 'Gagal mengirim pengajuan');
+        throw new Error(data.error || "Gagal mengirim pengajuan");
       }
       setReqSuccess(true);
     } catch (err: any) {
-      setReqError(err.name === 'AbortError' ? 'Server tidak merespons.' : (err.message || 'Gagal mengirim pengajuan'));
+      setReqError(
+        err.name === "AbortError"
+          ? "Server tidak merespons."
+          : err.message || "Gagal mengirim pengajuan",
+      );
     } finally {
       setReqSubmitting(false);
     }
@@ -237,11 +251,13 @@ export const AdminCounselorDashboard: React.FC<
   };
 
   // Metrics
-const totalCount = safeTickets.length;
-  const criticalCount = safeTickets.filter((t) =>
-    t.urgency === "Kritis" || t.urgency === "Tinggi",
+  const totalCount = safeTickets.length;
+  const criticalCount = safeTickets.filter(
+    (t) => t.urgency === "Kritis" || t.urgency === "Tinggi",
   ).length;
-  const inActionCount = safeTickets.filter((t) => t.status === "tindakan").length;
+  const inActionCount = safeTickets.filter(
+    (t) => t.status === "tindakan",
+  ).length;
   const closedCount = safeTickets.filter((t) => t.status === "ditutup").length;
 
   // 1. IF NOT LOGGED IN: SHOW LOGIN SCREEN
@@ -271,7 +287,10 @@ const totalCount = safeTickets.length;
                   type="email"
                   required
                   value={email}
-                  onChange={(e) => { setEmail(e.target.value); setLoginError(""); }}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setLoginError("");
+                  }}
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -284,7 +303,10 @@ const totalCount = safeTickets.length;
                   type="password"
                   required
                   value={password}
-                  onChange={(e) => { setPassword(e.target.value); setLoginError(""); }}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setLoginError("");
+                  }}
                   className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -318,62 +340,142 @@ const totalCount = safeTickets.length;
             <div className="text-center">
               <button
                 type="button"
-                onClick={() => { setShowRequestForm(!showRequestForm); setReqSuccess(false); setReqError(""); }}
+                onClick={() => {
+                  setShowRequestForm(!showRequestForm);
+                  setReqSuccess(false);
+                  setReqError("");
+                }}
                 className="text-xs font-bold text-blue-600 hover:text-blue-800 hover:underline cursor-pointer"
               >
-                {showRequestForm ? "← Kembali ke Login" : "Belum punya akun? Ajukan akun baru"}
+                {showRequestForm
+                  ? "← Kembali ke Login"
+                  : "Belum punya akun? Ajukan akun baru"}
               </button>
             </div>
 
             {showRequestForm && (
               <div className="border-t border-slate-200 pt-5 mt-2 space-y-4 animate-fadeIn">
-                <h3 className="font-bold text-sm text-slate-900">Pengajuan Akun Baru</h3>
-                <p className="text-[11px] text-slate-500">Ajukan akun untuk Guru BK, Satgas, atau Dinas. Admin sekolah akan menyetujui pengajuan Anda.</p>
+                <h3 className="font-bold text-sm text-slate-900">
+                  Pengajuan Akun Baru
+                </h3>
+                <p className="text-[11px] text-slate-500">
+                  Ajukan akun untuk Guru BK, Satgas, atau Dinas. Admin sekolah
+                  akan menyetujui pengajuan Anda.
+                </p>
 
                 {reqSuccess ? (
                   <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-center space-y-2">
                     <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
-                    <p className="text-xs font-bold text-emerald-800">Pengajuan berhasil dikirim!</p>
-                    <p className="text-[11px] text-emerald-700">Admin sekolah akan meninjau dan menyetujui akun Anda.</p>
+                    <p className="text-xs font-bold text-emerald-800">
+                      Pengajuan berhasil dikirim!
+                    </p>
+                    <p className="text-[11px] text-emerald-700">
+                      Admin sekolah akan meninjau dan menyetujui akun Anda.
+                    </p>
                   </div>
                 ) : (
                   <form onSubmit={handleAccountRequest} className="space-y-3">
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[11px] font-bold text-slate-700">Nama Lengkap</label>
-                        <input type="text" required value={reqName} onChange={(e) => setReqName(e.target.value)} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        <label className="text-[11px] font-bold text-slate-700">
+                          Nama Lengkap
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={reqName}
+                          onChange={(e) => setReqName(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[11px] font-bold text-slate-700">Email</label>
-                        <input type="email" required value={reqEmail} onChange={(e) => setReqEmail(e.target.value)} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        <label className="text-[11px] font-bold text-slate-700">
+                          Email
+                        </label>
+                        <input
+                          type="email"
+                          required
+                          value={reqEmail}
+                          onChange={(e) => setReqEmail(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div className="space-y-1">
-                        <label className="text-[11px] font-bold text-slate-700">Peran</label>
-                        <select value={reqRole} onChange={(e) => setReqRole(e.target.value)} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <label className="text-[11px] font-bold text-slate-700">
+                          Peran
+                        </label>
+                        <select
+                          value={reqRole}
+                          onChange={(e) => setReqRole(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        >
                           <option value="guru">Guru BK / Satgas</option>
                           <option value="admin">Admin Sekolah</option>
-                          <option value="dinas-pendidikan">Dinas Pendidikan</option>
-                          <option value="dinas-perlindungan">Dinas Perlindungan (PPA)</option>
+                          <option value="dinas-pendidikan">
+                            Dinas Pendidikan
+                          </option>
+                          <option value="dinas-perlindungan">
+                            Dinas Perlindungan (PPA)
+                          </option>
                         </select>
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[11px] font-bold text-slate-700">Instansi / Sekolah</label>
-                        <input type="text" required value={reqOrg} onChange={(e) => setReqOrg(e.target.value)} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                        <label className="text-[11px] font-bold text-slate-700">
+                          Instansi / Sekolah
+                        </label>
+                        <input
+                          type="text"
+                          required
+                          value={reqOrg}
+                          onChange={(e) => setReqOrg(e.target.value)}
+                          className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
                       </div>
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[11px] font-bold text-slate-700">NIP / ID Pegawai</label>
-                      <input type="text" value={reqIdentifier} onChange={(e) => setReqIdentifier(e.target.value)} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                      <label className="text-[11px] font-bold text-slate-700">
+                        NIP / ID Pegawai
+                      </label>
+                      <input
+                        type="text"
+                        value={reqIdentifier}
+                        onChange={(e) => setReqIdentifier(e.target.value)}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[11px] font-bold text-slate-700">Alasan Pengajuan</label>
-                      <textarea rows={2} required value={reqReason} onChange={(e) => setReqReason(e.target.value)} className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Jelaskan kebutuhan akses Anda..." />
+                      <label className="text-[11px] font-bold text-slate-700">
+                        Alasan Pengajuan
+                      </label>
+                      <textarea
+                        rows={2}
+                        required
+                        value={reqReason}
+                        onChange={(e) => setReqReason(e.target.value)}
+                        className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-xs focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        placeholder="Jelaskan kebutuhan akses Anda..."
+                      />
                     </div>
-                    {reqError && <div className="bg-red-50 border border-red-200 rounded-lg p-2 text-[11px] text-red-700">{reqError}</div>}
-                    <button type="submit" disabled={reqSubmitting} className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-bold py-2.5 rounded-xl text-xs cursor-pointer flex items-center justify-center gap-2">
-                      {reqSubmitting ? <><Loader2 className="w-3.5 h-3.5 animate-spin" /> Mengirim...</> : "Kirim Pengajuan"}
+                    {reqError && (
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-2 text-[11px] text-red-700">
+                        {reqError}
+                      </div>
+                    )}
+                    <button
+                      type="submit"
+                      disabled={reqSubmitting}
+                      className="w-full bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-400 text-white font-bold py-2.5 rounded-xl text-xs cursor-pointer flex items-center justify-center gap-2"
+                    >
+                      {reqSubmitting ? (
+                        <>
+                          <Loader2 className="w-3.5 h-3.5 animate-spin" />{" "}
+                          Mengirim...
+                        </>
+                      ) : (
+                        "Kirim Pengajuan"
+                      )}
                     </button>
                   </form>
                 )}
@@ -701,7 +803,8 @@ const totalCount = safeTickets.length;
                 {(selectedTicket.attachments ?? []).length > 0 && (
                   <div className="space-y-1.5">
                     <span className="text-xs font-bold uppercase tracking-wider text-slate-700">
-                      Bukti Lampiran Siswa ({(selectedTicket.attachments ?? []).length}
+                      Bukti Lampiran Siswa (
+                      {(selectedTicket.attachments ?? []).length}
                       ):
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">

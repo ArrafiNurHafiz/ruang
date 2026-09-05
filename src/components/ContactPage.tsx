@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { ContactMessage } from "../types";
 
-const API_URL = import.meta.env.VITE_API_URL || '/api';
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 export const ContactPage: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -34,19 +34,21 @@ export const ContactPage: React.FC = () => {
 
     try {
       const response = await fetch(`${API_URL}/contact`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, subject, category, message })
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, subject, category, message }),
       });
-      if (!response.ok) throw new Error('Gagal mengirim pesan');
-      
+      if (!response.ok) throw new Error("Gagal mengirim pesan");
+
       setIsSent(true);
       setName("");
       setEmail("");
       setSubject("");
       setMessage("");
     } catch (err) {
-      setSendError("Gagal mengirim pesan. Pastikan server backend berjalan dan coba lagi.");
+      setSendError(
+        "Gagal mengirim pesan. Pastikan server backend berjalan dan coba lagi.",
+      );
     } finally {
       setIsSending(false);
     }

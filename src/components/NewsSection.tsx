@@ -41,9 +41,11 @@ export const NewsSection: React.FC<NewsSectionProps> = ({
   );
   const [savedArticles, setSavedArticles] = useState<string[]>(() => {
     try {
-      const stored = localStorage.getItem('tameng_saved_articles');
+      const stored = localStorage.getItem("tameng_saved_articles");
       return stored ? JSON.parse(stored) : [];
-    } catch { return []; }
+    } catch {
+      return [];
+    }
   });
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
 
@@ -52,7 +54,12 @@ export const NewsSection: React.FC<NewsSectionProps> = ({
   }, []);
 
   useEffect(() => {
-    try { localStorage.setItem('tameng_saved_articles', JSON.stringify(savedArticles)); } catch {}
+    try {
+      localStorage.setItem(
+        "tameng_saved_articles",
+        JSON.stringify(savedArticles),
+      );
+    } catch {}
   }, [savedArticles]);
 
   const loadArticles = async () => {

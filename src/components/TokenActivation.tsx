@@ -62,7 +62,9 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
     try {
       const found = await api.verifyToken(cleanToken);
       if (found.isActivated) {
-        setTokenError(`Token ${cleanToken} sudah diaktivasi sebelumnya. Gunakan Kode Pemulihan untuk masuk.`);
+        setTokenError(
+          `Token ${cleanToken} sudah diaktivasi sebelumnya. Gunakan Kode Pemulihan untuk masuk.`,
+        );
         return;
       }
       setStep(2);
@@ -92,7 +94,10 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
       const key = generateRecoveryKey();
       setRecoveryKey(key);
 
-      const activated = await api.activateToken(tokenInput.toUpperCase(), btoa(pin));
+      const activated = await api.activateToken(
+        tokenInput.toUpperCase(),
+        btoa(pin),
+      );
 
       const targetToken: SchoolToken = {
         ...activated,
@@ -102,14 +107,14 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
 
       setActivatedToken(targetToken);
       onTokenActivated(targetToken);
-      
+
       confetti({
         particleCount: 150,
         spread: 70,
         origin: { y: 0.6 },
         colors: ["#2563eb", "#10b981", "#6366f1"],
       });
-      
+
       setStep(3);
     } catch (err) {
       setTokenError("Gagal mengaktifkan token. Silakan coba lagi.");
@@ -216,12 +221,17 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
                 type="text"
                 required
                 value={tokenInput}
-                onChange={(e) => { setTokenInput(e.target.value); setTokenError(""); }}
+                onChange={(e) => {
+                  setTokenInput(e.target.value);
+                  setTokenError("");
+                }}
                 placeholder="Contoh: TMG-SCH-8831"
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-mono font-bold tracking-widest text-slate-900 uppercase focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {tokenError && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700">{tokenError}</div>
+                <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700">
+                  {tokenError}
+                </div>
               )}
             </div>
 

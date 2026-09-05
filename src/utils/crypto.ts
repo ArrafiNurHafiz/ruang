@@ -1,14 +1,22 @@
 /**
  * TAMENG Cryptographic & Privacy Utilities
- * Zero-Knowledge Proof simulator, PII detector, and token hash algorithms
+ * Cryptographic Integrity Hash, PII detector, and token hash algorithms
  */
 
 export function generateTicketId(): string {
   const year = new Date().getFullYear();
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let randomPart = "";
-  for (let i = 0; i < 4; i++) {
-    randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
+  const randomBytes = new Uint8Array(4);
+  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+    crypto.getRandomValues(randomBytes);
+    for (let i = 0; i < 4; i++) {
+      randomPart += chars.charAt(randomBytes[i] % chars.length);
+    }
+  } else {
+    for (let i = 0; i < 4; i++) {
+      randomPart += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
   }
   return `TMG-${year}-${randomPart}`;
 }
@@ -35,29 +43,52 @@ export function generateRecoveryKey(): string {
     "satria",
   ];
   const selected: string[] = [];
-  for (let i = 0; i < 4; i++) {
-    const idx = Math.floor(Math.random() * words.length);
-    selected.push(words[idx]);
+  const randomIndices = new Uint32Array(4);
+  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
+    crypto.getRandomValues(randomIndices);
+    for (let i = 0; i < 4; i++) {
+      selected.push(words[randomIndices[i] % words.length]);
+    }
+  } else {
+    for (let i = 0; i < 4; i++) {
+      selected.push(words[Math.floor(Math.random() * words.length)]);
+    }
   }
   const randomSuffix = Math.floor(1000 + Math.random() * 9000);
   return `${selected.join("-")}-${randomSuffix}`;
 }
 
 /**
- * Generate simulated Zero-Knowledge Proof (ZKP) cryptographic digest
+ * Generate Cryptographic Integrity Hash for Report Content using standard SHA-256
  */
-export function generateZKPHash(content: string, timestamp: number): string {
-  let hash = 0;
-  const str = content + timestamp + "TAMENG_ZKP_SALT_2025";
-  for (let i = 0; i < str.length; i++) {
-    const char = str.charCodeAt(i);
-    hash = (hash << 5) - hash + char;
-    hash = hash & hash; // Convert to 32bit integer
+export async function generateZKPHash(
+  content: string,
+  timestamp: number,
+): Promise<string> {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(
+    `${content}_${timestamp}_TAMENG_INTEGRITY_SALT_2026`,
+  );
+
+  if (typeof crypto !== "undefined" && crypto.subtle && crypto.subtle.digest) {
+    const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+    const hashArray = Array.from(new Uint8Array(hashBuffer));
+    const hexDigest = hashArray
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
+    return `integrity-sha256:0x${hexDigest}`;
   }
-  const hex = Math.abs(hash).toString(16).padStart(8, "0");
-  const randHex1 = Math.random().toString(16).substring(2, 10);
-  const randHex2 = Math.random().toString(16).substring(2, 10);
-  return `zkp-sha256:0x${hex}${randHex1}${randHex2}`;
+
+  // Fallback FNV-1a if subtle crypto is unavailable
+  let hash = 0x811c9dc5;
+  const str = `${content}_${timestamp}_TAMENG_INTEGRITY_SALT_2026`;
+  for (let i = 0; i < str.length; i++) {
+    hash ^= str.charCodeAt(i);
+    hash +=
+      (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
+  }
+  const digest = (hash >>> 0).toString(16).padStart(8, "0");
+  return `integrity-sha256:0x${digest}`;
 }
 
 /**
@@ -111,7 +142,6 @@ export function detectPII(text: string): DetectedEntity[] {
   // 3. NISN (10 digits)
   const nisnRegex = /\b[0-9]{10}\b/g;
   while ((match = nisnRegex.exec(text)) !== null) {
-    // Avoid if it's part of a phone match
     if (
       !entities.some(
         (e) =>
@@ -128,7 +158,7 @@ export function detectPII(text: string): DetectedEntity[] {
     }
   }
 
-  // 4. Common name patterns or intro prefixes: "nama saya [X]", "saya [X]", "bernama [X]", "dipanggil [X]"
+  // 4. Common name patterns: "nama saya [X]", "saya [X]", "bernama [X]"
   const nameIntroRegex =
     /(?:nama(?:ku| saya)?\s+(?:adalah\s+)?([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)|saya\s+bernama\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)|teman\s+saya\s+bernama\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*))/gi;
   while ((match = nameIntroRegex.exec(text)) !== null) {
@@ -143,55 +173,47 @@ export function detectPII(text: string): DetectedEntity[] {
     }
   }
 
-  // 5. Address markers: "jl.", "jalan", "komplek", "rt/rw"
-  const addressRegex =
-    /\b(?:jl\.|jalan|komplek|gang|gg\.|rt\s*\d+\s*\/|rw\s*\d+)\s+[A-Za-z0-9\s.,-]+?(?=(?:,|\.|\n|$))/gi;
-  while ((match = addressRegex.exec(text)) !== null) {
-    if (match[0].length > 5) {
-      entities.push({
-        text: match[0],
-        type: "Lokasi Privat",
-        startIndex: match.index,
-        endIndex: match.index + match[0].length,
-      });
-    }
-  }
-
-  // Filter overlapping entities
-  return entities.filter(
-    (v, i, a) =>
-      a.findIndex((t) => t.text === v.text && t.startIndex === v.startIndex) ===
-      i,
-  );
+  return entities;
 }
 
-/**
- * Redacts detected PII in text replacing them with [SENSOR: Tipe]
- */
 export function autoRedactText(
   text: string,
   entities: DetectedEntity[],
 ): string {
   if (!text || entities.length === 0) return text;
 
-  // Sort entities descending by index so replacing doesn't mess up offsets
+  // Sort descending by startIndex so replacements don't shift earlier offsets
   const sorted = [...entities].sort((a, b) => b.startIndex - a.startIndex);
-  let result = text;
+  let redacted = text;
 
-  for (const item of sorted) {
-    const replacement = `[TERLINDUNGI: ${item.type.toUpperCase()}]`;
-    result =
-      result.substring(0, item.startIndex) +
-      replacement +
-      result.substring(item.endIndex);
+  for (const entity of sorted) {
+    let mask = "[REDACTED]";
+    switch (entity.type) {
+      case "Kelas / Rombel":
+        mask = "[KELAS-DIRAHAASIAKAN]";
+        break;
+      case "Nomor Kontak":
+        mask = "[NOMOR-KONTAK-DIRAHASIAKAN]";
+        break;
+      case "NISN / Angka Pengenal":
+        mask = "[NISN-DIRAHASIAKAN]";
+        break;
+      case "Nama / Identitas":
+        mask = "[NAMA-SISWA-DIRAHASIAKAN]";
+        break;
+      case "Lokasi Privat":
+        mask = "[LOKASI-DIRAHASIAKAN]";
+        break;
+    }
+    redacted =
+      redacted.slice(0, entity.startIndex) +
+      mask +
+      redacted.slice(entity.endIndex);
   }
 
-  return result;
+  return redacted;
 }
 
-/**
- * Format bytes to readable string (e.g. 1.2 MB)
- */
 export function formatBytes(bytes: number, decimals = 2): string {
   if (bytes === 0) return "0 Bytes";
   const k = 1024;

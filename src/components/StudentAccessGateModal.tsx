@@ -68,7 +68,7 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
 
     try {
       const matched = await api.verifyToken(cleanCode);
-      
+
       if (matched.status === "Kedaluwarsa") {
         setErrorMsg(
           "Kode akses ini telah kedaluwarsa atau dinonaktifkan oleh admin sekolah. Silakan minta kode baru ke Guru BK / Satgas.",

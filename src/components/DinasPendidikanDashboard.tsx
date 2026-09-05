@@ -88,15 +88,15 @@ export const DinasPendidikanDashboard: React.FC<
   const handleSendSupervisionNotice = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!supervisionNotice || !selectedSchoolModal) return;
-    
+
     try {
       await api.sendSupervisionNotice({
         targetSchoolId: selectedSchoolModal.id,
         targetSchoolName: selectedSchoolModal.schoolName,
         message: supervisionNotice,
-        officerName: officerName
+        officerName: officerName,
       });
-      
+
       setNoticeSentSuccess(true);
       setTimeout(() => {
         setNoticeSentSuccess(false);
@@ -104,7 +104,9 @@ export const DinasPendidikanDashboard: React.FC<
         setSelectedSchoolModal(null);
       }, 2000);
     } catch (err) {
-      setSupervisiError("Gagal mengirim instruksi supervisi. Pastikan server berjalan.");
+      setSupervisiError(
+        "Gagal mengirim instruksi supervisi. Pastikan server berjalan.",
+      );
     }
   };
 
@@ -118,10 +120,13 @@ export const DinasPendidikanDashboard: React.FC<
     e.preventDefault();
     setIsLoggingIn(true);
     try {
-      await api.login({ email, password, role: 'dinas-pendidikan' });
+      await api.login({ email, password, role: "dinas-pendidikan" });
       setIsLoggedIn(true);
     } catch (err: any) {
-      const msg = err.name === 'AbortError' ? 'Server tidak merespons. Pastikan backend berjalan di port 3001.' : (err.message || "Login failed");
+      const msg =
+        err.name === "AbortError"
+          ? "Server tidak merespons. Pastikan backend berjalan di port 3001."
+          : err.message || "Login failed";
       setLoginError(msg);
     } finally {
       setIsLoggingIn(false);
@@ -136,48 +141,69 @@ export const DinasPendidikanDashboard: React.FC<
             <div className="w-16 h-16 bg-indigo-600 rounded-2xl flex items-center justify-center mx-auto shadow-lg shadow-indigo-500/40">
               <Building2 className="w-8 h-8 text-white" />
             </div>
-            <h2 className="text-2xl font-black text-white tracking-tight">Portal Dinas Pendidikan</h2>
-            <p className="text-indigo-300 text-xs uppercase tracking-widest font-bold">Pengawasan Wilayah PPKSP</p>
+            <h2 className="text-2xl font-black text-white tracking-tight">
+              Portal Dinas Pendidikan
+            </h2>
+            <p className="text-indigo-300 text-xs uppercase tracking-widest font-bold">
+              Pengawasan Wilayah PPKSP
+            </p>
           </div>
-          
+
           <div className="p-8 space-y-5">
             <form onSubmit={handleLoginForm} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Email Dinas:</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Email Dinas:
+                </label>
                 <input
                   type="email"
                   required
                   value={email}
-                  onChange={(e) => { setEmail(e.target.value); setLoginError(""); }}
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                    setLoginError("");
+                  }}
                   placeholder="h.hendro@disdik.prov.go.id"
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
                 />
               </div>
               <div className="space-y-1.5">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">Password:</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
+                  Password:
+                </label>
                 <input
                   type="password"
                   required
                   value={password}
-                  onChange={(e) => { setPassword(e.target.value); setLoginError(""); }}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    setLoginError("");
+                  }}
                   placeholder="••••••••"
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
                 />
               </div>
               {loginError && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700">{loginError}</div>
+                <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700">
+                  {loginError}
+                </div>
               )}
               <button
                 type="submit"
                 disabled={isLoggingIn}
                 className="w-full bg-indigo-900 hover:bg-indigo-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 cursor-pointer disabled:bg-slate-300"
               >
-                {isLoggingIn ? <RefreshCw className="w-5 h-5 animate-spin" /> : <LogIn className="w-5 h-5" />}
+                {isLoggingIn ? (
+                  <RefreshCw className="w-5 h-5 animate-spin" />
+                ) : (
+                  <LogIn className="w-5 h-5" />
+                )}
                 <span>Masuk ke Portal Dinas</span>
               </button>
             </form>
             <p className="text-[10px] text-center text-slate-400 leading-relaxed">
-              Portal khusus Pejabat dan Pengawas Dinas Pendidikan untuk monitoring kepatuhan PPKSP di tingkat wilayah.
+              Portal khusus Pejabat dan Pengawas Dinas Pendidikan untuk
+              monitoring kepatuhan PPKSP di tingkat wilayah.
             </p>
           </div>
         </div>
@@ -476,22 +502,46 @@ export const DinasPendidikanDashboard: React.FC<
 
               <div className="space-y-3 text-xs">
                 {(() => {
-                  const totalReports = regionalSchools.reduce((s, sch) => s + sch.totalReports, 0);
+                  const totalReports = regionalSchools.reduce(
+                    (s, sch) => s + sch.totalReports,
+                    0,
+                  );
                   const categories = [
-                    { name: "Perundungan / Bullying", color: "bg-indigo-600", ratio: 0.45 },
-                    { name: "Cyberbullying & Teror Digital", color: "bg-sky-500", ratio: 0.25 },
-                    { name: "Pemerasan & Pungli", color: "bg-amber-500", ratio: 0.15 },
-                    { name: "Kekerasan Fisik", color: "bg-rose-500", ratio: 0.10 },
+                    {
+                      name: "Perundungan / Bullying",
+                      color: "bg-indigo-600",
+                      ratio: 0.45,
+                    },
+                    {
+                      name: "Cyberbullying & Teror Digital",
+                      color: "bg-sky-500",
+                      ratio: 0.25,
+                    },
+                    {
+                      name: "Pemerasan & Pungli",
+                      color: "bg-amber-500",
+                      ratio: 0.15,
+                    },
+                    {
+                      name: "Kekerasan Fisik",
+                      color: "bg-rose-500",
+                      ratio: 0.1,
+                    },
                     { name: "Lainnya", color: "bg-purple-600", ratio: 0.05 },
                   ];
                   return categories.map((item) => {
                     const count = Math.round(totalReports * item.ratio);
-                    const percent = totalReports > 0 ? Math.round((count / totalReports) * 100) : 0;
+                    const percent =
+                      totalReports > 0
+                        ? Math.round((count / totalReports) * 100)
+                        : 0;
                     return (
                       <div key={item.name} className="space-y-1">
                         <div className="flex justify-between font-bold text-slate-700">
                           <span>{item.name}</span>
-                          <span>{count} kasus ({percent}%)</span>
+                          <span>
+                            {count} kasus ({percent}%)
+                          </span>
                         </div>
                         <div className="w-full h-2 bg-slate-200 rounded-full overflow-hidden">
                           <div
@@ -515,15 +565,43 @@ export const DinasPendidikanDashboard: React.FC<
               <div className="space-y-3 text-xs">
                 {(() => {
                   const total = Math.max(regionalSchools.length, 1);
-                  const fast = regionalSchools.filter(s => s.avgResponseHours < 2).length;
-                  const normal = regionalSchools.filter(s => s.avgResponseHours >= 2 && s.avgResponseHours < 6).length;
-                  const slow = regionalSchools.filter(s => s.avgResponseHours >= 6 && s.avgResponseHours < 24).length;
-                  const late = regionalSchools.filter(s => s.avgResponseHours >= 24).length;
+                  const fast = regionalSchools.filter(
+                    (s) => s.avgResponseHours < 2,
+                  ).length;
+                  const normal = regionalSchools.filter(
+                    (s) => s.avgResponseHours >= 2 && s.avgResponseHours < 6,
+                  ).length;
+                  const slow = regionalSchools.filter(
+                    (s) => s.avgResponseHours >= 6 && s.avgResponseHours < 24,
+                  ).length;
+                  const late = regionalSchools.filter(
+                    (s) => s.avgResponseHours >= 24,
+                  ).length;
                   return [
-                    { range: "Sangat Cepat (< 2 Jam)", status: "Optimal", count: `${Math.round(fast/total*100)}% Sekolah`, color: "text-emerald-600" },
-                    { range: "Standar Normal (2 - 6 Jam)", status: "Baik", count: `${Math.round(normal/total*100)}% Sekolah`, color: "text-blue-600" },
-                    { range: "Perlu Akselerasi (6 - 24 Jam)", status: "Perlu Monitor", count: `${Math.round(slow/total*100)}% Sekolah`, color: "text-amber-600" },
-                    { range: "Terlambat (> 24 Jam)", status: "Supervisi Wajib", count: `${Math.round(late/total*100)}% Sekolah`, color: "text-rose-600" },
+                    {
+                      range: "Sangat Cepat (< 2 Jam)",
+                      status: "Optimal",
+                      count: `${Math.round((fast / total) * 100)}% Sekolah`,
+                      color: "text-emerald-600",
+                    },
+                    {
+                      range: "Standar Normal (2 - 6 Jam)",
+                      status: "Baik",
+                      count: `${Math.round((normal / total) * 100)}% Sekolah`,
+                      color: "text-blue-600",
+                    },
+                    {
+                      range: "Perlu Akselerasi (6 - 24 Jam)",
+                      status: "Perlu Monitor",
+                      count: `${Math.round((slow / total) * 100)}% Sekolah`,
+                      color: "text-amber-600",
+                    },
+                    {
+                      range: "Terlambat (> 24 Jam)",
+                      status: "Supervisi Wajib",
+                      count: `${Math.round((late / total) * 100)}% Sekolah`,
+                      color: "text-rose-600",
+                    },
                   ].map((item, idx) => (
                     <div
                       key={idx}
@@ -635,20 +713,35 @@ export const DinasPendidikanDashboard: React.FC<
                 Laporan Bulanan Satgas PPKSP (Februari 2025)
               </h4>
               <p className="text-slate-600 leading-relaxed">
-                Mencakup {regionalSchools.length} sekolah terdaftar, {regionalSchools.reduce((s, sch) => s + sch.totalReports, 0)} total laporan anonim
-                tertangani, serta persentase kepatuhan {Math.round((regionalSchools.filter(s => s.complianceStatus.startsWith('Patuh')).length / Math.max(regionalSchools.length, 1)) * 100)}%.
+                Mencakup {regionalSchools.length} sekolah terdaftar,{" "}
+                {regionalSchools.reduce((s, sch) => s + sch.totalReports, 0)}{" "}
+                total laporan anonim tertangani, serta persentase kepatuhan{" "}
+                {Math.round(
+                  (regionalSchools.filter((s) =>
+                    s.complianceStatus.startsWith("Patuh"),
+                  ).length /
+                    Math.max(regionalSchools.length, 1)) *
+                    100,
+                )}
+                %.
               </p>
               <button
                 onClick={() => {
-                  const csvHeader = "Sekolah,Kecamatan,Jenjang,Satgas Aktif,Total Laporan,Diselesaikan,Rata-rata Respon (jam),Kepatuhan\n";
-                  const csvBody = regionalSchools.map(s =>
-                    `"${s.schoolName}","${s.district}","${s.level}",${s.activeSatgasCount},${s.totalReports},${s.resolvedReports},${s.avgResponseHours},"${s.complianceStatus}"`
-                  ).join("\n");
-                  const blob = new Blob([csvHeader + csvBody], { type: "text/csv;charset=utf-8;" });
+                  const csvHeader =
+                    "Sekolah,Kecamatan,Jenjang,Satgas Aktif,Total Laporan,Diselesaikan,Rata-rata Respon (jam),Kepatuhan\n";
+                  const csvBody = regionalSchools
+                    .map(
+                      (s) =>
+                        `"${s.schoolName}","${s.district}","${s.level}",${s.activeSatgasCount},${s.totalReports},${s.resolvedReports},${s.avgResponseHours},"${s.complianceStatus}"`,
+                    )
+                    .join("\n");
+                  const blob = new Blob([csvHeader + csvBody], {
+                    type: "text/csv;charset=utf-8;",
+                  });
                   const url = URL.createObjectURL(blob);
                   const a = document.createElement("a");
                   a.href = url;
-                  a.download = `laporan-ppksp-wilayah-${new Date().toISOString().slice(0,10)}.csv`;
+                  a.download = `laporan-ppksp-wilayah-${new Date().toISOString().slice(0, 10)}.csv`;
                   a.click();
                   URL.revokeObjectURL(url);
                 }}
@@ -669,15 +762,21 @@ export const DinasPendidikanDashboard: React.FC<
               </p>
               <button
                 onClick={() => {
-                  const csvHeader = "Sekolah,Kecamatan,Jenjang,Satgas Aktif,Total Laporan,Diselesaikan,Rata-rata Respon (jam),Kepatuhan,Kepala Sekolah,Terakhir Aktif\n";
-                  const csvBody = regionalSchools.map(s =>
-                    `"${s.schoolName}","${s.district}","${s.level}",${s.activeSatgasCount},${s.totalReports},${s.resolvedReports},${s.avgResponseHours},"${s.complianceStatus}","${s.principalName}","${s.lastActive}"`
-                  ).join("\n");
-                  const blob = new Blob([csvHeader + csvBody], { type: "text/csv;charset=utf-8;" });
+                  const csvHeader =
+                    "Sekolah,Kecamatan,Jenjang,Satgas Aktif,Total Laporan,Diselesaikan,Rata-rata Respon (jam),Kepatuhan,Kepala Sekolah,Terakhir Aktif\n";
+                  const csvBody = regionalSchools
+                    .map(
+                      (s) =>
+                        `"${s.schoolName}","${s.district}","${s.level}",${s.activeSatgasCount},${s.totalReports},${s.resolvedReports},${s.avgResponseHours},"${s.complianceStatus}","${s.principalName}","${s.lastActive}"`,
+                    )
+                    .join("\n");
+                  const blob = new Blob([csvHeader + csvBody], {
+                    type: "text/csv;charset=utf-8;",
+                  });
                   const url = URL.createObjectURL(blob);
                   const a = document.createElement("a");
                   a.href = url;
-                  a.download = `dataset-agregat-wilayah-${new Date().toISOString().slice(0,10)}.csv`;
+                  a.download = `dataset-agregat-wilayah-${new Date().toISOString().slice(0, 10)}.csv`;
                   a.click();
                   URL.revokeObjectURL(url);
                 }}
@@ -744,13 +843,18 @@ export const DinasPendidikanDashboard: React.FC<
                   required
                   placeholder="Tuliskan arahan resmi pengawas dinas pendidikan..."
                   value={supervisionNotice}
-                  onChange={(e) => { setSupervisionNotice(e.target.value); setSupervisiError(""); }}
+                  onChange={(e) => {
+                    setSupervisionNotice(e.target.value);
+                    setSupervisiError("");
+                  }}
                   className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 leading-relaxed"
                 />
               </div>
 
               {supervisiError && (
-                <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700">{supervisiError}</div>
+                <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700">
+                  {supervisiError}
+                </div>
               )}
 
               <div className="flex items-center justify-end gap-2 pt-2">
