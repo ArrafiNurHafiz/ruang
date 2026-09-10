@@ -110,26 +110,9 @@ export function detectPII(text: string): DetectedEntity[] {
   if (!text) return [];
   const entities: DetectedEntity[] = [];
 
-  // 1. Class patterns: e.g. "XII IPA 2", "12 IPS 1", "Kelas 8B", "X TKJ 3", "XI MIPA 4", "IX-C"
-  const classRegex =
-    /\b(kelas\s+[0-9]{1,2}\s*[a-zA-Z0-9-]*|(?:X|XI|XII|VII|VIII|IX|[0-9]{1,2})\s*(?:IPA|IPS|MIPA|BHS|TKJ|RPL|AKL|OTKP|TBSM|TKR|MM|DKV)?\s*[0-9A-Za-z-]*)\b/gi;
-  let match;
-  while ((match = classRegex.exec(text)) !== null) {
-    if (
-      match[0].length >= 3 &&
-      !["dan", "itu", "ke", "di"].includes(match[0].toLowerCase())
-    ) {
-      entities.push({
-        text: match[0],
-        type: "Kelas / Rombel",
-        startIndex: match.index,
-        endIndex: match.index + match[0].length,
-      });
-    }
-  }
-
-  // 2. Phone numbers: 08xx-xxxx-xxxx or +628xxx
+  // 1. Phone numbers: 08xx-xxxx-xxxx or +628xxx (Check phone first)
   const phoneRegex = /\b(?:\+62|62|0)8[1-9][0-9]{7,11}\b/g;
+  let match;
   while ((match = phoneRegex.exec(text)) !== null) {
     entities.push({
       text: match[0],
@@ -139,7 +122,7 @@ export function detectPII(text: string): DetectedEntity[] {
     });
   }
 
-  // 3. NISN (10 digits)
+  // 2. NISN (10 digits)
   const nisnRegex = /\b[0-9]{10}\b/g;
   while ((match = nisnRegex.exec(text)) !== null) {
     if (
@@ -158,18 +141,72 @@ export function detectPII(text: string): DetectedEntity[] {
     }
   }
 
-  // 4. Common name patterns: "nama saya [X]", "saya [X]", "bernama [X]"
-  const nameIntroRegex =
-    /(?:nama(?:ku| saya)?\s+(?:adalah\s+)?([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)|saya\s+bernama\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*)|teman\s+saya\s+bernama\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)*))/gi;
-  while ((match = nameIntroRegex.exec(text)) !== null) {
-    const matchedName = match[1] || match[2] || match[3];
-    if (matchedName && matchedName.length > 2) {
+  // 3. Class patterns: e.g. "kelas XII IPA 2", "12 IPS 1", "Kelas 8B", "X TKJ 3", "XI MIPA 4", "IX-C"
+  const classRegex =
+    /\b(?:kelas\s+(?:1[0-2]|[1-9]|X|XI|XII|VII|VIII|IX)(?:\s+(?:MIPA|IPA|IPS|BHS|TKJ|RPL|AKL|OTKP|TBSM|TKR|MM|DKV|[A-Za-z]))?(?:\s+[0-9]{1,2})?|(?:X|XI|XII|VII|VIII|IX)\s+(?:IPA|IPS|MIPA|BHS|TKJ|RPL|AKL|OTKP|TBSM|TKR|MM|DKV)(?:\s+[0-9]+)?|(?:1[0-2]|[7-9])\s+(?:IPA|IPS|MIPA|BHS|TKJ|RPL|AKL|OTKP|TBSM|TKR|MM|DKV)(?:\s+[0-9]+)?|(?:kelas\s+)?[0-9]{1,2}[a-zA-Z]\b|(?:X|XI|XII|VII|VIII|IX|[0-9]{1,2})[-/][a-zA-Z0-9]+)\b/gi;
+  while ((match = classRegex.exec(text)) !== null) {
+    if (
+      !entities.some(
+        (e) =>
+          e.startIndex <= match!.index &&
+          e.endIndex >= match!.index + match![0].length,
+      )
+    ) {
       entities.push({
-        text: matchedName,
-        type: "Nama / Identitas",
+        text: match[0],
+        type: "Kelas / Rombel",
         startIndex: match.index,
         endIndex: match.index + match[0].length,
       });
+    }
+  }
+
+  // 4. Common name patterns: "nama saya [X]", "saya [X]", "bernama [X]"
+  const nameIntroRegex =
+    /(?:nama(?:ku| saya)?\s+(?:adalah\s+)?|saya\s+bernama\s+|teman\s+saya\s+bernama\s+)([A-Za-zÀ-ÿ]+(?:\s+[A-Za-zÀ-ÿ]+)*)/gi;
+  const stopWords = new Set([
+    "dari",
+    "kelas",
+    "no",
+    "hp",
+    "nomor",
+    "nisn",
+    "di",
+    "ke",
+    "dan",
+    "yang",
+    "pada",
+    "saat",
+    "waktu",
+    "adalah",
+  ]);
+  while ((match = nameIntroRegex.exec(text)) !== null) {
+    const rawName = match[1];
+    if (rawName) {
+      const words = rawName.split(/\s+/);
+      const cleanWords: string[] = [];
+      for (const w of words) {
+        if (stopWords.has(w.toLowerCase())) break;
+        cleanWords.push(w);
+      }
+      if (cleanWords.length > 0) {
+        const matchedName = cleanWords.join(" ");
+        const nameStart = match.index + match[0].indexOf(matchedName);
+        if (
+          !entities.some(
+            (e) =>
+              e.startIndex <= nameStart &&
+              e.endIndex >= nameStart + matchedName.length,
+          )
+        ) {
+          entities.push({
+            text: matchedName,
+            type: "Nama / Identitas",
+            startIndex: nameStart,
+            endIndex: nameStart + matchedName.length,
+          });
+        }
+      }
     }
   }
 

@@ -7,12 +7,14 @@
     "dev": "vite --port=3000 --host=0.0.0.0",
     "build": "vite build",
     "preview": "vite preview",
-    "server": "node server.js",
+    "server": "node server.cjs",
     "clean": "rm -rf dist server.js",
     "lint": "tsc --noEmit",
     "test:security": "tsx tests/security-regression.test.ts",
     "test:security:live": "tsx tests/security-live-smoke.test.ts",
-    "test": "pnpm test:security"
+    "test:integration": "tsx tests/backend-local-integration.test.ts",
+    "test:frontend": "tsx tests/frontend-logic.test.ts",
+    "test": "tsx tests/security-regression.test.ts && tsx tests/backend-local-integration.test.ts && tsx tests/frontend-logic.test.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

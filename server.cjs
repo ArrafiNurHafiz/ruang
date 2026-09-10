@@ -202,9 +202,20 @@ app.get("/api/tickets", (req, res) => {
 
 app.post("/api/tickets", (req, res) => {
   const db = getDB();
+  const story = req.body.story || "";
+  const recoveryCode = req.body.recovery_code || req.body.recoveryCode || "";
   const newTicket = {
+    status: req.body.status || "diterima",
+    hash_zkp:
+      req.body.hash_zkp ||
+      req.body.hashZKP ||
+      `integrity-sha256:0x${crypto
+        .createHash("sha256")
+        .update(story + recoveryCode + Date.now())
+        .digest("hex")}`,
     ...req.body,
     id: crypto.randomUUID(),
+    status: req.body.status || "diterima",
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     messages: [

@@ -15,6 +15,13 @@ export default defineConfig(() => {
       // Mengizinkan semua domain trycloudflare.com
       allowedHosts: [".trycloudflare.com"],
 
+      proxy: {
+        "/api": {
+          target: "http://localhost:3001",
+          changeOrigin: true,
+        },
+      },
+
       // HMR configuration (bawaan dari template Anda)
       hmr: process.env.DISABLE_HMR !== "true",
       watch: process.env.DISABLE_HMR === "true" ? null : {},
