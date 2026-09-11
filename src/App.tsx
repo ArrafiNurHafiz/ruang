@@ -33,7 +33,6 @@ import { AdminCounselorDashboard } from "./components/AdminCounselorDashboard";
 import { AdminDashboard } from "./components/AdminDashboard";
 import { DinasPendidikanDashboard } from "./components/DinasPendidikanDashboard";
 import { DinasPerlindunganDashboard } from "./components/DinasPerlindunganDashboard";
-import { RoleSwitcherModal } from "./components/RoleSwitcherModal";
 import { DesktopLandingHero } from "./components/DesktopLandingHero";
 import { AboutSection } from "./components/AboutSection";
 import { HelpCenter } from "./components/HelpCenter";
@@ -94,7 +93,6 @@ export default function App() {
   const [activeRole, setActiveRole] = useState<AppUserRole>("siswa");
   const [currentUserAccount, setCurrentUserAccount] =
     useState<UserAccount | null>(null);
-  const [isRoleSwitcherOpen, setIsRoleSwitcherOpen] = useState<boolean>(false);
 
   // Student Access Token & Anti-Infiltrator Session
   const [tokensList, setTokensList] = useState<SchoolToken[]>([]);
@@ -361,7 +359,6 @@ export default function App() {
     } else if (role === "dinas-perlindungan") {
       setCurrentTab("dinas-pppa");
     }
-    setIsRoleSwitcherOpen(false);
   };
 
   useEffect(() => {
@@ -913,7 +910,6 @@ export default function App() {
         studentSession={studentSession}
         onOpenStudentGate={() => setIsStudentGateModalOpen(true)}
         activeRole={activeRole}
-        onOpenRoleSwitcher={() => setIsRoleSwitcherOpen(true)}
         onLogoutRole={() => handleSelectRole("siswa")}
       />
 
@@ -1018,7 +1014,6 @@ export default function App() {
             onCounselorReply={handleCounselorReply}
             onEscalateTicket={handleEscalateTicket}
             onSubmitResolutionEvidence={handleSubmitResolutionEvidence}
-            onOpenRoleSwitcher={() => setIsRoleSwitcherOpen(true)}
             schoolProfile={schoolProfile}
             tokens={tokensList}
             onGenerateBatchTokens={handleGenerateBatchTokens}
@@ -1165,28 +1160,13 @@ export default function App() {
             <span className="font-medium text-slate-500">TAMENG</span>
             <span>— Ruang Aman Pelaporan & Konseling Siswa</span>
           </div>
-          <div className="flex items-center gap-3">
-            <button
-              id="btn-footer-role-switcher"
-              onClick={() => setIsRoleSwitcherOpen(true)}
-              className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold transition cursor-pointer"
-            >
-              Ganti Peran / Portal
-            </button>
+          <div>
             <span>
               Platform ini dihibahkan untuk satuan pendidikan Indonesia.
             </span>
           </div>
         </div>
       </footer>
-
-      {/* 5 User Roles Switcher Modal */}
-      <RoleSwitcherModal
-        isOpen={isRoleSwitcherOpen}
-        onClose={() => setIsRoleSwitcherOpen(false)}
-        activeRole={activeRole}
-        onSelectRole={handleSelectRole}
-      />
 
       {/* Emergency Modal Pop-up */}
       <EmergencyModal

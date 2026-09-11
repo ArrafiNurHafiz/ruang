@@ -62,7 +62,6 @@ interface AdminCounselorDashboardProps {
       submittedBy?: string;
     },
   ) => void;
-  onOpenRoleSwitcher?: () => void;
   schoolProfile: SchoolProfile;
   tokens?: SchoolToken[];
   onGenerateBatchTokens?: (
@@ -84,7 +83,6 @@ export const AdminCounselorDashboard: React.FC<AdminCounselorDashboardProps> = (
   onCounselorReply,
   onEscalateTicket,
   onSubmitResolutionEvidence,
-  onOpenRoleSwitcher,
   schoolProfile,
   tokens = [],
   onGenerateBatchTokens,

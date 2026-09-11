@@ -36,7 +36,6 @@ interface NavbarProps {
   schoolProfile?: SchoolProfile;
   onOpenHibahGuide?: () => void;
   activeRole?: AppUserRole;
-  onOpenRoleSwitcher?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -55,7 +54,6 @@ export const Navbar: React.FC<NavbarProps> = ({
   schoolProfile,
   onOpenHibahGuide,
   activeRole,
-  onOpenRoleSwitcher,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [isVisible, setIsVisible] = React.useState(true);
@@ -232,19 +230,6 @@ export const Navbar: React.FC<NavbarProps> = ({
               </button>
             )}
 
-            {/* Ganti Peran Quick Button */}
-            {onOpenRoleSwitcher && (
-              <button
-                type="button"
-                id="navbar-role-switcher-btn"
-                onClick={onOpenRoleSwitcher}
-                className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition cursor-pointer"
-                title="Beralih peran (Guru, Admin, Dinas, Siswa)"
-              >
-                <span>Ganti Peran</span>
-              </button>
-            )}
-
             {/* Counselor / Staff Logged in or Login Button */}
             {activeRole !== "siswa" ? (
               <div className="flex items-center gap-2 pl-1.5 border-l border-slate-200">
@@ -386,52 +371,28 @@ export const Navbar: React.FC<NavbarProps> = ({
                   {activeRole === "dinas-perlindungan" && "UPTD PPA"}
                 </span>
               </div>
-              <div className="flex items-center gap-2">
-                {onOpenRoleSwitcher && (
-                  <button
-                    onClick={() => {
-                      setMobileMenuOpen(false);
-                      onOpenRoleSwitcher();
-                    }}
-                    className="flex-1 py-2 px-3 rounded-lg border border-slate-200 text-center text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
-                  >
-                    Ganti Peran
-                  </button>
-                )}
                 <button
                   onClick={() => {
                     setMobileMenuOpen(false);
                     if (onLogoutRole) onLogoutRole();
                     else if (onCounselorLogout) onCounselorLogout();
                   }}
-                  className="flex-1 py-2 px-3 rounded-lg bg-rose-50 border border-rose-200 text-center text-xs font-semibold text-rose-700 hover:bg-rose-100 flex items-center justify-center gap-1.5 cursor-pointer"
+                  className="w-full py-2 px-3 rounded-lg bg-rose-50 border border-rose-200 text-center text-xs font-semibold text-rose-700 hover:bg-rose-100 flex items-center justify-center gap-1.5 cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                   <span>Keluar</span>
                 </button>
               </div>
-            </div>
           ) : (
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+            <div className="pt-2 border-t border-slate-100">
               <button
                 onClick={() => {
                   handleNavClick("login");
                 }}
-                className="flex-1 py-2 rounded-lg border border-slate-200 text-center text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
+                className="w-full py-2 rounded-lg border border-slate-200 text-center text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
               >
                 Masuk Petugas
               </button>
-              {onOpenRoleSwitcher && (
-                <button
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    onOpenRoleSwitcher();
-                  }}
-                  className="py-2 px-3 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-semibold cursor-pointer"
-                >
-                  Ganti Peran
-                </button>
-              )}
             </div>
           )}
         </div>

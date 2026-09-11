@@ -1044,6 +1044,67 @@
       "recovery_key": "kunci-eb3d-3309",
       "activated_at": "2026-09-11T10:51:25.945Z",
       "usage_count": 1
+    },
+    {
+      "id": "407c2754-6c6b-4d88-8230-21b5c783c840",
+      "token_code": "TEST-SMAN1-H3VL-5978",
+      "school_id": "default-school",
+      "student_level": "Kelas 10",
+      "batch_id": "BATCH-1789125166704",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "notes": "Automated Integration Test",
+      "created_at": "2026-09-11T11:12:46.704Z",
+      "password_hash": "57f7c4489124968ab2576a977c97ad6584fd0b5491f54ac55fdf4f1999f248c0",
+      "pin_hash": "57f7c4489124968ab2576a977c97ad6584fd0b5491f54ac55fdf4f1999f248c0",
+      "recovery_key": "kunci-4sib-9481",
+      "activated_at": "2026-09-11T11:12:46.715Z",
+      "usage_count": 1
+    },
+    {
+      "id": "cae90da1-7246-4971-85ae-1362460c2e71",
+      "token_code": "TEST-SMAN1-IEJR-9212",
+      "school_id": "default-school",
+      "student_level": "Kelas 10",
+      "batch_id": "BATCH-1789125166704",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Automated Integration Test",
+      "created_at": "2026-09-11T11:12:46.704Z"
+    },
+    {
+      "id": "ef45bcb5-9a19-4c81-ac94-804563c12b72",
+      "token_code": "COLLISION-TEST-6IFC-9806",
+      "school_id": "default-school",
+      "student_level": "Kelas 11",
+      "batch_id": "BATCH-1789125166732",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "created_at": "2026-09-11T11:12:46.732Z",
+      "password_hash": "75a2dbd0a39d03c825821461b1c96c6cf77abee3a64c8b60068ea759ab51191e",
+      "pin_hash": "75a2dbd0a39d03c825821461b1c96c6cf77abee3a64c8b60068ea759ab51191e",
+      "recovery_key": "kunci-454a-9379",
+      "activated_at": "2026-09-11T11:12:46.739Z",
+      "usage_count": 1
+    },
+    {
+      "id": "b4dfaf30-0b6f-47f5-af36-506c8cbdac31",
+      "token_code": "COLLISION-TEST-ZH32-5957",
+      "school_id": "default-school",
+      "student_level": "Kelas 11",
+      "batch_id": "BATCH-1789125166732",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "created_at": "2026-09-11T11:12:46.732Z",
+      "password_hash": "75a2dbd0a39d03c825821461b1c96c6cf77abee3a64c8b60068ea759ab51191e",
+      "pin_hash": "75a2dbd0a39d03c825821461b1c96c6cf77abee3a64c8b60068ea759ab51191e",
+      "recovery_key": "kunci-pjv0-9946",
+      "activated_at": "2026-09-11T11:12:46.745Z",
+      "usage_count": 1
     }
   ],
   "tickets": [
@@ -3947,6 +4008,95 @@
         "isSatisfied": true,
         "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
       }
+    },
+    {
+      "status": "ditutup",
+      "hash_zkp": "integrity-sha256:0xdbcee6771c3a92afee285190b4d1f7054112524469f2726c9731e1c31472880d",
+      "is_student_verified": true,
+      "verification_method": "token",
+      "ticket_number": "TMG-2026-T5818",
+      "category": "Perundungan / Bullying",
+      "reporterRole": "Siswa (Korban)",
+      "location": "Kantin Sekolah",
+      "incidentDate": "2026-09-10",
+      "urgency": "Tinggi",
+      "story": "Ada siswa mengejek dan memalak uang di kantin",
+      "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
+      "detectedPII": [],
+      "recovery_code": "aman-tameng-test-1789125166630",
+      "secret_pin": "7867",
+      "school_id": "default-school",
+      "is_kiosk": false,
+      "id": "a5e4aecc-9244-470b-8c7e-cfeda807744c",
+      "created_at": "2026-09-11T11:12:46.767Z",
+      "updated_at": "2026-09-11T11:12:46.813Z",
+      "messages": [
+        {
+          "id": "2c6b6192-f1c6-463c-823b-3ac5479ff581",
+          "sender_type": "system",
+          "message_text": "Laporan Anda berhasil dienkripsi dan diterima oleh Tim Bimbingan Konseling (BK) & Satgas PPKSP Sekolah.",
+          "created_at": "2026-09-11T11:12:46.767Z",
+          "is_encrypted": true
+        },
+        {
+          "id": "54090eef-3cfc-4b7b-b781-9a50cc34b79e",
+          "sender_type": "pelapor",
+          "message_text": "Halo Bu Guru BK, saya sangat takut datang ke kantin.",
+          "is_encrypted": true,
+          "created_at": "2026-09-11T11:12:46.778Z"
+        },
+        {
+          "id": "ac710fce-e64e-4d34-9807-d1f71742d848",
+          "sender_type": "counselor",
+          "sender_title": "Guru BK",
+          "message_text": "Jangan khawatir Nak, laporanmu aman bersama kami. Kami akan dampingi.",
+          "is_encrypted": true,
+          "created_at": "2026-09-11T11:12:46.784Z"
+        },
+        {
+          "id": "aceac555-8a01-4b29-981a-5ea5884d12ad",
+          "sender_type": "system",
+          "message_text": "[BUKTI TINDAK LANJUT SEKOLAH]: Pihak sekolah telah mengunggah bukti penanganan (Surat Permintaan Maaf Pelaku & Mediasi): \"Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai\". Menunggu konfirmasi penyelesaian dari siswa pelapor.",
+          "created_at": "2026-09-11T11:12:46.808Z",
+          "is_encrypted": true
+        },
+        {
+          "id": "96b34cc8-3428-4dae-a329-7f390ccd309d",
+          "sender_type": "system",
+          "message_text": "[KASUS RESMI SELESAI]: Siswa pelapor telah mengonfirmasi bahwa masalah telah diselesaikan dengan baik. Kasus resmi ditutup. Terima kasih telah berani bersuara.",
+          "created_at": "2026-09-11T11:12:46.813Z",
+          "is_encrypted": true
+        }
+      ],
+      "counselorNotes": [
+        "Koordinasi dengan satpam pengawas area kantin saat jam istirahat."
+      ],
+      "actionSummary": "Sekolah mengirimkan bukti tindak lanjut: Surat Permintaan Maaf Pelaku & Mediasi",
+      "resolution_evidence": {
+        "type": "Surat Permintaan Maaf Pelaku & Mediasi",
+        "description": "Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai",
+        "fileUrl": "",
+        "submittedAt": "2026-09-11T11:12:46.808Z",
+        "submittedBy": "Guru BK / Satgas PPKSP"
+      },
+      "resolutionEvidence": {
+        "type": "Surat Permintaan Maaf Pelaku & Mediasi",
+        "description": "Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai",
+        "fileUrl": "",
+        "submittedAt": "2026-09-11T11:12:46.808Z",
+        "submittedBy": "Guru BK / Satgas PPKSP"
+      },
+      "action_summary": "Sekolah mengirimkan bukti tindak lanjut: Surat Permintaan Maaf Pelaku & Mediasi",
+      "student_confirmation": {
+        "confirmedAt": "2026-09-11T11:12:46.813Z",
+        "isSatisfied": true,
+        "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
+      },
+      "studentConfirmation": {
+        "confirmedAt": "2026-09-11T11:12:46.813Z",
+        "isSatisfied": true,
+        "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
+      }
     }
   ],
   "audit_logs": [
@@ -4609,6 +4759,26 @@
       "details": "Bukti Surat Permintaan Maaf Pelaku & Mediasi diunggah untuk tiket #8f9dcf32-ed0c-4160-b26a-025b057be68d. Status: Menunggu Konfirmasi Siswa.",
       "zkp_proof_status": "Tervalidasi",
       "created_at": "2026-09-11T10:51:25.990Z"
+    },
+    {
+      "id": "43bf5b55-7c07-498e-9d98-185c00646371",
+      "school_id": "default-school",
+      "action": "Laporan Baru Dibuat",
+      "actor_role": "Siswa (Anonim)",
+      "actor_name": "Sistem",
+      "details": "Laporan baru #TMG-2026-T5818 kategori Perundungan / Bullying (Terverifikasi: token)",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-09-11T11:12:46.767Z"
+    },
+    {
+      "id": "4499ee9d-67a0-4b8e-8549-bd65614d8556",
+      "school_id": "default-school",
+      "action": "Bukti Tindak Lanjut Diunggah",
+      "actor_role": "Guru BK",
+      "actor_name": "Guru BK / Satgas PPKSP",
+      "details": "Bukti Surat Permintaan Maaf Pelaku & Mediasi diunggah untuk tiket #a5e4aecc-9244-470b-8c7e-cfeda807744c. Status: Menunggu Konfirmasi Siswa.",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-09-11T11:12:46.808Z"
     }
   ],
   "interventions": [
@@ -5099,6 +5269,20 @@
       "created_at": "2026-09-11T10:51:26.004Z",
       "updated_at": "2026-09-11T10:51:26.010Z",
       "assignedPsychologist": "Dra. Anita Kartika, M.Psi"
+    },
+    {
+      "id": "PPA-6824",
+      "ticketId": "a5e4aecc-9244-470b-8c7e-cfeda807744c",
+      "victimAlias": "Ananda Bunga (Samaran)",
+      "schoolOrigin": "SMA Negeri 1 Jakarta",
+      "category": "Perundungan Berat",
+      "urgency": "Tinggi",
+      "stage": "Pemulihan Psikologis",
+      "shelterRequired": false,
+      "notes": [],
+      "created_at": "2026-09-11T11:12:46.824Z",
+      "updated_at": "2026-09-11T11:12:46.830Z",
+      "assignedPsychologist": "Dra. Anita Kartika, M.Psi"
     }
   ],
   "news_articles": [
@@ -5488,6 +5672,16 @@
       "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
       "status": "Baru",
       "created_at": "2026-09-11T10:51:26.015Z"
+    },
+    {
+      "id": "8e424274-44c8-4bc8-b00a-b9bb1a177517",
+      "name": "Ibu Ratna",
+      "email": "ratna@gmail.com",
+      "subject": "Konsultasi PPKSP",
+      "category": "Pertanyaan Satgas",
+      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "status": "Baru",
+      "created_at": "2026-09-11T11:12:46.838Z"
     }
   ]
 }
