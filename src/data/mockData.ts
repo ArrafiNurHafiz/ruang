@@ -314,13 +314,13 @@ export const MOCK_USERS: Record<
     ],
   },
   admin: {
-    id: "usr-admin-01",
-    name: "Bambang Prasetyo, S.Kom",
-    email: "admin.sistem@kemdikbud.go.id",
+    id: "usr-admin-sys-01",
+    name: "Admin Sistem",
+    email: "admin@ruang.com",
     role: "admin",
-    roleTitle: "Administrator Sistem Nasional PPKSP",
-    organization: "Pusdatin Kemendikbudristek RI",
-    identifier: "ID ADMIN: ADM-SYS-NAT-001",
+    roleTitle: "Administrator Sistem PPKSP",
+    organization: "Pusat Kendali TAMENG",
+    identifier: "ID ADMIN: ADM-SYS-001",
     avatar:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
     permissions: [

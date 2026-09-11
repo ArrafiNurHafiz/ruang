@@ -30,8 +30,9 @@ export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({
     setError("");
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 250));
+      const cleanEmail = email.trim().toLowerCase();
 
+      // Find role from MOCK_USERS if known, or let backend determine
       const roles: AppUserRole[] = [
         "guru",
         "admin",
@@ -39,53 +40,49 @@ export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({
         "dinas-perlindungan",
       ];
 
-      let matched: AppUserRole | null = null;
-      let matchedUser: (typeof MOCK_USERS)[AppUserRole] | null = null;
+      let candidateRole: AppUserRole | undefined = undefined;
       for (const role of roles) {
-        const candidate = MOCK_USERS[role];
-        if (
-          candidate &&
-          candidate.email.toLowerCase() === email.trim().toLowerCase()
-        ) {
-          matched = role;
-          matchedUser = candidate;
+        if (MOCK_USERS[role]?.email.toLowerCase() === cleanEmail) {
+          candidateRole = role;
           break;
         }
       }
 
-      if (!matched || !matchedUser) {
-        setError("User dengan email tersebut tidak terdaftar.");
-        return;
-      }
-
       // Authenticate via backend to obtain secure JWT token
+      let authData: any = null;
       try {
-        await api.login({
-          email: email.trim().toLowerCase(),
+        authData = await api.login({
+          email: cleanEmail,
           password,
-          role: matched,
+          role: candidateRole,
         });
       } catch (authErr: any) {
-        setError(authErr.message || "Email atau password salah.");
+        setError(authErr.message || "Email atau kata sandi salah.");
         return;
       }
 
+      const userRole = (authData?.role || authData?.user?.role || candidateRole || "admin") as AppUserRole;
+      const userName = authData?.user?.name || "Petugas";
+      const userOrg = authData?.user?.organization || "Satuan Pendidikan";
+      const userNip = authData?.user?.identifier?.replace("NIP: ", "") || "";
+      const userAvatar = authData?.user?.avatar_url || authData?.user?.avatar || "";
+
       const counselor: CounselorUser | undefined =
-        matched === "guru"
+        userRole === "guru"
           ? {
-              id: matchedUser.id,
-              name: matchedUser.name,
-              email: matchedUser.email,
+              id: authData?.user?.id || "usr-guru-01",
+              name: userName,
+              email: cleanEmail,
               role: "Guru Bimbingan Konseling (BK)",
-              nip: matchedUser.identifier?.replace("NIP: ", "") || "",
-              avatar: matchedUser.avatar || "",
-              schoolName: matchedUser.organization,
+              nip: userNip,
+              avatar: userAvatar,
+              schoolName: userOrg,
             }
           : undefined;
 
-      onLogin(matched, counselor);
+      onLogin(userRole, counselor);
     } catch (err) {
-      setError("Terjadi kesalahan. Coba lagi.");
+      setError("Terjadi kesalahan saat masuk. Silakan coba lagi.");
     } finally {
       setIsLoading(false);
     }

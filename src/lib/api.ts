@@ -484,7 +484,7 @@ export const api = {
     return response.json();
   },
 
-  async login(credentials: { email: string; password?: string; role: string }) {
+  async login(credentials: { email: string; password?: string; role?: string }) {
     const response = await fetchWithTimeout(`${API_URL}/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
