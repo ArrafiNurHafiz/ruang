@@ -142,7 +142,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           name text not null,
           email text not null unique,
           password_hash text,
-          role text not null,
+          role text not null default 'guru',
           role_title text,
           organization text,
           identifier text,
@@ -154,6 +154,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           updated_at timestamptz default now()
         )
       `;
+      await sql`alter table users add column if not exists school_id text default 'default-school'`;
+      await sql`alter table users add column if not exists role text default 'guru'`;
+      await sql`alter table users add column if not exists role_title text`;
+      await sql`alter table users add column if not exists organization text`;
+      await sql`alter table users add column if not exists identifier text`;
+      await sql`alter table users add column if not exists avatar_url text`;
+      await sql`alter table users add column if not exists permissions text[] default '{}'`;
+      await sql`alter table users add column if not exists is_active boolean default true`;
+      await sql`alter table users add column if not exists status text default 'Aktif'`;
+      await sql`alter table users add column if not exists password_hash text`;
+      await sql`alter table users add column if not exists updated_at timestamptz default now()`;
       results.push("table users ready");
 
       await sql`
@@ -178,6 +189,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           expires_at timestamptz
         )
       `;
+      await sql`alter table tokens add column if not exists password_hash text`;
+      await sql`alter table tokens add column if not exists pin_hash text`;
+      await sql`alter table tokens add column if not exists recovery_key text`;
+      await sql`alter table tokens add column if not exists usage_count integer default 0`;
+      await sql`alter table tokens add column if not exists max_usage integer default 1`;
+      await sql`alter table tokens add column if not exists last_used_at timestamptz`;
+      await sql`alter table tokens add column if not exists expires_at timestamptz`;
       results.push("table tokens ready");
 
       await sql`
@@ -211,6 +229,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           updated_at timestamptz default now()
         )
       `;
+      await sql`alter table tickets add column if not exists hash_zkp text`;
+      await sql`alter table tickets add column if not exists recovery_code text`;
+      await sql`alter table tickets add column if not exists secret_pin text`;
+      await sql`alter table tickets add column if not exists assigned_counselor_id text`;
+      await sql`alter table tickets add column if not exists action_summary text`;
+      await sql`alter table tickets add column if not exists resolution_evidence jsonb`;
+      await sql`alter table tickets add column if not exists student_confirmation jsonb`;
+      await sql`alter table tickets add column if not exists is_kiosk_submission boolean default false`;
+      await sql`alter table tickets add column if not exists is_escalated_to_dinas boolean default false`;
+      await sql`alter table tickets add column if not exists escalated_to text`;
+      await sql`alter table tickets add column if not exists escalation_reason text`;
+      await sql`alter table tickets add column if not exists protection_stage text`;
+      await sql`alter table tickets add column if not exists assigned_expert text`;
       results.push("table tickets ready");
 
       await sql`
