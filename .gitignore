@@ -11,3 +11,5 @@ dist/
 .playwright-mcp/
 .commandcode/
 .claude-flow/
+.vercel
+.env*
