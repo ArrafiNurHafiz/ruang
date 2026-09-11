@@ -300,30 +300,7 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
               <span>Lupa Nomor Tiket? Pulihkan dengan Verifikasi Kedua (PIN Rahasia)</span>
             </button>
 
-            {/* Quick Demo Chips */}
-            {tickets.length > 0 && (
-              <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500">
-                <span className="text-[11px]">Tiket Anda:</span>
-                {tickets.slice(0, 2).map((t) => (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => {
-                      setSearchQuery(t.id);
-                      setActiveTicket(t);
-                      setSearchError("");
-                    }}
-                    className={`px-2 py-0.5 rounded-lg font-mono text-[11px] border transition-colors cursor-pointer ${
-                      activeTicket?.id === t.id
-                        ? "bg-blue-50 text-blue-700 border-blue-300 font-bold"
-                        : "bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100"
-                    }`}
-                  >
-                    {t.id.slice(0, 8)}...
-                  </button>
-                ))}
-              </div>
-            )}
+
           </div>
         </form>
       </div>
