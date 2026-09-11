@@ -13,7 +13,14 @@ import {
 } from "lucide-react";
 import { ContactMessage } from "../types";
 
-const API_URL = import.meta.env.VITE_API_URL || "/api";
+const isLocalhost =
+  typeof window !== "undefined" &&
+  (window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1");
+
+const API_URL = isLocalhost
+  ? (import.meta.env.VITE_API_URL || "/api")
+  : "/api";
 
 export const ContactPage: React.FC = () => {
   const [name, setName] = useState<string>("");
