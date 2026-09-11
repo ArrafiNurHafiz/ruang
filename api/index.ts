@@ -135,6 +135,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       `;
       results.push("table schools ready");
 
+      try {
+        const userCols = await sql`
+          SELECT column_name FROM information_schema.columns WHERE table_name = 'users'
+        `;
+        const colNames = userCols.map((c: any) => c.column_name);
+        if (colNames.length > 0 && !colNames.includes("name")) {
+          // Template table without our application schema, drop it to recreate cleanly
+          await sql`DROP TABLE IF EXISTS users CASCADE`;
+        }
+      } catch {
+        // Table doesn't exist yet or query skipped
+      }
+
       await sql`
         create table if not exists users (
           id text primary key default uuid_generate_v4()::text,
@@ -154,6 +167,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           updated_at timestamptz default now()
         )
       `;
+      await sql`alter table users add column if not exists name text`;
       await sql`alter table users add column if not exists school_id text default 'default-school'`;
       await sql`alter table users add column if not exists role text default 'guru'`;
       await sql`alter table users add column if not exists role_title text`;
