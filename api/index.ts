@@ -1,18 +1,22 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { createClient } from "@supabase/supabase-js";
+import { neon } from "@neondatabase/serverless";
 import crypto from "crypto";
 
-const supabaseUrl =
-  process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL || "";
-const supabaseKey =
-  process.env.SUPABASE_SERVICE_KEY ||
-  process.env.SUPABASE_ANON_KEY ||
-  process.env.VITE_SUPABASE_ANON_KEY ||
-  "";
-const supabase =
-  supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
+// ==============================================================================
+// TAMENG - RUANG AMAN KELUARGA & SEKOLAH
+// Vercel Serverless Function Backend powered by Neon PostgreSQL (100% Free Forever)
+// ==============================================================================
 
-// Hardcoded secret for HMAC token signing
+const databaseUrl =
+  process.env.POSTGRES_URL ||
+  process.env.DATABASE_URL ||
+  process.env.POSTGRES_URL_NON_POOLING ||
+  process.env.VITE_DATABASE_URL ||
+  "";
+
+const sql = databaseUrl ? neon(databaseUrl) : null;
+
+// Secret for HMAC token signing
 const JWT_SECRET =
   process.env.JWT_SECRET || "TAMENG_PPKSP_SECURE_AUTH_SIGNING_KEY_2026";
 
@@ -85,13 +89,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const path = req.url?.split("?")[0]?.replace("/api/", "") || "";
   const method = req.method;
 
-  // FAIL CLOSED CHECK: Require database connectivity for system operation
-  if (!supabase) {
+  // FAIL CLOSED CHECK: Require database connectivity
+  if (!sql) {
     return res.status(503).json({
       success: false,
       error: "SERVICE_UNAVAILABLE",
       message:
-        "Sistem penyimpanan aman sedang tidak tersedia. Permintaan ditolak untuk menjaga integritas data.",
+        "Database Neon Serverless PostgreSQL belum terkonfigurasi. Sambungkan database Postgres di Vercel Dashboard (Storage -> Create Database -> Postgres) untuk mengaktifkan POSTGRES_URL secara otomatis (100% Free Forever).",
     });
   }
 
@@ -105,14 +109,14 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: "Email dan role wajib diisi" });
       }
 
-      const { data: user, error } = await supabase
-        .from("users")
-        .select("*")
-        .eq("email", email.toLowerCase().trim())
-        .eq("role", role)
-        .single();
+      const rows = await sql`
+        SELECT * FROM users
+        WHERE LOWER(email) = ${email.toLowerCase().trim()} AND role = ${role}
+        LIMIT 1
+      `;
+      const user = rows[0];
 
-      if (error || !user) {
+      if (!user) {
         return res
           .status(401)
           .json({ error: "User tidak ditemukan atau role tidak sesuai" });
@@ -147,6 +151,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         redactedStory,
         detectedPII,
         recovery_code,
+        secretPin,
         school_id,
         is_kiosk,
       } = req.body || {};
@@ -157,68 +162,71 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           .json({ error: "Informasi laporan tidak lengkap" });
       }
 
-      const ticketData = {
-        id: crypto.randomUUID(),
-        ticket_number,
-        school_id: school_id || "default-school",
-        category,
-        reporter_role: reporterRole || "Siswa",
-        location: location || "",
-        incident_date: incidentDate || new Date().toISOString(),
-        urgency: urgency || "Sedang",
-        story,
-        redacted_story: redactedStory || story,
-        detected_pii: detectedPII || [],
-        hash_zkp: `integrity-sha256:0x${crypto
-          .createHash("sha256")
-          .update(story + recovery_code + Date.now())
-          .digest("hex")}`,
-        status: "diterima",
-        recovery_code,
-        is_kiosk_submission: is_kiosk || false,
-      };
+      const ticketId = crypto.randomUUID();
+      const schoolIdVal = school_id || "default-school";
+      const zkpHash = `integrity-sha256:0x${crypto
+        .createHash("sha256")
+        .update(story + recovery_code + Date.now())
+        .digest("hex")}`;
 
-      const { data, error } = await supabase
-        .from("tickets")
-        .insert(ticketData)
-        .select()
-        .single();
-      if (error) {
-        if (
-          error.message?.includes("duplicate key") &&
-          error.message?.includes("recovery_code")
-        ) {
-          return res.status(409).json({
-            error: "Kode pemulihan telah digunakan. Silakan buat kode baru.",
-          });
-        }
-        return res.status(500).json({ error: error.message });
-      }
+      const rows = await sql`
+        INSERT INTO tickets (
+          id, ticket_number, school_id, category, reporter_role, location,
+          incident_date, urgency, story, redacted_story, detected_pii,
+          hash_zkp, status, recovery_code, secret_pin, is_kiosk_submission
+        ) VALUES (
+          ${ticketId},
+          ${ticket_number},
+          ${schoolIdVal},
+          ${category},
+          ${reporterRole || "Siswa"},
+          ${location || ""},
+          ${incidentDate || new Date().toISOString()},
+          ${urgency || "Sedang"},
+          ${story},
+          ${redactedStory || story},
+          ${detectedPII || []},
+          ${zkpHash},
+          'diterima',
+          ${recovery_code},
+          ${secretPin || null},
+          ${Boolean(is_kiosk)}
+        ) RETURNING *
+      `;
 
-      // Automatically insert initial system message
-      await supabase.from("ticket_messages").insert({
-        ticket_id: data.id,
-        sender_type: "system",
-        message_text:
-          "Laporan Anda berhasil diterima secara aman dan dicatat ke dalam sistem PPKSP.",
-        is_encrypted: true,
-      });
+      const data = rows[0];
 
-      // Automatically insert audit log
-      await supabase.from("audit_logs").insert({
-        school_id: ticketData.school_id,
-        action: "Laporan Baru Dibuat",
-        actor_role: "Siswa (Anonim)",
-        actor_name: "Sistem Anonim",
-        details: `Laporan #${ticketData.ticket_number}`,
-        zkp_proof_status: "Tervalidasi",
-      });
+      // Initial system message
+      await sql`
+        INSERT INTO ticket_messages (id, ticket_id, sender_type, message_text, is_encrypted)
+        VALUES (
+          ${crypto.randomUUID()},
+          ${data.id},
+          'system',
+          'Laporan Anda berhasil diterima secara aman dan dicatat ke dalam sistem PPKSP.',
+          true
+        )
+      `;
+
+      // Audit log
+      await sql`
+        INSERT INTO audit_logs (id, school_id, action, actor_role, actor_name, details, zkp_proof_status)
+        VALUES (
+          ${crypto.randomUUID()},
+          ${schoolIdVal},
+          'Laporan Baru Dibuat',
+          'Siswa (Anonim)',
+          'Sistem Anonim',
+          ${`Laporan #${ticket_number}`},
+          'Tervalidasi'
+        )
+      `;
 
       return res.status(201).json(data);
     }
 
     // ----------------------------------------------------
-    // TICKETS: VERIFY ACCESS VIA RECOVERY CODE (PUBLIC BUT BOUNDED)
+    // TICKETS: VERIFY ACCESS VIA RECOVERY CODE
     // ----------------------------------------------------
     if (path === "tickets/verify-access" && method === "POST") {
       const { recoveryCode, ticketNumber } = req.body || {};
@@ -226,36 +234,211 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: "Kode pemulihan diperlukan" });
       }
 
-      let query = supabase
-        .from("tickets")
-        .select("*, ticket_messages(*)")
-        .eq("recovery_code", recoveryCode.trim());
+      let rows;
       if (ticketNumber) {
-        query = query.eq("ticket_number", ticketNumber.trim());
+        rows = await sql`
+          SELECT * FROM tickets
+          WHERE LOWER(recovery_code) = ${recoveryCode.trim().toLowerCase()}
+            AND ticket_number = ${ticketNumber.trim()}
+          LIMIT 1
+        `;
+      } else {
+        rows = await sql`
+          SELECT * FROM tickets
+          WHERE LOWER(recovery_code) = ${recoveryCode.trim().toLowerCase()}
+          LIMIT 1
+        `;
       }
-      const { data, error } = await query.single();
-      if (error || !data) {
+
+      if (!rows || rows.length === 0) {
         return res
           .status(404)
           .json({ error: "Laporan tidak ditemukan dengan kode tersebut" });
       }
 
-      return res.json(data);
+      const ticket = rows[0];
+      const messages = await sql`
+        SELECT * FROM ticket_messages WHERE ticket_id = ${ticket.id} ORDER BY created_at ASC
+      `;
+
+      return res.json({ ...ticket, ticket_messages: messages, messages });
     }
 
-    // TICKET BY RECOVERY CODE (LEGACY REST LOOKUP)
+    // ----------------------------------------------------
+    // TICKETS: RECOVER BY PIN (PUBLIC BUT BOUNDED)
+    // ----------------------------------------------------
+    if (path === "tickets/recover-by-pin" && method === "POST") {
+      const { secretPin, category } = req.body || {};
+      if (!secretPin) {
+        return res.status(400).json({ error: "PIN Rahasia wajib diisi" });
+      }
+
+      const cleanPin = secretPin.trim().toLowerCase();
+      let rows;
+      if (category) {
+        rows = await sql`
+          SELECT * FROM tickets
+          WHERE LOWER(secret_pin) = ${cleanPin} AND category = ${category}
+          ORDER BY created_at DESC LIMIT 1
+        `;
+      } else {
+        rows = await sql`
+          SELECT * FROM tickets
+          WHERE LOWER(secret_pin) = ${cleanPin}
+          ORDER BY created_at DESC LIMIT 1
+        `;
+      }
+
+      if (!rows || rows.length === 0) {
+        return res
+          .status(404)
+          .json({ error: "Laporan dengan PIN tersebut tidak ditemukan" });
+      }
+
+      const ticket = rows[0];
+      const messages = await sql`
+        SELECT * FROM ticket_messages WHERE ticket_id = ${ticket.id} ORDER BY created_at ASC
+      `;
+
+      return res.json({ ...ticket, ticket_messages: messages, messages });
+    }
+
+    // ----------------------------------------------------
+    // TICKETS: SUBMIT RESOLUTION EVIDENCE (STAFF)
+    // ----------------------------------------------------
+    if (
+      path.match(/^tickets\/[^/]+\/resolution-evidence$/) &&
+      method === "POST"
+    ) {
+      const authUser = getAuthUser(req);
+      if (!authUser) {
+        return res.status(401).json({ error: "Autentikasi diperlukan" });
+      }
+
+      const ticketId = path.split("/")[1];
+      const { type, description, fileUrl, submittedBy } = req.body || {};
+      const resolutionEvidence = {
+        type: type || "Surat Permintaan Maaf & Mediasi",
+        description: description || "",
+        fileUrl: fileUrl || "",
+        submittedAt: new Date().toISOString(),
+        submittedBy: submittedBy || authUser.name || "Guru BK / Satgas PPKSP",
+      };
+
+      const rows = await sql`
+        UPDATE tickets
+        SET status = 'menunggu_siswa',
+            resolution_evidence = ${JSON.stringify(resolutionEvidence)},
+            action_summary = ${`Sekolah mengirimkan bukti tindak lanjut: ${resolutionEvidence.type}`},
+            updated_at = NOW()
+        WHERE id = ${ticketId}
+        RETURNING *
+      `;
+
+      if (!rows || rows.length === 0) {
+        return res.status(404).json({ error: "Tiket tidak ditemukan" });
+      }
+
+      const data = rows[0];
+
+      // Add system message to chat
+      await sql`
+        INSERT INTO ticket_messages (id, ticket_id, sender_type, message_text, is_encrypted)
+        VALUES (
+          ${crypto.randomUUID()},
+          ${ticketId},
+          'system',
+          ${`[BUKTI TINDAK LANJUT SEKOLAH]: Pihak sekolah telah mengunggah bukti penanganan (${resolutionEvidence.type}): "${resolutionEvidence.description}". Menunggu konfirmasi penyelesaian dari siswa pelapor.`},
+          true
+        )
+      `;
+
+      // Audit Log
+      await sql`
+        INSERT INTO audit_logs (id, school_id, action, actor_role, actor_name, details, zkp_proof_status)
+        VALUES (
+          ${crypto.randomUUID()},
+          ${data.school_id || authUser.school_id || "default-school"},
+          'Bukti Tindak Lanjut Diunggah',
+          ${authUser.role || "Guru BK"},
+          ${submittedBy || authUser.name || "Guru BK"},
+          ${`Bukti ${resolutionEvidence.type} diunggah untuk tiket #${data.ticket_number}. Status: Menunggu Konfirmasi Siswa.`},
+          'Tervalidasi'
+        )
+      `;
+
+      return res.json(sanitizeTicketForStaff(data));
+    }
+
+    // ----------------------------------------------------
+    // TICKETS: STUDENT CONFIRM RESOLUTION OR ESCALATE
+    // ----------------------------------------------------
+    if (path.match(/^tickets\/[^/]+\/student-confirm$/) && method === "POST") {
+      const ticketId = path.split("/")[1];
+      const { isSatisfied, feedback } = req.body || {};
+
+      let rows;
+      let systemMsgText = "";
+
+      if (isSatisfied) {
+        const studentConf = {
+          confirmedAt: new Date().toISOString(),
+          isSatisfied: true,
+          studentFeedback:
+            feedback || "Siswa mengonfirmasi masalah telah teratasi.",
+        };
+        rows = await sql`
+          UPDATE tickets
+          SET status = 'ditutup',
+              student_confirmation = ${JSON.stringify(studentConf)},
+              updated_at = NOW()
+          WHERE id = ${ticketId}
+          RETURNING *
+        `;
+        systemMsgText =
+          "[KASUS RESMI SELESAI]: Siswa pelapor telah mengonfirmasi bahwa masalah telah diselesaikan dengan baik. Kasus resmi ditutup. Terima kasih telah berani bersuara.";
+      } else {
+        rows = await sql`
+          UPDATE tickets
+          SET status = 'tindakan',
+              is_escalated_to_dinas = true,
+              escalated_to = 'Keduanya',
+              escalation_reason = ${feedback || "Siswa menyatakan penanganan sekolah belum tuntas / masih terjadi intimidasi."},
+              updated_at = NOW()
+          WHERE id = ${ticketId}
+          RETURNING *
+        `;
+        systemMsgText = `[PERINGATAN ESKALASI DINAS]: Siswa menyatakan masalah BELUM teratasi ("${feedback || "Perlu tindakan lebih lanjut"}"). Kasus ini langsung dieskalasi ke Dinas Pendidikan & Dinas Perlindungan (UPTD PPA) untuk supervisi luar.`;
+      }
+
+      if (!rows || rows.length === 0) {
+        return res.status(404).json({ error: "Tiket tidak ditemukan" });
+      }
+
+      await sql`
+        INSERT INTO ticket_messages (id, ticket_id, sender_type, message_text, is_encrypted)
+        VALUES (${crypto.randomUUID()}, ${ticketId}, 'system', ${systemMsgText}, true)
+      `;
+
+      return res.json(rows[0]);
+    }
+
+    // ----------------------------------------------------
+    // TICKET BY RECOVERY CODE OR ID (GET)
+    // ----------------------------------------------------
     if (path.match(/^tickets\/[^/]+$/) && method === "GET") {
       const codeOrId = path.split("/")[1];
 
-      // If code format
-      const { data, error } = await supabase
-        .from("tickets")
-        .select("*, ticket_messages(*)")
-        .eq("recovery_code", codeOrId)
-        .single();
-
-      if (!error && data) {
-        return res.json(data);
+      // Try lookup by recovery_code first (Public Student access)
+      const rowsByCode = await sql`
+        SELECT * FROM tickets WHERE recovery_code = ${codeOrId} LIMIT 1
+      `;
+      if (rowsByCode.length > 0) {
+        const ticket = rowsByCode[0];
+        const messages = await sql`
+          SELECT * FROM ticket_messages WHERE ticket_id = ${ticket.id} ORDER BY created_at ASC
+        `;
+        return res.json({ ...ticket, ticket_messages: messages, messages });
       }
 
       // If requested by ID, requires Staff Auth
@@ -266,17 +449,25 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           .json({ error: "Autentikasi diperlukan untuk mengakses tiket ini" });
       }
 
-      const { data: ticketById, error: errId } = await supabase
-        .from("tickets")
-        .select("*, ticket_messages(*)")
-        .eq("id", codeOrId)
-        .single();
-
-      if (errId || !ticketById) {
+      const rowsById = await sql`
+        SELECT * FROM tickets WHERE id = ${codeOrId} LIMIT 1
+      `;
+      if (!rowsById.length) {
         return res.status(404).json({ error: "Laporan tidak ditemukan" });
       }
 
-      return res.json(sanitizeTicketForStaff(ticketById));
+      const ticketById = rowsById[0];
+      const messages = await sql`
+        SELECT * FROM ticket_messages WHERE ticket_id = ${ticketById.id} ORDER BY created_at ASC
+      `;
+
+      return res.json(
+        sanitizeTicketForStaff({
+          ...ticketById,
+          ticket_messages: messages,
+          messages,
+        }),
+      );
     }
 
     // ----------------------------------------------------
@@ -290,15 +481,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         });
       }
 
-      const { data, error } = await supabase
-        .from("tickets")
-        .select("*, ticket_messages(*)")
-        .order("created_at", { ascending: false });
+      const rows = await sql`
+        SELECT * FROM tickets ORDER BY created_at DESC
+      `;
 
-      if (error) return res.status(500).json({ error: error.message });
-
-      // NEVER leak recovery_code in staff bulk list
-      const sanitized = (data || []).map(sanitizeTicketForStaff);
+      const sanitized = rows.map(sanitizeTicketForStaff);
       return res.json(sanitized);
     }
 
@@ -316,28 +503,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const id = path.split("/")[1];
       const { status, action_summary } = req.body || {};
 
-      const { data, error } = await supabase
-        .from("tickets")
-        .update({
-          status,
-          action_summary,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", id)
-        .select()
-        .single();
+      const rows = await sql`
+        UPDATE tickets
+        SET status = COALESCE(${status}, status),
+            action_summary = COALESCE(${action_summary}, action_summary),
+            updated_at = NOW()
+        WHERE id = ${id}
+        RETURNING *
+      `;
 
-      if (error) return res.status(500).json({ error: error.message });
+      if (!rows.length) {
+        return res.status(404).json({ error: "Tiket tidak ditemukan" });
+      }
 
-      // Log action
-      await supabase.from("audit_logs").insert({
-        school_id: authUser.school_id || "default-school",
-        action: `Status Tiket Diubah: ${status}`,
-        actor_role: authUser.role,
-        actor_name: authUser.email,
-        details: `Perubahan status tiket ID ${id}`,
-        zkp_proof_status: "Tercatat",
-      });
+      const data = rows[0];
+
+      // Audit Log
+      await sql`
+        INSERT INTO audit_logs (id, school_id, action, actor_role, actor_name, details, zkp_proof_status)
+        VALUES (
+          ${crypto.randomUUID()},
+          ${authUser.school_id || "default-school"},
+          ${`Status Tiket Diubah: ${status}`},
+          ${authUser.role},
+          ${authUser.email},
+          ${`Perubahan status tiket ID ${id}`},
+          'Tercatat'
+        )
+      `;
 
       return res.json(sanitizeTicketForStaff(data));
     }
@@ -354,7 +547,6 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         return res.status(400).json({ error: "Isi pesan tidak boleh kosong" });
       }
 
-      // If sender is counselor or staff, require auth
       if (sender_type === "counselor" || sender_type === "admin") {
         const authUser = getAuthUser(req);
         if (!authUser) {
@@ -365,27 +557,20 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         }
       }
 
-      const msgData = {
-        ticket_id: ticketId,
-        sender_type,
-        sender_title: sender_title || null,
-        message_text,
-        is_encrypted: is_encrypted ?? true,
-      };
+      const msgId = crypto.randomUUID();
+      const rows = await sql`
+        INSERT INTO ticket_messages (id, ticket_id, sender_type, sender_title, message_text, is_encrypted)
+        VALUES (
+          ${msgId},
+          ${ticketId},
+          ${sender_type},
+          ${sender_title || null},
+          ${message_text},
+          ${is_encrypted ?? true}
+        ) RETURNING *
+      `;
 
-      const { data, error } = await supabase
-        .from("ticket_messages")
-        .insert(msgData)
-        .select()
-        .single();
-      if (error) {
-        if (error.message?.includes("foreign key")) {
-          return res.status(404).json({ error: "Tiket tidak ditemukan" });
-        }
-        return res.status(500).json({ error: error.message });
-      }
-
-      return res.status(201).json(data);
+      return res.status(201).json(rows[0]);
     }
 
     // ----------------------------------------------------
@@ -402,58 +587,251 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const ticketId = path.split("/")[1];
       const { note } = req.body || {};
 
-      const { data, error } = await supabase
-        .from("counselor_notes")
-        .insert({ ticket_id: ticketId, note })
-        .select()
-        .single();
+      const noteId = crypto.randomUUID();
+      const rows = await sql`
+        INSERT INTO counselor_notes (id, ticket_id, note)
+        VALUES (${noteId}, ${ticketId}, ${note})
+        RETURNING *
+      `;
 
-      if (error) return res.status(500).json({ error: error.message });
-      return res.status(201).json(data);
+      return res.status(201).json(rows[0]);
     }
 
     // ----------------------------------------------------
-    // TOKENS: VERIFY & ACTIVATE (STUDENT FLOW)
+    // TOKENS: VERIFY & ACTIVATE & RECOVERY (STUDENT FLOW)
     // ----------------------------------------------------
     if (path === "tokens/verify" && method === "POST") {
       const { tokenCode } = req.body || {};
       if (!tokenCode)
         return res.status(400).json({ error: "Kode token diperlukan" });
 
-      const { data, error } = await supabase
-        .from("tokens")
-        .select(
-          "id, token_code, school_id, student_level, is_activated, status",
-        )
-        .eq("token_code", tokenCode.trim())
-        .single();
+      const clean = tokenCode.trim().toUpperCase();
+      const rows = await sql`
+        SELECT * FROM tokens WHERE UPPER(token_code) = ${clean} LIMIT 1
+      `;
 
-      if (error || !data)
+      if (!rows.length) {
         return res.status(404).json({ error: "Token tidak valid" });
-      return res.json(data);
+      }
+
+      const token = rows[0];
+      const { password_hash, pin_hash, ...safeToken } = token;
+      return res.json({
+        ...safeToken,
+        hasPassword: Boolean(password_hash || pin_hash),
+        recoveryKey: token.recovery_key,
+        recovery_key: token.recovery_key,
+      });
+    }
+
+    if (path === "tokens/verify-by-password" && method === "POST") {
+      const raw = (req.body?.password || req.body?.pin || "").trim();
+      const tokenCode = (req.body?.tokenCode || "").trim().toUpperCase();
+      const recoveryKey = (req.body?.recoveryKey || "").trim().toLowerCase();
+
+      if (!raw) {
+        return res.status(400).json({ error: "Sandi harus diisi" });
+      }
+
+      const hashSha256 = crypto.createHash("sha256").update(raw).digest("hex");
+      const base64Hash = Buffer.from(raw).toString("base64");
+
+      // Case 1: 2-Step verification (Token Code + Password) - Always 100% unique per student
+      if (tokenCode) {
+        const rows = await sql`
+          SELECT * FROM tokens WHERE UPPER(token_code) = ${tokenCode} LIMIT 1
+        `;
+
+        if (!rows.length) {
+          return res
+            .status(404)
+            .json({ error: "Kode akses sekolah tidak ditemukan." });
+        }
+
+        const token = rows[0];
+        const isMatch =
+          token.password_hash === hashSha256 ||
+          token.pin_hash === hashSha256 ||
+          token.pin_hash === base64Hash;
+
+        if (!isMatch) {
+          return res
+            .status(401)
+            .json({ error: "Sandi pribadi salah untuk kode akses ini." });
+        }
+
+        const { password_hash, pin_hash, ...safeToken } = token;
+        return res.json({
+          ...safeToken,
+          hasPassword: true,
+          recoveryKey: token.recovery_key,
+          recovery_key: token.recovery_key,
+        });
+      }
+
+      // Case 2: Recovery Key + Password
+      if (recoveryKey) {
+        const rows = await sql`
+          SELECT * FROM tokens WHERE LOWER(recovery_key) = ${recoveryKey} LIMIT 1
+        `;
+
+        if (!rows.length) {
+          return res
+            .status(404)
+            .json({ error: "Kunci pemulihan tidak ditemukan." });
+        }
+
+        const token = rows[0];
+        const isMatch =
+          token.password_hash === hashSha256 ||
+          token.pin_hash === hashSha256 ||
+          token.pin_hash === base64Hash;
+
+        if (!isMatch) {
+          return res.status(401).json({ error: "Sandi pribadi salah." });
+        }
+
+        const { password_hash, pin_hash, ...safeToken } = token;
+        return res.json({
+          ...safeToken,
+          hasPassword: true,
+          recoveryKey: token.recovery_key,
+          recovery_key: token.recovery_key,
+        });
+      }
+
+      // Case 3: Password only (with Collision Protection if 2+ tokens share the same password)
+      const matchingTokens = await sql`
+        SELECT * FROM tokens
+        WHERE password_hash = ${hashSha256}
+           OR pin_hash = ${hashSha256}
+           OR pin_hash = ${base64Hash}
+      `;
+
+      if (!matchingTokens.length) {
+        return res.status(404).json({
+          error:
+            "Sandi pelajar tidak cocok atau belum diaktivasi dengan kode akses sekolah.",
+        });
+      }
+
+      // Collision prevention: If 2 or more tokens share this password, fail-safe to protect student privacy
+      if (matchingTokens.length > 1) {
+        return res.status(409).json({
+          error:
+            "Terdeteksi beberapa kode akses dengan kata sandi yang sama. Demi privasi dan keamanan akun Anda, masukkan juga Kode Akses Sekolah atau Kunci Pemulihan Anda.",
+          message:
+            "Terdeteksi beberapa kode akses dengan kata sandi yang sama. Demi privasi dan keamanan akun Anda, masukkan juga Kode Akses Sekolah atau Kunci Pemulihan Anda.",
+          isCollision: true,
+          collision: true,
+        });
+      }
+
+      const { password_hash, pin_hash, ...safeToken } = matchingTokens[0];
+      return res.json({
+        ...safeToken,
+        hasPassword: true,
+        recoveryKey: safeToken.recovery_key,
+        recovery_key: safeToken.recovery_key,
+      });
     }
 
     if (path === "tokens/activate" && method === "POST") {
-      const { tokenCode, pinHash } = req.body || {};
-      if (!tokenCode || !pinHash)
-        return res.status(400).json({ error: "Token dan PIN hash diperlukan" });
+      const cleanCode = (req.body?.tokenCode || "").trim().toUpperCase();
+      const rawPassword = (req.body?.password || req.body?.pin || "").trim();
+      if (
+        !cleanCode ||
+        (!rawPassword && !req.body?.pinHash && !req.body?.passwordHash)
+      ) {
+        return res
+          .status(400)
+          .json({ error: "Kode token dan kata sandi diperlukan" });
+      }
 
-      const { data, error } = await supabase
-        .from("tokens")
-        .update({
-          is_activated: true,
-          status: "Aktif",
-          pin_hash: pinHash,
-          activated_at: new Date().toISOString(),
-        })
-        .eq("token_code", tokenCode.trim())
-        .select(
-          "id, token_code, school_id, student_level, is_activated, status, activated_at",
-        )
-        .single();
+      const existingRows = await sql`
+        SELECT * FROM tokens WHERE UPPER(token_code) = ${cleanCode} LIMIT 1
+      `;
 
-      if (error) return res.status(500).json({ error: error.message });
-      return res.json(data);
+      if (!existingRows.length) {
+        return res
+          .status(404)
+          .json({ error: "Kode akses sekolah tidak ditemukan" });
+      }
+
+      const existingToken = existingRows[0];
+      const passwordHash = rawPassword
+        ? crypto.createHash("sha256").update(rawPassword).digest("hex")
+        : req.body?.passwordHash || req.body?.pinHash;
+
+      const recoveryKey =
+        existingToken.recovery_key ||
+        `kunci-${Math.random().toString(36).substring(2, 6)}-${Math.floor(1000 + Math.random() * 9000)}`;
+
+      const updatedRows = await sql`
+        UPDATE tokens
+        SET is_activated = true,
+            status = 'Aktif',
+            password_hash = ${passwordHash},
+            pin_hash = ${passwordHash},
+            recovery_key = ${recoveryKey},
+            activated_at = NOW(),
+            usage_count = COALESCE(usage_count, 0) + 1
+        WHERE id = ${existingToken.id}
+        RETURNING *
+      `;
+
+      const data = updatedRows[0];
+      return res.json({
+        ...data,
+        hasPassword: true,
+        recoveryKey: data.recovery_key,
+        recovery_key: data.recovery_key,
+      });
+    }
+
+    if (path.match(/^tokens\/[^/]+\/status$/) && method === "PUT") {
+      const idOrCode = path.split("/")[1];
+      const { status, is_used_for_report } = req.body || {};
+
+      const updatedRows = await sql`
+        UPDATE tokens
+        SET status = COALESCE(${status}, status),
+            is_used_for_report = COALESCE(${is_used_for_report}, is_used_for_report),
+            last_used_at = CASE WHEN ${Boolean(is_used_for_report)} = true THEN NOW() ELSE last_used_at END
+        WHERE id = ${idOrCode} OR UPPER(token_code) = ${idOrCode.toUpperCase()}
+        RETURNING *
+      `;
+
+      if (!updatedRows.length) {
+        return res.status(404).json({ error: "Token tidak ditemukan" });
+      }
+
+      return res.json(updatedRows[0]);
+    }
+
+    if (path.match(/^tokens\/[^/]+$/) && method === "DELETE") {
+      const authUser = getAuthUser(req);
+      if (!authUser || authUser.role !== "admin") {
+        return res.status(403).json({
+          error: "403 Forbidden: Hanya Admin yang dapat menghapus token",
+        });
+      }
+
+      const idOrCode = path.split("/")[1];
+      const deletedRows = await sql`
+        DELETE FROM tokens
+        WHERE id = ${idOrCode} OR UPPER(token_code) = ${idOrCode.toUpperCase()}
+        RETURNING *
+      `;
+
+      if (!deletedRows.length) {
+        return res.status(404).json({ error: "Token tidak ditemukan" });
+      }
+
+      return res.json({
+        message: "Token berhasil dihapus",
+        token: deletedRows[0],
+      });
     }
 
     // TOKENS: MANAGEMENT (PROTECTED - ADMIN)
@@ -462,15 +840,18 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!authUser) return res.status(401).json({ error: "401 Unauthorized" });
 
       const schoolId = req.query.schoolId as string;
-      let q = supabase
-        .from("tokens")
-        .select(
-          "id, token_code, school_id, student_level, batch_id, is_activated, status, notes, created_at",
-        );
-      if (schoolId) q = q.eq("school_id", schoolId);
-      const { data, error } = await q;
-      if (error) return res.status(500).json({ error: error.message });
-      return res.json(data || []);
+      let rows;
+      if (schoolId) {
+        rows = await sql`
+          SELECT * FROM tokens WHERE school_id = ${schoolId} ORDER BY created_at DESC
+        `;
+      } else {
+        rows = await sql`
+          SELECT * FROM tokens ORDER BY created_at DESC
+        `;
+      }
+
+      return res.json(rows);
     }
 
     if (path === "tokens/batch" && method === "POST") {
@@ -482,23 +863,34 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const { count, prefix, studentLevel, notes, schoolId } = req.body || {};
-      const batch = Array.from({ length: Math.min(count || 10, 500) }, () => ({
-        id: crypto.randomUUID(),
-        token_code: `${prefix || "TKN"}-${crypto.randomBytes(3).toString("hex").toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`,
-        school_id: schoolId || authUser.school_id || "default-school",
-        student_level: studentLevel || "Semua Tingkat",
-        batch_id: `BATCH-${Date.now()}`,
-        is_activated: false,
-        status: "Tersedia",
-        notes: notes || "",
-      }));
+      const qty = Math.min(count || 10, 500);
+      const schId = schoolId || authUser.school_id || "default-school";
+      const lvl = studentLevel || "Semua Tingkat";
+      const batchId = `BATCH-${Date.now()}`;
+      const noteVal = notes || "";
 
-      const { data, error } = await supabase
-        .from("tokens")
-        .insert(batch)
-        .select();
-      if (error) return res.status(500).json({ error: error.message });
-      return res.status(201).json(data);
+      const created: any[] = [];
+      for (let i = 0; i < qty; i++) {
+        const code = `${prefix || "TKN"}-${crypto.randomBytes(3).toString("hex").toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+        const r = await sql`
+          INSERT INTO tokens (
+            id, token_code, school_id, student_level, batch_id,
+            is_activated, status, notes
+          ) VALUES (
+            ${crypto.randomUUID()},
+            ${code},
+            ${schId},
+            ${lvl},
+            ${batchId},
+            false,
+            'Tersedia',
+            ${noteVal}
+          ) RETURNING *
+        `;
+        created.push(r[0]);
+      }
+
+      return res.status(201).json(created);
     }
 
     // ----------------------------------------------------
@@ -508,13 +900,69 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const authUser = getAuthUser(req);
       if (!authUser) return res.status(401).json({ error: "401 Unauthorized" });
 
-      const { data, error } = await supabase
-        .from("users")
-        .select(
-          "id, name, email, role, role_title, organization, identifier, avatar_url, permissions, is_active, status",
-        );
-      if (error) return res.status(500).json({ error: error.message });
-      return res.json((data || []).map(sanitizeUser));
+      const rows = await sql`
+        SELECT * FROM users ORDER BY created_at ASC
+      `;
+      return res.json(rows.map(sanitizeUser));
+    }
+
+    if (path === "users" && method === "POST") {
+      const authUser = getAuthUser(req);
+      if (!authUser || authUser.role !== "admin") {
+        return res.status(403).json({ error: "403 Forbidden" });
+      }
+
+      const {
+        name,
+        email,
+        role,
+        role_title,
+        organization,
+        identifier,
+        avatar_url,
+        permissions,
+        status,
+      } = req.body || {};
+
+      const rows = await sql`
+        INSERT INTO users (
+          id, name, email, role, role_title, organization,
+          identifier, avatar_url, permissions, status
+        ) VALUES (
+          ${crypto.randomUUID()},
+          ${name},
+          ${email},
+          ${role},
+          ${role_title || ""},
+          ${organization || ""},
+          ${identifier || ""},
+          ${avatar_url || ""},
+          ${permissions || []},
+          ${status || "Aktif"}
+        ) RETURNING *
+      `;
+
+      return res.status(201).json(sanitizeUser(rows[0]));
+    }
+
+    if (path.match(/^users\/[^/]+\/status$/) && method === "PUT") {
+      const authUser = getAuthUser(req);
+      if (!authUser || authUser.role !== "admin") {
+        return res.status(403).json({ error: "403 Forbidden" });
+      }
+
+      const id = path.split("/")[1];
+      const { status } = req.body || {};
+
+      const rows = await sql`
+        UPDATE users
+        SET status = ${status}, updated_at = NOW()
+        WHERE id = ${id}
+        RETURNING *
+      `;
+
+      if (!rows.length) return res.status(404).json({ error: "User not found" });
+      return res.json(sanitizeUser(rows[0]));
     }
 
     // ----------------------------------------------------
@@ -524,12 +972,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const authUser = getAuthUser(req);
       if (!authUser) return res.status(401).json({ error: "401 Unauthorized" });
 
-      const { data, error } = await supabase
-        .from("audit_logs")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (error) return res.status(500).json({ error: error.message });
-      return res.json(data || []);
+      const rows = await sql`
+        SELECT * FROM audit_logs ORDER BY created_at DESC
+      `;
+      return res.json(rows);
     }
 
     // ----------------------------------------------------
@@ -539,30 +985,49 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const authUser = getAuthUser(req);
       if (!authUser) return res.status(401).json({ error: "401 Unauthorized" });
 
-      const { data, error } = await supabase
-        .from("interventions")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (error) return res.status(500).json({ error: error.message });
-      return res.json(data || []);
+      const rows = await sql`
+        SELECT * FROM interventions ORDER BY created_at DESC
+      `;
+      return res.json(rows);
     }
 
     if (path === "interventions" && method === "POST") {
       const authUser = getAuthUser(req);
       if (!authUser) return res.status(401).json({ error: "401 Unauthorized" });
 
-      const item = {
-        id: crypto.randomUUID(),
-        ...req.body,
-        notes: req.body.notes || [],
-      };
-      const { data, error } = await supabase
-        .from("interventions")
-        .insert(item)
-        .select()
-        .single();
-      if (error) return res.status(500).json({ error: error.message });
-      return res.status(201).json(data);
+      const {
+        ticket_id,
+        victim_alias,
+        school_origin,
+        category,
+        urgency,
+        assigned_psychologist,
+        assigned_legal_aid,
+        stage,
+        shelter_required,
+        notes,
+      } = req.body || {};
+
+      const rows = await sql`
+        INSERT INTO interventions (
+          id, ticket_id, victim_alias, school_origin, category, urgency,
+          assigned_psychologist, assigned_legal_aid, stage, shelter_required, notes
+        ) VALUES (
+          ${crypto.randomUUID()},
+          ${ticket_id || null},
+          ${victim_alias || ""},
+          ${school_origin || ""},
+          ${category || ""},
+          ${urgency || "Sedang"},
+          ${assigned_psychologist || ""},
+          ${assigned_legal_aid || ""},
+          ${stage || "Asesmen Awal"},
+          ${Boolean(shelter_required)},
+          ${notes || []}
+        ) RETURNING *
+      `;
+
+      return res.status(201).json(rows[0]);
     }
 
     if (path.match(/^interventions\/[^/]+$/) && method === "PUT") {
@@ -570,61 +1035,126 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (!authUser) return res.status(401).json({ error: "401 Unauthorized" });
 
       const id = path.split("/")[1];
-      const { data, error } = await supabase
-        .from("interventions")
-        .update({ ...req.body, updated_at: new Date().toISOString() })
-        .eq("id", id)
-        .select()
-        .single();
-      if (error) return res.status(500).json({ error: error.message });
-      return res.json(data);
+      const {
+        stage,
+        assigned_psychologist,
+        assigned_legal_aid,
+        shelter_required,
+        notes,
+      } = req.body || {};
+
+      const rows = await sql`
+        UPDATE interventions
+        SET stage = COALESCE(${stage}, stage),
+            assigned_psychologist = COALESCE(${assigned_psychologist}, assigned_psychologist),
+            assigned_legal_aid = COALESCE(${assigned_legal_aid}, assigned_legal_aid),
+            shelter_required = COALESCE(${shelter_required}, shelter_required),
+            notes = COALESCE(${notes}, notes),
+            updated_at = NOW()
+        WHERE id = ${id}
+        RETURNING *
+      `;
+
+      if (!rows.length) {
+        return res.status(404).json({ error: "Intervensi tidak ditemukan" });
+      }
+
+      return res.json(rows[0]);
     }
 
     // ----------------------------------------------------
-    // PUBLIC CONTENT: NEWS, ARTICLES, FAQS, STATS
+    // SUPERVISION NOTICES (DISDIK / DPPA)
+    // ----------------------------------------------------
+    if (path === "supervision-notices" && method === "GET") {
+      const rows = await sql`
+        SELECT * FROM supervision_notices ORDER BY created_at DESC
+      `;
+      return res.json(rows || []);
+    }
+
+    if (path === "supervision-notices" && method === "POST") {
+      const {
+        ticket_id,
+        school_id,
+        school_name,
+        target_role,
+        urgency,
+        message,
+        sender_role,
+      } = req.body || {};
+
+      const rows = await sql`
+        INSERT INTO supervision_notices (
+          id, ticket_id, school_id, school_name, target_role,
+          urgency, message, sender_role
+        ) VALUES (
+          ${crypto.randomUUID()},
+          ${ticket_id || null},
+          ${school_id || "default-school"},
+          ${school_name || ""},
+          ${target_role || "Semua Petugas"},
+          ${urgency || "Biasa"},
+          ${message || ""},
+          ${sender_role || "Dinas Pendidikan"}
+        ) RETURNING *
+      `;
+
+      return res.status(201).json(rows[0]);
+    }
+
+    // ----------------------------------------------------
+    // PUBLIC CONTENT: DASHBOARD STATS, REGIONAL SCHOOLS, NEWS, FAQS, HELP, CONTACT
     // ----------------------------------------------------
     if (path === "dashboard/stats" && method === "GET") {
-      const { data: tickets } = await supabase.from("tickets").select("status");
-      const t = tickets || [];
+      const rows = await sql`
+        SELECT status FROM tickets
+      `;
       return res.json({
-        totalTickets: t.length,
-        pendingTickets: t.filter(
+        totalTickets: rows.length,
+        pendingTickets: rows.filter(
           (x: any) => x.status === "diterima" || x.status === "ditinjau",
         ).length,
-        resolvedTickets: t.filter((x: any) => x.status === "ditutup").length,
+        resolvedTickets: rows.filter((x: any) => x.status === "ditutup").length,
         avgResponseTime: 0,
       });
     }
 
     if (path === "regional-schools" && method === "GET") {
-      const { data } = await supabase.from("regional_schools").select("*");
-      return res.json(data || []);
+      const rows = await sql`SELECT * FROM regional_schools`;
+      return res.json(rows || []);
     }
 
     if (path === "news" && method === "GET") {
-      const { data } = await supabase.from("news_articles").select("*");
-      return res.json(data || []);
+      const rows = await sql`SELECT * FROM news_articles`;
+      return res.json(rows || []);
     }
 
     if (path === "help-articles" && method === "GET") {
-      const { data } = await supabase.from("help_articles").select("*");
-      return res.json(data || []);
+      const rows = await sql`SELECT * FROM help_articles`;
+      return res.json(rows || []);
     }
 
     if (path === "faqs" && method === "GET") {
-      const { data } = await supabase.from("faq_items").select("*");
-      return res.json(data || []);
+      const rows = await sql`SELECT * FROM faq_items`;
+      return res.json(rows || []);
     }
 
     if (path === "contact" && method === "POST") {
-      const msg = { id: crypto.randomUUID(), ...req.body, status: "Baru" };
-      const { data, error } = await supabase
-        .from("contact_messages")
-        .insert(msg)
-        .select()
-        .single();
-      if (error) return res.status(500).json({ error: error.message });
-      return res.status(201).json(data);
+      const { name, email, subject, category, message } = req.body || {};
+      const rows = await sql`
+        INSERT INTO contact_messages (id, name, email, subject, category, message, status)
+        VALUES (
+          ${crypto.randomUUID()},
+          ${name || ""},
+          ${email || ""},
+          ${subject || ""},
+          ${category || "Umum"},
+          ${message || ""},
+          'Baru'
+        ) RETURNING *
+      `;
+
+      return res.status(201).json(rows[0]);
     }
 
     return res.status(404).json({ error: "Endpoint tidak ditemukan" });

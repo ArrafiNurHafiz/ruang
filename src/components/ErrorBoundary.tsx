@@ -1,4 +1,5 @@
 import React from "react";
+import { AlertTriangle } from "lucide-react";
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -44,7 +45,7 @@ export class ErrorBoundary extends React.Component<
         <div className="min-h-screen flex items-center justify-center bg-slate-50 p-4">
           <div className="max-w-md w-full bg-white rounded-2xl shadow-lg border border-slate-200 p-6 text-center space-y-4">
             <div className="w-12 h-12 bg-rose-100 rounded-2xl flex items-center justify-center mx-auto">
-              <span className="text-2xl">⚠️</span>
+              <AlertTriangle className="w-6 h-6 text-rose-600" />
             </div>
             <h2 className="text-lg font-extrabold text-slate-900">
               Terjadi Kesalahan

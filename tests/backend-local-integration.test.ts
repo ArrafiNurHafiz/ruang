@@ -24,6 +24,7 @@ async function run() {
 
   let createdTicket: any = null;
   let sampleRecoveryCode = `aman-tameng-test-${Date.now()}`;
+  let samplePin = String(Math.floor(1000 + Math.random() * 9000));
   let sampleTokenCode = "";
   let authToken = "";
 
@@ -117,6 +118,99 @@ async function run() {
     assert.equal(data.token_code, sampleTokenCode);
   });
 
+  const sampleStudentPassword = `rahasia_siswa_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+  await test("POST /tokens/activate pairs token with encrypted student password", async () => {
+    const res = await fetch(`${BASE_URL}/tokens/activate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tokenCode: sampleTokenCode,
+        password: sampleStudentPassword,
+      }),
+    });
+    assert.equal(res.status, 200);
+    const activated = await res.json();
+    assert.equal(activated.status, "Aktif");
+    assert.equal(activated.hasPassword, true);
+  });
+
+  await test("POST /tokens/verify-by-password verifies student using personal password", async () => {
+    const res = await fetch(`${BASE_URL}/tokens/verify-by-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: sampleStudentPassword }),
+    });
+    assert.equal(res.status, 200);
+    const verified = await res.json();
+    assert.equal(verified.token_code, sampleTokenCode);
+    assert.equal(verified.hasPassword, true);
+  });
+
+  await test("POST /tokens/verify-by-password rejects wrong password with 404", async () => {
+    const res = await fetch(`${BASE_URL}/tokens/verify-by-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: "wrong_password_here" }),
+    });
+    assert.equal(res.status, 404);
+  });
+
+  await test("POST /tokens/verify-by-password detects password collisions and safeguards privacy with 409", async () => {
+    // 1. Create two new tokens
+    const batchRes = await fetch(`${BASE_URL}/tokens/batch`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ count: 2, prefix: "COLLISION-TEST", studentLevel: "Kelas 11" }),
+    });
+    const [t1, t2] = await batchRes.json();
+    const sharedCollisionPassword = `sandi_kembar_${Date.now()}`;
+
+    // 2. Both students coincidentally set the same password
+    const act1 = await (await fetch(`${BASE_URL}/tokens/activate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tokenCode: t1.token_code, password: sharedCollisionPassword }),
+    })).json();
+
+    await fetch(`${BASE_URL}/tokens/activate`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ tokenCode: t2.token_code, password: sharedCollisionPassword }),
+    });
+
+    // 3. Verifying using ONLY password triggers 409 collision protection
+    const collisionRes = await fetch(`${BASE_URL}/tokens/verify-by-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: sharedCollisionPassword }),
+    });
+    assert.equal(collisionRes.status, 409);
+    const collisionData = await collisionRes.json();
+    assert.equal(collisionData.isCollision, true);
+
+    // 4. Disambiguating with tokenCode + password succeeds 100%
+    const resolvedRes = await fetch(`${BASE_URL}/tokens/verify-by-password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ password: sharedCollisionPassword, tokenCode: t1.token_code }),
+    });
+    assert.equal(resolvedRes.status, 200);
+    const resolvedData = await resolvedRes.json();
+    assert.equal(resolvedData.token_code, t1.token_code);
+
+    // 5. Disambiguating with recoveryKey + password succeeds 100%
+    if (act1.recoveryKey) {
+      const recRes = await fetch(`${BASE_URL}/tokens/verify-by-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password: sharedCollisionPassword, recoveryKey: act1.recoveryKey }),
+      });
+      assert.equal(recRes.status, 200);
+      const recData = await recRes.json();
+      assert.equal(recData.token_code, t1.token_code);
+    }
+  });
+
   // 4. TICKETS & CHAT WORKFLOW
   console.log("\n📦 [GROUP 4] Incident Ticket & 2-Way Chat Workflow");
   await test("POST /tickets creates a new anonymous report", async () => {
@@ -134,6 +228,7 @@ async function run() {
         redactedStory: "Ada siswa mengejek dan memalak uang di kantin",
         detectedPII: [],
         recovery_code: sampleRecoveryCode,
+        secret_pin: samplePin,
         school_id: "default-school",
         is_kiosk: false,
       }),
@@ -142,6 +237,7 @@ async function run() {
     createdTicket = await res.json();
     assert.ok(createdTicket.id);
     assert.equal(createdTicket.status, "diterima");
+    assert.equal(createdTicket.is_student_verified, true);
     assert.ok(createdTicket.messages.length >= 1); // System message inserted
   });
 
@@ -206,6 +302,52 @@ async function run() {
     assert.equal(res.status, 200);
     const updated = await res.json();
     assert.equal(updated.status, "tindakan");
+  });
+
+  await test("POST /tickets/recover-by-pin recovers ticket using second verification PIN", async () => {
+    const res = await fetch(`${BASE_URL}/tickets/recover-by-pin`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        category: "Perundungan / Bullying",
+        secretPin: samplePin,
+      }),
+    });
+    assert.equal(res.status, 200);
+    const ticket = await res.json();
+    assert.equal(ticket.id, createdTicket.id);
+  });
+
+  await test("POST /tickets/:id/resolution-evidence uploads proof and sets status to 'menunggu_siswa'", async () => {
+    const res = await fetch(`${BASE_URL}/tickets/${createdTicket.id}/resolution-evidence`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        type: "Surat Permintaan Maaf Pelaku & Mediasi",
+        description: "Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai",
+        submittedBy: "Guru BK / Satgas PPKSP",
+      }),
+    });
+    assert.equal(res.status, 200);
+    const updated = await res.json();
+    assert.equal(updated.status, "menunggu_siswa");
+    assert.ok(updated.resolution_evidence);
+  });
+
+  await test("POST /tickets/:id/student-confirm concludes case in student's hands with 'ditutup'", async () => {
+    const res = await fetch(`${BASE_URL}/tickets/${createdTicket.id}/student-confirm`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        isSatisfied: true,
+        feedback: "Masalah sudah terselesaikan dengan baik, terima kasih.",
+      }),
+    });
+    assert.equal(res.status, 200);
+    const updated = await res.json();
+    assert.equal(updated.status, "ditutup");
+    assert.ok(updated.student_confirmation);
+    assert.equal(updated.student_confirmation.isSatisfied, true);
   });
 
   // 5. AUDIT LOGS & INTERVENTIONS

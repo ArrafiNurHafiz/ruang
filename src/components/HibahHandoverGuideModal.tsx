@@ -126,46 +126,50 @@ PEDOMAN PERMENDIKBUDRISTEK NO. 46 TAHUN 2023
         <div className="flex border-b border-slate-200 bg-slate-50 px-6 gap-2 text-xs overflow-x-auto">
           <button
             onClick={() => setActiveSection("sop")}
-            className={`py-3 px-3 font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+            className={`py-3 px-3 font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap inline-flex items-center gap-1.5 ${
               activeSection === "sop"
                 ? "border-blue-600 text-blue-600"
                 : "border-transparent text-slate-600 hover:text-slate-900"
             }`}
           >
-            📋 SOP 7 Langkah Satgas PPKSP
+            <FileText className="w-4 h-4" />
+            <span>SOP 7 Langkah Satgas PPKSP</span>
           </button>
 
           <button
             onClick={() => setActiveSection("hibah")}
-            className={`py-3 px-3 font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+            className={`py-3 px-3 font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap inline-flex items-center gap-1.5 ${
               activeSection === "hibah"
                 ? "border-blue-600 text-blue-600"
                 : "border-transparent text-slate-600 hover:text-slate-900"
             }`}
           >
-            📜 Berita Acara &amp; Hak Hibah
+            <Award className="w-4 h-4" />
+            <span>Berita Acara &amp; Hak Hibah</span>
           </button>
 
           <button
             onClick={() => setActiveSection("token")}
-            className={`py-3 px-3 font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+            className={`py-3 px-3 font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap inline-flex items-center gap-1.5 ${
               activeSection === "token"
                 ? "border-blue-600 text-blue-600"
                 : "border-transparent text-slate-600 hover:text-slate-900"
             }`}
           >
-            🔑 Distribusi Token Bebas Jejak
+            <KeyRound className="w-4 h-4" />
+            <span>Distribusi Token Bebas Jejak</span>
           </button>
 
           <button
             onClick={() => setActiveSection("backup")}
-            className={`py-3 px-3 font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap ${
+            className={`py-3 px-3 font-bold border-b-2 transition-all cursor-pointer whitespace-nowrap inline-flex items-center gap-1.5 ${
               activeSection === "backup"
                 ? "border-blue-600 text-blue-600"
                 : "border-transparent text-slate-600 hover:text-slate-900"
             }`}
           >
-            💾 Backup Data &amp; Reset Go-Live
+            <Database className="w-4 h-4" />
+            <span>Backup Data &amp; Reset Go-Live</span>
           </button>
         </div>
 

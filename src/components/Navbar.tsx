@@ -2,21 +2,15 @@ import React from "react";
 import {
   ShieldCheck,
   Send,
-  KeyRound,
-  Monitor,
   Search,
-  Newspaper,
   HelpCircle,
-  PhoneCall,
-  BookOpen,
-  User,
-  UserCheck,
   LogOut,
   EyeOff,
-  AlertTriangle,
   Menu,
   X,
-  Lock,
+  UserCheck,
+  KeyRound,
+  Shield,
 } from "lucide-react";
 import {
   CounselorUser,
@@ -64,232 +58,208 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenRoleSwitcher,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
+  const [isVisible, setIsVisible] = React.useState(true);
+  const lastScrollY = React.useRef(0);
 
-  // Main navigation items as shown in the desktop mockup
-  const mainNavItems = [
-    { id: "beranda", label: "Beranda" },
-    { id: "tentang", label: "Tentang" },
-    { id: "cara-kerja", label: "Cara Kerja" },
-    { id: "bantuan", label: "Pusat Bantuan" },
-    { id: "kontak", label: "Kontak" },
-  ];
+  React.useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
 
-  // Secondary tools for quick access
-  const appTools = [
-    { id: "lapor", label: "Lapor Anonim", icon: Send },
-    { id: "status", label: "Cek Tiket & Chat", icon: Search },
-    { id: "aktivasi", label: "Aktivasi Token", icon: KeyRound },
-    { id: "kios", label: "Mode Kios", icon: Monitor },
-    { id: "berita", label: "Berita & Edukasi", icon: Newspaper },
-  ];
+      // Selalu tampil jika berada di posisi teratas
+      if (currentScrollY < 50) {
+        setIsVisible(true);
+        lastScrollY.current = currentScrollY;
+        return;
+      }
+
+      // Jangan sembunyikan jika menu drawer mobile sedang terbuka
+      if (mobileMenuOpen) {
+        setIsVisible(true);
+        return;
+      }
+
+      // Threshold selisih scroll untuk mencegah jitter pada trackpad
+      const delta = currentScrollY - lastScrollY.current;
+      if (Math.abs(delta) < 8) {
+        return;
+      }
+
+      if (delta > 0) {
+        // Scroll ke bawah -> sembunyikan navbar
+        setIsVisible(false);
+      } else {
+        // Scroll ke atas -> munculkan navbar
+        setIsVisible(true);
+      }
+
+      lastScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [mobileMenuOpen]);
 
   const handleNavClick = (id: string) => {
     onSelectTab(id);
     setMobileMenuOpen(false);
   };
 
-  const isHeroTab = currentTab === "beranda";
-
   return (
     <header
-      className={`sticky top-0 z-40 transition-colors duration-200 ${
-        isHeroTab
-          ? "bg-[#1d4ed8] text-white border-b border-blue-500/30 shadow-md"
-          : "bg-white text-slate-900 border-b border-slate-200 shadow-xs"
+      className={`sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 shadow-xs transition-transform duration-300 ease-in-out ${
+        isVisible ? "translate-y-0" : "-translate-y-full"
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 sm:h-18 gap-4">
-          {/* BRAND / LOGO (RUANG AMAN) */}
+      <div className="max-w-6xl mx-auto px-4 sm:px-6">
+        <div className="flex items-center justify-between h-16 gap-3">
+          {/* BRAND / LOGO */}
           <div
             onClick={() => handleNavClick("beranda")}
-            className="flex items-center gap-3 cursor-pointer group select-none shrink-0"
+            className="flex items-center gap-2.5 cursor-pointer group select-none shrink-0"
             id="brand-logo-button"
           >
-            <div
-              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center transition-transform group-hover:scale-105 ${
-                isHeroTab
-                  ? "bg-white/20 text-white border border-white/30 shadow-inner"
-                  : "bg-blue-600 text-white shadow-blue-500/20 shadow-md"
-              }`}
-            >
-              <svg
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2.2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                className="w-5 h-5 sm:w-6 sm:h-6"
-              >
-                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                <path d="M9 10a3 3 0 0 0 6 0" />
-                <circle cx="9" cy="8" r="0.5" fill="currentColor" />
-                <circle cx="15" cy="8" r="0.5" fill="currentColor" />
-              </svg>
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-sky-600 to-blue-600 text-white flex items-center justify-center shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+              <Shield className="w-5 h-5 fill-white/20" />
             </div>
             <div>
-              <h1
-                className={`text-xl sm:text-2xl font-extrabold tracking-tight leading-none ${
-                  isHeroTab ? "text-white" : "text-slate-900"
-                }`}
-              >
-                Ruang Aman
-              </h1>
-              <span
-                className={`text-[9px] font-semibold tracking-wider uppercase block ${
-                  isHeroTab ? "text-blue-200" : "text-slate-400"
-                }`}
-              >
-                Platform PPKSP Siswa
-              </span>
+              <div className="flex items-center gap-1.5">
+                <span className="text-lg font-bold tracking-tight text-slate-900 leading-none">
+                  TAMENG
+                </span>
+                <span className="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded bg-sky-100 text-sky-700 tracking-wider">
+                  Ruang Aman
+                </span>
+              </div>
+              <p className="text-[10px] text-slate-500 font-medium">
+                {activeRole === "guru" && schoolProfile?.schoolName
+                  ? `Satgas PPKSP • ${schoolProfile.schoolName}`
+                  : "Platform Nasional PPKSP • Satuan Pendidikan Indonesia"}
+              </p>
             </div>
           </div>
 
           {/* DESKTOP NAV LINKS (CENTER) */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-2">
-            {mainNavItems.map((item) => {
-              const isActive = currentTab === item.id;
-              return (
-                <button
-                  key={item.id}
-                  id={`nav-link-${item.id}`}
-                  onClick={() => handleNavClick(item.id)}
-                  className={`px-3.5 py-1.5 rounded-full text-sm font-medium transition-all duration-150 cursor-pointer ${
-                    isHeroTab
-                      ? isActive
-                        ? "bg-white/20 text-white font-bold backdrop-blur-xs"
-                        : "text-white/80 hover:text-white hover:bg-white/10"
-                      : isActive
-                        ? "bg-blue-50 text-blue-700 font-bold"
-                        : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-                  }`}
-                >
-                  {item.label}
-                </button>
-              );
-            })}
-
-            {/* Quick Access to Report & Chat */}
-            <div
-              className={`h-4 w-px mx-1 ${isHeroTab ? "bg-white/20" : "bg-slate-200"}`}
-            ></div>
-
-            <button
-              onClick={() => handleNavClick("lapor")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                isHeroTab
-                  ? currentTab === "lapor"
-                    ? "bg-white text-blue-700"
-                    : "bg-white/15 text-white hover:bg-white/25 border border-white/20"
-                  : currentTab === "lapor"
-                    ? "bg-blue-600 text-white"
-                    : "bg-blue-50 text-blue-700 hover:bg-blue-100"
-              }`}
-            >
-              <Send className="w-3 h-3" />
-              <span>Lapor Anonim</span>
-            </button>
-
-            <button
-              onClick={() => handleNavClick("status")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                isHeroTab
-                  ? currentTab === "status"
-                    ? "bg-white/25 text-white font-bold"
-                    : "text-blue-100 hover:text-white hover:bg-white/10"
-                  : currentTab === "status"
-                    ? "bg-indigo-50 text-indigo-700 font-bold"
-                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-100"
-              }`}
-            >
-              <Search className="w-3 h-3" />
-              <span>Pantau Tiket</span>
-            </button>
-
-            {onOpenHibahGuide && (
+          {activeRole === "siswa" ? (
+            <nav className="hidden md:flex items-center gap-1 lg:gap-1.5">
               <button
-                type="button"
-                onClick={onOpenHibahGuide}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all cursor-pointer ${
-                  isHeroTab
-                    ? "bg-amber-400/20 text-amber-200 hover:bg-amber-400/30 border border-amber-300/30"
-                    : "bg-amber-50 text-amber-900 hover:bg-amber-100 border border-amber-200"
+                id="nav-link-beranda"
+                onClick={() => handleNavClick("beranda")}
+                className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                  currentTab === "beranda"
+                    ? "bg-slate-100 text-slate-900 font-semibold"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                 }`}
-                title="Buku Panduan Hibah & SOP PPKSP"
               >
-                <BookOpen className="w-3 h-3 text-amber-300" />
-                <span>SOP Hibah</span>
+                Beranda
               </button>
-            )}
-          </nav>
 
-          {/* RIGHT ACTIONS: LOGIN & CONTROLS */}
-          <div className="flex items-center gap-2 sm:gap-2.5">
-            {/* Student Token Status Badge / Gate Button */}
-            {activeRole === "siswa" && studentSession && (
-              <div
-                className={`hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs ${
-                  isHeroTab
-                    ? "bg-emerald-500/25 border-emerald-400/40 text-emerald-200"
-                    : "bg-emerald-50 border-emerald-200 text-emerald-800"
+              <button
+                id="nav-link-lapor"
+                onClick={() => handleNavClick("lapor")}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-semibold transition-all cursor-pointer ${
+                  currentTab === "lapor"
+                    ? "bg-blue-600 text-white shadow-xs"
+                    : "bg-blue-50 text-blue-700 hover:bg-blue-100"
                 }`}
               >
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="font-mono font-bold">
+                <Send className="w-3.5 h-3.5" />
+                <span>Lapor Anonim</span>
+              </button>
+
+              <button
+                id="nav-link-status"
+                onClick={() => handleNavClick("status")}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                  currentTab === "status"
+                    ? "bg-slate-100 text-slate-900 font-semibold"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                }`}
+              >
+                <Search className="w-3.5 h-3.5 text-slate-400" />
+                <span>Pantau Tiket</span>
+              </button>
+
+              <button
+                id="nav-link-bantuan"
+                onClick={() => handleNavClick("bantuan")}
+                className={`px-3.5 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+                  currentTab === "bantuan"
+                    ? "bg-slate-100 text-slate-900 font-semibold"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
+                }`}
+              >
+                Pusat Bantuan
+              </button>
+            </nav>
+          ) : (
+            <div className="hidden md:flex items-center gap-2">
+              <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-900 text-white shadow-xs text-xs">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                <span className="font-semibold tracking-wide">
+                  {activeRole === "guru" && "Ruang Kerja Guru BK / Admin Sekolah"}
+                  {activeRole === "admin" && "Konsol Admin Sistem (Manajemen User & IT)"}
+                  {activeRole === "dinas-pendidikan" && "Portal Pengawasan Dinas Pendidikan"}
+                  {activeRole === "dinas-perlindungan" && "Portal Intervensi UPTD PPA"}
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* RIGHT CONTROLS */}
+          <div className="flex items-center gap-2">
+            {/* Student Token Verified Badge */}
+            {activeRole === "siswa" && studentSession && (
+              <div className="hidden sm:flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-medium">
+                <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+                <span className="font-mono text-[11px] font-bold">
                   {studentSession.tokenCode}
                 </span>
-                <span className="text-[10px] opacity-80">• Sah</span>
               </div>
             )}
-            {activeRole === "siswa" && !studentSession && onOpenStudentGate && (
+
+            {/* Mode Samaran Button (only for student role) */}
+            {activeRole === "siswa" && (
               <button
-                onClick={onOpenStudentGate}
-                className={`hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold transition-all cursor-pointer ${
-                  isHeroTab
-                    ? "bg-white/10 hover:bg-white/20 border-white/30 text-white"
-                    : "bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700"
-                }`}
-                title="Masukkan Kode Akses Sekolah (Cegah Penyusup)"
+                onClick={onToggleDisguise}
+                id="nav-disguise-mode-btn"
+                title="Mode Samaran: Tutupi layar seketika jadi materi pelajaran (ESC 2x)"
+                className="p-2 rounded-lg text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors cursor-pointer flex items-center gap-1 text-xs"
               >
-                <KeyRound className="w-3.5 h-3.5 text-amber-400" />
-                <span>Kode Siswa</span>
+                <EyeOff className="w-4 h-4" />
+                <span className="hidden xl:inline text-[11px] text-slate-500 font-medium">
+                  Samaran
+                </span>
               </button>
             )}
 
-            {/* Login Button */}
-            <button
-              onClick={() => onSelectTab("login")}
-              className={`hidden md:flex items-center gap-1.5 px-3 py-1 rounded-full border text-xs font-bold transition-all cursor-pointer ${
-                isHeroTab
-                  ? "bg-white/10 hover:bg-white/20 border-white/30 text-white"
-                  : "bg-slate-900 hover:bg-slate-800 border-slate-900 text-white"
-              }`}
-            >
-              <UserCheck className="w-3.5 h-3.5" />
-              <span>Login</span>
-            </button>
-
-            {/* Counselor / Authenticated User Status */}
-            {currentUser || loggedCounselor ? (
-              <div
-                className={`flex items-center gap-2 px-3 py-1.5 rounded-full border ${
-                  isHeroTab
-                    ? "bg-white/15 border-white/30 text-white"
-                    : "bg-indigo-50 border-indigo-200 text-indigo-900"
-                }`}
+            {/* Ganti Peran Quick Button */}
+            {onOpenRoleSwitcher && (
+              <button
+                type="button"
+                id="navbar-role-switcher-btn"
+                onClick={onOpenRoleSwitcher}
+                className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-100 text-slate-700 text-xs font-semibold transition cursor-pointer"
+                title="Beralih peran (Guru, Admin, Dinas, Siswa)"
               >
-                <div className="w-5 h-5 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">
-                  {activeRole === "siswa"
-                    ? "S"
-                    : activeRole === "guru"
-                      ? "BK"
-                      : activeRole === "admin"
-                        ? "AD"
-                        : activeRole === "dinas-pendidikan"
-                          ? "DP"
-                          : "PA"}
-                </div>
+                <span>Ganti Peran</span>
+              </button>
+            )}
+
+            {/* Counselor / Staff Logged in or Login Button */}
+            {activeRole !== "siswa" ? (
+              <div className="flex items-center gap-2 pl-1.5 border-l border-slate-200">
+                <button
+                  id="nav-logout-btn"
+                  onClick={onLogoutRole || onCounselorLogout}
+                  title="Keluar dari sesi petugas & kembali ke portal siswa"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-semibold transition cursor-pointer shadow-2xs"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Keluar</span>
+                </button>
+              </div>
+            ) : currentUser || loggedCounselor ? (
+              <div className="flex items-center gap-1.5 pl-1.5 border-l border-slate-200">
                 <button
                   id="nav-user-dashboard"
                   onClick={() =>
@@ -303,126 +273,167 @@ export const Navbar: React.FC<NavbarProps> = ({
                             : "admin",
                     )
                   }
-                  className="text-xs font-bold hover:underline cursor-pointer truncate max-w-[100px] sm:max-w-none"
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors cursor-pointer"
                 >
-                  {
-                    (
-                      currentUser?.name ||
-                      loggedCounselor?.name ||
-                      "Pengguna"
-                    ).split(",")[0]
-                  }
+                  <div className="w-4 h-4 rounded-full bg-blue-600 text-white flex items-center justify-center text-[9px] font-bold">
+                    {activeRole === "guru"
+                      ? "BK"
+                      : activeRole === "admin"
+                        ? "AD"
+                        : "ST"}
+                  </div>
+                  <span className="truncate max-w-[80px] sm:max-w-[120px]">
+                    {
+                      (
+                        currentUser?.name ||
+                        loggedCounselor?.name ||
+                        "Petugas"
+                      ).split(" ")[0]
+                    }
+                  </span>
                 </button>
                 <button
                   id="nav-user-logout"
                   onClick={onLogoutRole || onCounselorLogout}
                   title="Logout"
-                  className="text-slate-300 hover:text-rose-400 p-0.5 rounded cursor-pointer"
+                  className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg hover:bg-rose-50 transition-colors cursor-pointer"
                 >
                   <LogOut className="w-3.5 h-3.5" />
                 </button>
               </div>
-            ) : null}
-
-            {/* Quick Exit Disguise / Safety Button */}
-            <button
-              onClick={onToggleDisguise}
-              id="nav-disguise-mode-btn"
-              title="Mode Samaran: Samarkan layar jadi catatan pelajaran"
-              className={`p-2 rounded-full transition-colors cursor-pointer hidden sm:flex items-center justify-center ${
-                isHeroTab
-                  ? "text-white/80 hover:text-white hover:bg-white/15"
-                  : "text-slate-500 hover:text-slate-900 hover:bg-slate-100"
-              }`}
-            >
-              <EyeOff className="w-4 h-4" />
-            </button>
+            ) : (
+              <button
+                onClick={() => handleNavClick("login")}
+                className="hidden sm:inline-flex items-center gap-1 px-3 py-1.5 rounded-lg border border-slate-200 hover:border-slate-300 text-slate-700 hover:text-slate-900 text-xs font-semibold transition-colors cursor-pointer"
+              >
+                <UserCheck className="w-3.5 h-3.5 text-slate-500" />
+                <span>Masuk Petugas</span>
+              </button>
+            )}
 
             {/* Mobile Menu Hamburger Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className={`lg:hidden p-2 rounded-lg cursor-pointer ${
-                isHeroTab
-                  ? "text-white hover:bg-white/15"
-                  : "text-slate-700 hover:bg-slate-100"
-              }`}
+              className="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100 cursor-pointer"
               id="mobile-menu-toggle"
+              aria-label="Toggle Menu"
             >
               {mobileMenuOpen ? (
-                <X className="w-6 h-6" />
+                <X className="w-5 h-5" />
               ) : (
-                <Menu className="w-6 h-6" />
+                <Menu className="w-5 h-5" />
               )}
             </button>
           </div>
         </div>
       </div>
 
-      {/* MOBILE DRAWER / MENU */}
+      {/* MOBILE DRAWER */}
       {mobileMenuOpen && (
-        <div className="lg:hidden bg-slate-900/95 backdrop-blur-xl text-white border-t border-slate-800 px-4 py-6 space-y-4 shadow-2xl">
-          <div className="space-y-1">
-            <p className="text-[10px] uppercase font-bold text-slate-400 px-3 tracking-wider">
-              Navigasi Utama
-            </p>
-            {mainNavItems.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => handleNavClick(item.id)}
-                className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                  currentTab === item.id
-                    ? "bg-blue-600 text-white"
-                    : "text-slate-200 hover:bg-slate-800"
-                }`}
-              >
-                <span>{item.label}</span>
-              </button>
-            ))}
-          </div>
+        <div className="md:hidden bg-white border-t border-slate-200 px-4 py-3 space-y-1.5 shadow-lg">
+          <button
+            onClick={() => handleNavClick("beranda")}
+            className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium ${
+              currentTab === "beranda"
+                ? "bg-slate-100 text-slate-900 font-semibold"
+                : "text-slate-700 hover:bg-slate-50"
+            }`}
+          >
+            <span>Beranda</span>
+          </button>
+          <button
+            onClick={() => handleNavClick("lapor")}
+            className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-semibold ${
+              currentTab === "lapor"
+                ? "bg-blue-600 text-white"
+                : "bg-blue-50 text-blue-700"
+            }`}
+          >
+            <Send className="w-4 h-4" />
+            <span>Lapor Anonim</span>
+          </button>
+          <button
+            onClick={() => handleNavClick("status")}
+            className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium ${
+              currentTab === "status"
+                ? "bg-slate-100 text-slate-900 font-semibold"
+                : "text-slate-700 hover:bg-slate-50"
+            }`}
+          >
+            <Search className="w-4 h-4 text-slate-400" />
+            <span>Pantau Status Tiket</span>
+          </button>
+          <button
+            onClick={() => handleNavClick("bantuan")}
+            className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium ${
+              currentTab === "bantuan"
+                ? "bg-slate-100 text-slate-900 font-semibold"
+                : "text-slate-700 hover:bg-slate-50"
+            }`}
+          >
+            <HelpCircle className="w-4 h-4 text-slate-400" />
+            <span>Pusat Bantuan &amp; Edukasi</span>
+          </button>
 
-          <div className="space-y-1 pt-2 border-t border-slate-800">
-            <p className="text-[10px] uppercase font-bold text-slate-400 px-3 tracking-wider">
-              Akses Cepat Fitur
-            </p>
-            {appTools.map((tool) => {
-              const Icon = tool.icon;
-              return (
+          {activeRole !== "siswa" ? (
+            <div className="pt-2 border-t border-slate-100 space-y-2">
+              <div className="flex items-center justify-between text-xs text-slate-500 px-1 font-medium">
+                <span>Peran Aktif:</span>
+                <span className="font-semibold text-slate-800">
+                  {activeRole === "guru" && "Guru BK / Admin Sekolah"}
+                  {activeRole === "admin" && "Admin Sistem"}
+                  {activeRole === "dinas-pendidikan" && "Dinas Pendidikan"}
+                  {activeRole === "dinas-perlindungan" && "UPTD PPA"}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                {onOpenRoleSwitcher && (
+                  <button
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      onOpenRoleSwitcher();
+                    }}
+                    className="flex-1 py-2 px-3 rounded-lg border border-slate-200 text-center text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
+                  >
+                    Ganti Peran
+                  </button>
+                )}
                 <button
-                  key={tool.id}
-                  onClick={() => handleNavClick(tool.id)}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-colors ${
-                    currentTab === tool.id
-                      ? "bg-blue-600 text-white"
-                      : "text-slate-200 hover:bg-slate-800"
-                  }`}
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    if (onLogoutRole) onLogoutRole();
+                    else if (onCounselorLogout) onCounselorLogout();
+                  }}
+                  className="flex-1 py-2 px-3 rounded-lg bg-rose-50 border border-rose-200 text-center text-xs font-semibold text-rose-700 hover:bg-rose-100 flex items-center justify-center gap-1.5 cursor-pointer"
                 >
-                  <Icon className="w-4 h-4 text-sky-400" />
-                  <span>{tool.label}</span>
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span>Keluar</span>
                 </button>
-              );
-            })}
-          </div>
-
-          <div className="pt-3 border-t border-slate-800 space-y-2">
-            <button
-              onClick={() => {
-                handleNavClick("login");
-                setMobileMenuOpen(false);
-              }}
-              className="w-full flex items-center justify-center gap-2 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-900 font-bold text-sm"
-            >
-              <UserCheck className="w-4 h-4" />
-              <span>Login</span>
-            </button>
-
-            <button
-              onClick={onQuickExit}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-600/30 text-red-300 hover:bg-red-600 hover:text-white font-bold text-xs transition-colors border border-red-500/40"
-            >
-              <LogOut className="w-4 h-4" />
-              <span>Keluar Cepat &amp; Hapus Jejak</span>
-            </button>
-          </div>
+              </div>
+            </div>
+          ) : (
+            <div className="pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+              <button
+                onClick={() => {
+                  handleNavClick("login");
+                }}
+                className="flex-1 py-2 rounded-lg border border-slate-200 text-center text-xs font-semibold text-slate-700 hover:bg-slate-50 cursor-pointer"
+              >
+                Masuk Petugas
+              </button>
+              {onOpenRoleSwitcher && (
+                <button
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    onOpenRoleSwitcher();
+                  }}
+                  className="py-2 px-3 rounded-lg bg-slate-100 text-slate-700 hover:bg-slate-200 text-xs font-semibold cursor-pointer"
+                >
+                  Ganti Peran
+                </button>
+              )}
+            </div>
+          )}
         </div>
       )}
     </header>

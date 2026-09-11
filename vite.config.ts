@@ -24,7 +24,9 @@ export default defineConfig(() => {
 
       // HMR configuration (bawaan dari template Anda)
       hmr: process.env.DISABLE_HMR !== "true",
-      watch: process.env.DISABLE_HMR === "true" ? null : {},
+      watch: {
+        ignored: ["**/db.json", "**/.git/**"],
+      },
     },
   };
 });

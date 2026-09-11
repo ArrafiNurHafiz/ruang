@@ -55,6 +55,7 @@ create table if not exists tokens (
   batch_id text,
   is_activated boolean default false,
   is_used_for_report boolean default false,
+  password_hash text,
   pin_hash text,
   recovery_key text,
   status text default 'Aktif' check (status in ('Tersedia', 'Aktif', 'Digunakan', 'Kedaluwarsa')),
@@ -80,11 +81,14 @@ create table if not exists tickets (
   story text,
   redacted_story text,
   detected_pii text[] default '{}',
-  status text default 'diterima' check (status in ('diterima', 'ditinjau', 'tindakan', 'ditutup')),
+  status text default 'diterima' check (status in ('diterima', 'ditinjau', 'tindakan', 'menunggu_siswa', 'ditutup')),
   hash_zkp text,
   recovery_code text unique,
+  secret_pin text,
   assigned_counselor_id uuid references users(id) on delete set null,
   action_summary text,
+  resolution_evidence jsonb,
+  student_confirmation jsonb,
   is_kiosk_submission boolean default false,
   is_escalated_to_dinas boolean default false,
   escalated_to text,
@@ -183,16 +187,59 @@ create table if not exists news_articles (
   created_at timestamptz default now()
 );
 
+-- Contact messages
+create table if not exists contact_messages (
+  id uuid primary key default uuid_generate_v4(),
+  name text,
+  email text,
+  subject text,
+  category text,
+  message text,
+  status text default 'Baru',
+  created_at timestamptz default now()
+);
+
+-- Supervision notices
+create table if not exists supervision_notices (
+  id uuid primary key default uuid_generate_v4(),
+  ticket_id text,
+  school_id text default 'default-school',
+  school_name text,
+  target_role text,
+  urgency text,
+  message text not null,
+  sender_role text,
+  created_at timestamptz default now()
+);
+
+-- Regional schools
+create table if not exists regional_schools (
+  id text primary key,
+  "schoolName" text not null,
+  district text,
+  level text,
+  "activeSatgasCount" int default 0,
+  "totalReports" int default 0,
+  "resolvedReports" int default 0,
+  "avgResponseHours" float default 0,
+  "complianceStatus" text,
+  "principalName" text,
+  "lastActive" text
+);
+
 -- Indexes for performance
-create index idx_tickets_school on tickets(school_id);
-create index idx_tickets_status on tickets(status);
-create index idx_tickets_recovery on tickets(recovery_code);
-create index idx_tokens_school on tokens(school_id);
-create index idx_tokens_code on tokens(token_code);
-create index idx_messages_ticket on ticket_messages(ticket_id);
-create index idx_audit_school on audit_logs(school_id);
-create index idx_users_auth on users(auth_id);
-create index idx_users_school on users(school_id);
+create index if not exists idx_tickets_school on tickets(school_id);
+create index if not exists idx_tickets_status on tickets(status);
+create index if not exists idx_tickets_recovery on tickets(recovery_code);
+create index if not exists idx_tickets_secret_pin on tickets(secret_pin);
+create index if not exists idx_tokens_school on tokens(school_id);
+create index if not exists idx_tokens_code on tokens(token_code);
+create index if not exists idx_tokens_recovery on tokens(recovery_key);
+create index if not exists idx_tokens_password on tokens(password_hash);
+create index if not exists idx_messages_ticket on ticket_messages(ticket_id);
+create index if not exists idx_audit_school on audit_logs(school_id);
+create index if not exists idx_users_auth on users(auth_id);
+create index if not exists idx_users_school on users(school_id);
 
 -- Enable Row Level Security
 alter table schools enable row level security;
@@ -206,6 +253,9 @@ alter table interventions enable row level security;
 alter table help_articles enable row level security;
 alter table faq_items enable row level security;
 alter table news_articles enable row level security;
+alter table contact_messages enable row level security;
+alter table supervision_notices enable row level security;
+alter table regional_schools enable row level security;
 
 -- RLS Policies for schools
 create policy "Schools are viewable by everyone" on schools for select using (true);
@@ -242,10 +292,15 @@ create policy "System can insert audit logs" on audit_logs for insert with check
 create policy "Interventions viewable by authenticated users" on interventions for select using (auth.role() = 'authenticated');
 create policy "Interventions can be managed by staff" on interventions for all using (auth.role() = 'authenticated');
 
--- RLS Policies for help articles, FAQs, news (public read)
+-- RLS Policies for help articles, FAQs, news, regional_schools, contact, supervision
 create policy "Help articles are public" on help_articles for select using (true);
 create policy "FAQ items are public" on faq_items for select using (true);
 create policy "News articles are public" on news_articles for select using (true);
+create policy "Regional schools are public" on regional_schools for select using (true);
+create policy "Anyone can submit contact message" on contact_messages for insert with check (true);
+create policy "Staff can view contact message" on contact_messages for select using (auth.role() = 'authenticated');
+create policy "Supervision notices viewable by staff" on supervision_notices for select using (auth.role() = 'authenticated');
+create policy "Staff can create supervision notices" on supervision_notices for insert with check (auth.role() = 'authenticated');
 
 -- Function to handle new user signup
 create or replace function handle_new_user()
@@ -262,3 +317,23 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
   after insert on auth.users
   for each row execute function handle_new_user();
+
+-- Migration helpers for upgrading existing deployments
+alter table tokens add column if not exists password_hash text;
+alter table tokens add column if not exists pin_hash text;
+alter table tokens add column if not exists recovery_key text;
+alter table tokens add column if not exists usage_count integer default 0;
+alter table tokens add column if not exists max_usage integer default 1;
+alter table tokens add column if not exists last_used_at timestamptz;
+alter table tokens add column if not exists expires_at timestamptz;
+
+alter table tickets add column if not exists hash_zkp text;
+alter table tickets add column if not exists secret_pin text;
+alter table tickets add column if not exists resolution_evidence jsonb;
+alter table tickets add column if not exists student_confirmation jsonb;
+alter table tickets add column if not exists is_escalated_to_dinas boolean default false;
+alter table tickets add column if not exists escalated_to text;
+alter table tickets add column if not exists escalation_reason text;
+alter table tickets add column if not exists protection_stage text;
+alter table tickets add column if not exists assigned_expert text;
+alter table tickets add column if not exists assigned_counselor_id text;

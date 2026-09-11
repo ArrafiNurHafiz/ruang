@@ -58,34 +58,34 @@ export const RoleSwitcherModal: React.FC<RoleSwitcherModalProps> = ({
     },
     {
       id: "guru",
-      name: "2. Guru BK & Satgas PPKSP",
-      subtitle: "Tenaga Pendidik & Tim Penanganan Satuan Pendidikan",
+      name: "2. Guru BK & Satgas PPKSP (Admin Sekolah)",
+      subtitle: "Penanganan Laporan, Konseling & Pengelola Kode Akses Siswa",
       icon: UserCheck,
-      badge: "Guru BK / Satgas",
+      badge: "Guru BK / Admin Sekolah",
       badgeColor: "bg-blue-100 text-blue-800 border-blue-300",
       bgColor: "hover:border-blue-400 hover:bg-blue-50/40",
       officialAgency: "Satuan Pendidikan Sekolah",
       features: [
-        "Triage & Investigasi Laporan Masuk",
+        "Triage & Investigasi Laporan Masuk Siswa",
+        "Generate & Cetak Kode Akses Siswa",
         "Chat Langsung Terenkripsi dengan Siswa",
-        "Catatan Konseling Rahasia & Jadwal Mediasi",
-        "Eskalasi Kasus Kritis ke Dinas & UPTD PPA",
+        "Catatan Konseling Rahasia & Eskalasi Kasus",
       ],
     },
     {
       id: "admin",
-      name: "3. Admin Sekolah & Sistem",
-      subtitle: "Administrator Keamanan IT & Operator PPKSP",
+      name: "3. Admin Sistem (System Administrator)",
+      subtitle: "Pengelolaan Akun Pengguna, Keamanan & Pemeliharaan IT",
       icon: ShieldCheck,
-      badge: "Admin Sekolah",
+      badge: "Admin Sistem",
       badgeColor: "bg-slate-200 text-slate-800 border-slate-300",
       bgColor: "hover:border-slate-400 hover:bg-slate-50",
-      officialAgency: "Manajemen Sistem Sekolah",
+      officialAgency: "Administrator Sistem Informasi",
       features: [
-        "Batch Generator Token Siswa Semaphore",
-        "Manajemen Akun Guru BK & Hak Akses",
-        "Audit Trail Enkripsi ZKP (Zero PII)",
-        "Konfigurasi Satuan Pendidikan & Hotline",
+        "Manajemen Akun Pengguna & Hak Akses Petugas",
+        "Audit Trail & Keamanan Enkripsi ZKP (Zero PII)",
+        "Cadangan & Pemulihan Sistem (Backup/Restore)",
+        "Konfigurasi Sistem & Panduan SOP Hibah",
       ],
     },
     {
@@ -158,6 +158,7 @@ export const RoleSwitcherModal: React.FC<RoleSwitcherModalProps> = ({
             return (
               <div
                 key={r.id}
+                id={`role-card-${r.id}`}
                 onClick={() => {
                   onSelectRole(r.id);
                   onClose();

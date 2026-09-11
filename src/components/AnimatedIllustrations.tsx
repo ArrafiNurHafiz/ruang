@@ -596,7 +596,7 @@ export const PPKSPVectorArt: React.FC<IllustrationProps> = ({
           textAnchor="middle"
           fontFamily="sans-serif"
         >
-          🛡️ TPPK Sekolah
+          TPPK Sekolah
         </text>
       </g>
 
@@ -618,7 +618,7 @@ export const PPKSPVectorArt: React.FC<IllustrationProps> = ({
           textAnchor="middle"
           fontFamily="sans-serif"
         >
-          ✨ Perlindungan Sah
+          Perlindungan Sah
         </text>
       </g>
     </svg>
@@ -759,7 +759,7 @@ export const CyberSafetyVectorArt: React.FC<IllustrationProps> = ({
           fontWeight="bold"
           fontFamily="sans-serif"
         >
-          🚫 Terblokir Otomatis
+          Terblokir Otomatis
         </text>
       </g>
 
@@ -799,7 +799,7 @@ export const CyberSafetyVectorArt: React.FC<IllustrationProps> = ({
           fontWeight="bold"
           fontFamily="sans-serif"
         >
-          🔒 Metadata Terhapus
+          Metadata Terhapus
         </text>
       </g>
     </svg>
@@ -911,7 +911,7 @@ export const UpstanderVectorArt: React.FC<IllustrationProps> = ({
           textAnchor="middle"
           fontFamily="sans-serif"
         >
-          🌟 Upstander Solidaritas
+          Upstander Solidaritas
         </text>
       </g>
     </svg>
@@ -1011,7 +1011,7 @@ export const MentalHealthVectorArt: React.FC<IllustrationProps> = ({
           textAnchor="middle"
           fontFamily="sans-serif"
         >
-          💚 Ruang Konseling Nyaman
+          Ruang Konseling Nyaman
         </text>
       </g>
     </svg>

@@ -10,7 +10,12 @@ export type ReportCategory =
 export type ReportUrgency =
   "Rendah" | "Sedang" | "Tinggi" | "Kritis (Darurat Segera)";
 
-export type ReportStatus = "diterima" | "ditinjau" | "tindakan" | "ditutup";
+export type ReportStatus =
+  | "diterima"
+  | "ditinjau"
+  | "tindakan"
+  | "menunggu_siswa"
+  | "ditutup";
 
 export type ReporterRole =
   "Siswa (Korban)" | "Siswa (Saksi Mata)" | "Teman / Kerabat" | "Anonim Penuh";
@@ -34,6 +39,20 @@ export interface ChatMessage {
   attachment?: AttachmentItem;
 }
 
+export interface ResolutionEvidence {
+  type: string;
+  description: string;
+  fileUrl?: string;
+  submittedAt: string;
+  submittedBy?: string;
+}
+
+export interface StudentConfirmation {
+  confirmedAt: string;
+  isSatisfied: boolean;
+  studentFeedback?: string;
+}
+
 export interface ReportTicket {
   id: string; // e.g. TMG-2025-78A1
   category: ReportCategory;
@@ -50,6 +69,9 @@ export interface ReportTicket {
   updatedAt: string;
   hashZKP: string; // Zero-knowledge proof hash
   recoveryCode: string;
+  secretPin?: string; // Verifikasi kedua bagi siswa (antisipasi lupa kode tiket)
+  resolutionEvidence?: ResolutionEvidence; // Bukti dari sekolah (surat minta maaf, sanksi, dll)
+  studentConfirmation?: StudentConfirmation; // Konfirmasi selesai dari siswa pelapor
   messages: ChatMessage[];
   counselorNotes?: string[];
   assignedCounselor?: string;
@@ -69,10 +91,16 @@ export interface ReportTicket {
     | "Pendampingan Hukum"
     | "Selesai";
   assignedExpert?: string;
+  isStudentVerified?: boolean;
+  verificationMethod?: "token" | "sandi";
 }
 
 export type AppUserRole =
-  "siswa" | "guru" | "admin" | "dinas-pendidikan" | "dinas-perlindungan";
+  | "siswa"
+  | "guru"
+  | "admin"
+  | "dinas-pendidikan"
+  | "dinas-perlindungan";
 
 export interface UserAccount {
   id: string;
@@ -94,6 +122,8 @@ export interface SchoolToken {
   isActivated: boolean;
   isUsedForReport?: boolean;
   pinHash?: string;
+  passwordHash?: string;
+  hasPassword?: boolean;
   recoveryKey?: string;
   createdAt?: string;
   expiresAt?: string;
@@ -113,6 +143,7 @@ export interface StudentSession {
   authenticatedAt: string;
   expiresAt?: string;
   isVerified?: boolean;
+  verificationMethod?: "token" | "sandi";
 }
 
 export interface CounselorUser {
@@ -139,7 +170,9 @@ export interface SchoolRegionalData {
   id: string;
   schoolName: string;
   district: string;
-  level: "SMP" | "SMA" | "SMK";
+  province?: string;
+  npsn?: string;
+  level: "SD" | "SMP" | "SMA" | "SMK" | "SLB" | string;
   activeSatgasCount: number;
   totalReports: number;
   resolvedReports: number;
@@ -148,6 +181,7 @@ export interface SchoolRegionalData {
     "Patuh (A)" | "Cukup (B)" | "Perlu Perhatian (C)" | "Kritis (D)";
   principalName: string;
   lastActive: string;
+  hotlineNumber?: string;
 }
 
 export interface ProtectionIntervention {

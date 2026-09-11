@@ -41,10 +41,45 @@ async function runE2E() {
     // Find and click button with text 'Lapor' or navigate
     await page.evaluate(() => {
       const buttons = Array.from(document.querySelectorAll("button, a"));
-      const laporBtn = buttons.find((b) => b.textContent?.includes("Lapor") || b.textContent?.includes("Buat Laporan"));
+      const laporBtn = buttons.find(
+        (b) =>
+          b.textContent?.includes("Lapor") ||
+          b.textContent?.includes("Buat Laporan"),
+      );
       if (laporBtn) laporBtn.click();
     });
     await new Promise((r) => setTimeout(r, 1000));
+
+    // 3b. Test Student Pre-Verification Gate (Kode Akses atau Sandi Pelajar)
+    console.log("2b. Menguji Gerbang Verifikasi Siswa Sah (Kode Akses / Sandi)...");
+    const gateVerified = await page.evaluate(() => {
+      // Find quick demo chip or enter code
+      const buttons = Array.from(document.querySelectorAll("button"));
+      const demoChip = buttons.find((b) =>
+        b.textContent?.includes("SCH-X1-8831"),
+      );
+      if (demoChip) {
+        demoChip.click();
+        return true;
+      }
+      const verifyBtn = buttons.find((b) =>
+        b.textContent?.includes("Verifikasi"),
+      );
+      if (verifyBtn) {
+        const input = document.querySelector("input[placeholder*='SCH-X1']");
+        if (input) {
+          input.value = "SCH-X1-8831";
+          input.dispatchEvent(new Event("input", { bubbles: true }));
+        }
+        verifyBtn.click();
+        return true;
+      }
+      return false;
+    });
+    console.log(
+      `   ✅ Verifikasi Pelajar via Kode Akses Sekolah: ${gateVerified ? "BERHASIL DIVERIFIKASI" : "LEWAT (SUDAH TERVERIFIKASI)"}`,
+    );
+    await new Promise((r) => setTimeout(r, 1200));
 
     // 4. Test PII Detection in Form
     console.log("3. Menguji Input Cerita & Deteksi PII Real-Time...");

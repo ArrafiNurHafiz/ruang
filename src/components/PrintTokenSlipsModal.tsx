@@ -10,6 +10,7 @@ import {
   School,
   FileSpreadsheet,
   AlertTriangle,
+  Lock,
 } from "lucide-react";
 import { SchoolToken } from "../types";
 
@@ -209,9 +210,9 @@ export const PrintTokenSlipsModal: React.FC<PrintTokenSlipsModalProps> = ({
 
                 {/* Instructions */}
                 <div className="text-[9px] text-slate-500 space-y-1 mt-2 border-t border-slate-100 pt-2 leading-tight">
-                  <p>
-                    🔒 <strong>Petunjuk:</strong> Masukkan kode ini di portal
-                    pelaporan anonim. Jangan berikan ke orang luar.
+                  <p className="flex items-center gap-1">
+                    <Lock className="w-2.5 h-2.5 text-slate-700 shrink-0" />
+                    <span><strong>Petunjuk:</strong> Masukkan kode ini di portal pelaporan anonim. Jangan berikan ke orang luar.</span>
                   </p>
                   <p className="text-slate-400">
                     Sistem ZKP: Nama Anda tetap 100% anonim dan terlindungi.

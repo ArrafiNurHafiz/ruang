@@ -183,7 +183,7 @@ export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({
             </form>
 
             <div className="text-center text-[11px] text-slate-400 space-y-2">
-              <p>Belum punya akun? Hubungi admin sekolah untuk pengajuan.</p>
+              <p>Belum punya akun? Hubungi Admin Sistem untuk pengajuan akun petugas.</p>
             </div>
           </div>
         </div>

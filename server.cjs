@@ -213,6 +213,10 @@ app.post("/api/tickets", (req, res) => {
         .createHash("sha256")
         .update(story + recoveryCode + Date.now())
         .digest("hex")}`,
+    is_student_verified:
+      req.body.isStudentVerified ?? req.body.is_student_verified ?? true,
+    verification_method:
+      req.body.verificationMethod ?? req.body.verification_method ?? "token",
     ...req.body,
     id: crypto.randomUUID(),
     status: req.body.status || "diterima",
@@ -238,13 +242,153 @@ app.post("/api/tickets", (req, res) => {
     action: "Laporan Baru Dibuat",
     actor_role: "Siswa (Anonim)",
     actor_name: "Sistem",
-    details: `Laporan baru #${newTicket.ticket_number} kategori ${newTicket.category}`,
+    details: `Laporan baru #${newTicket.ticket_number || newTicket.id} kategori ${newTicket.category} (Terverifikasi: ${newTicket.verification_method || "siswa"})`,
     zkp_proof_status: "Tervalidasi",
     created_at: new Date().toISOString(),
   });
 
   saveDB(db);
   res.status(201).json(newTicket);
+});
+
+// Recover Ticket by Secret PIN (Second Verification)
+app.post("/api/tickets/recover-by-pin", (req, res) => {
+  const db = getDB();
+  const { category, secretPin } = req.body;
+  if (!secretPin) {
+    return res.status(400).json({ error: "PIN Rahasia wajib diisi" });
+  }
+
+  const cleanPin = String(secretPin).trim().toLowerCase();
+  const ticket = [...db.tickets].reverse().find((t) => {
+    const ticketPin = String(t.secret_pin || t.secretPin || "").trim().toLowerCase();
+    const matchesPin = ticketPin === cleanPin;
+    const matchesCat = !category || t.category === category;
+    return matchesPin && matchesCat;
+  });
+
+  if (!ticket) {
+    return res.status(404).json({ error: "Laporan dengan PIN tersebut tidak ditemukan" });
+  }
+
+  res.json(ticket);
+});
+
+// Submit Resolution Evidence by School Counselor
+app.post("/api/tickets/:id/resolution-evidence", (req, res) => {
+  const db = getDB();
+  const index = db.tickets.findIndex((t) => t.id === req.params.id);
+  if (index === -1) return res.status(404).json({ error: "Ticket not found" });
+
+  const { type, description, fileUrl, submittedBy } = req.body;
+  const resolutionEvidence = {
+    type: type || "Surat Permintaan Maaf & Mediasi",
+    description: description || "",
+    fileUrl: fileUrl || "",
+    submittedAt: new Date().toISOString(),
+    submittedBy: submittedBy || "Guru BK / Satgas PPKSP",
+  };
+
+  const systemMsg = {
+    id: crypto.randomUUID(),
+    sender_type: "system",
+    message_text: `[BUKTI TINDAK LANJUT SEKOLAH]: Pihak sekolah telah mengunggah bukti penanganan (${resolutionEvidence.type}): "${resolutionEvidence.description}". Menunggu konfirmasi penyelesaian dari siswa pelapor.`,
+    created_at: new Date().toISOString(),
+    is_encrypted: true,
+  };
+
+  db.tickets[index] = {
+    ...db.tickets[index],
+    status: "menunggu_siswa",
+    resolution_evidence: resolutionEvidence,
+    resolutionEvidence: resolutionEvidence,
+    action_summary: `Sekolah mengirimkan bukti tindak lanjut: ${resolutionEvidence.type}`,
+    actionSummary: `Sekolah mengirimkan bukti tindak lanjut: ${resolutionEvidence.type}`,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (!db.tickets[index].messages) db.tickets[index].messages = [];
+  db.tickets[index].messages.push(systemMsg);
+
+  // Audit Log
+  db.audit_logs.push({
+    id: crypto.randomUUID(),
+    school_id: db.tickets[index].school_id || "default-school",
+    action: "Bukti Tindak Lanjut Diunggah",
+    actor_role: "Guru BK",
+    actor_name: submittedBy || "Guru BK",
+    details: `Bukti ${resolutionEvidence.type} diunggah untuk tiket #${db.tickets[index].id}. Status: Menunggu Konfirmasi Siswa.`,
+    zkp_proof_status: "Tervalidasi",
+    created_at: new Date().toISOString(),
+  });
+
+  saveDB(db);
+  res.json(db.tickets[index]);
+});
+
+// Student Confirms Resolution or Escalates to Dinas
+app.post("/api/tickets/:id/student-confirm", (req, res) => {
+  const db = getDB();
+  const index = db.tickets.findIndex((t) => t.id === req.params.id);
+  if (index === -1) return res.status(404).json({ error: "Ticket not found" });
+
+  const { isSatisfied, feedback } = req.body;
+
+  if (isSatisfied) {
+    // Student satisfied: close case
+    db.tickets[index].status = "ditutup";
+    db.tickets[index].student_confirmation = {
+      confirmedAt: new Date().toISOString(),
+      isSatisfied: true,
+      studentFeedback: feedback || "Siswa mengonfirmasi masalah telah teratasi.",
+    };
+    db.tickets[index].studentConfirmation = db.tickets[index].student_confirmation;
+
+    const closeMsg = {
+      id: crypto.randomUUID(),
+      sender_type: "system",
+      message_text: `[KASUS RESMI SELESAI]: Siswa pelapor telah mengonfirmasi bahwa masalah telah diselesaikan dengan baik. Kasus resmi ditutup. Terima kasih telah berani bersuara.`,
+      created_at: new Date().toISOString(),
+      is_encrypted: true,
+    };
+    db.tickets[index].messages.push(closeMsg);
+  } else {
+    // Student not satisfied: escalate directly to Dinas
+    db.tickets[index].status = "tindakan";
+    db.tickets[index].is_escalated_to_dinas = true;
+    db.tickets[index].isEscalatedToDinas = true;
+    db.tickets[index].escalated_to = "Keduanya";
+    db.tickets[index].escalatedTo = "Keduanya";
+    db.tickets[index].escalation_reason =
+      feedback || "Siswa menyatakan penanganan sekolah belum tuntas / masih terjadi intimidasi.";
+    db.tickets[index].escalationReason = db.tickets[index].escalation_reason;
+
+    const escalateMsg = {
+      id: crypto.randomUUID(),
+      sender_type: "system",
+      message_text: `[PERINGATAN ESKALASI DINAS]: Siswa menyatakan masalah BELUM teratasi ("${feedback || "Perlu tindakan lebih lanjut"}"). Kasus ini langsung dieskalasi ke Dinas Pendidikan & Dinas Perlindungan (UPTD PPA) untuk supervisi luar.`,
+      created_at: new Date().toISOString(),
+      is_encrypted: true,
+    };
+    db.tickets[index].messages.push(escalateMsg);
+  }
+
+  db.tickets[index].updated_at = new Date().toISOString();
+  saveDB(db);
+  res.json(db.tickets[index]);
+});
+
+app.post("/api/tickets/verify-access", (req, res) => {
+  const db = getDB();
+  const code = (req.body.recoveryCode || req.body.ticketId || req.body.code || "").trim();
+  const ticket = db.tickets.find(
+    (t) =>
+      (t.recovery_code && t.recovery_code.toLowerCase() === code.toLowerCase()) ||
+      (t.id && t.id.toUpperCase() === code.toUpperCase()) ||
+      (t.ticket_number && t.ticket_number.toUpperCase() === code.toUpperCase()),
+  );
+  if (!ticket) return res.status(404).json({ error: "Ticket not found" });
+  res.json(ticket);
 });
 
 app.get("/api/tickets/:recoveryCode", (req, res) => {
@@ -329,27 +473,146 @@ app.post("/api/tokens/batch", (req, res) => {
 
 app.post("/api/tokens/verify", (req, res) => {
   const db = getDB();
-  const token = db.tokens.find((t) => t.token_code === req.body.tokenCode);
+  const clean = (req.body.tokenCode || "").trim().toUpperCase();
+  const token = db.tokens.find((t) => t.token_code?.toUpperCase() === clean);
   if (!token) return res.status(404).json({ error: "Token invalid" });
-  res.json(token);
+  const { pin_hash, password_hash, ...safeToken } = token;
+  res.json({
+    ...safeToken,
+    hasPassword: Boolean(password_hash || pin_hash),
+    recoveryKey: token.recovery_key,
+    recovery_key: token.recovery_key,
+  });
+});
+
+app.post("/api/tokens/verify-by-password", (req, res) => {
+  const db = getDB();
+  const raw = (req.body.password || req.body.pin || "").trim();
+  const tokenCode = (req.body.tokenCode || "").trim().toUpperCase();
+  const recoveryKey = (req.body.recoveryKey || "").trim().toLowerCase();
+
+  if (!raw) {
+    return res.status(400).json({ error: "Sandi harus diisi" });
+  }
+  const hashSha256 = crypto.createHash("sha256").update(raw).digest("hex");
+  const base64Hash = Buffer.from(raw).toString("base64");
+
+  // Case 1: 2-Step verification (Token Code + Password) - Always 100% unique
+  if (tokenCode) {
+    const token = db.tokens.find(
+      (t) => t.token_code?.toUpperCase() === tokenCode,
+    );
+    if (!token) {
+      return res.status(404).json({ error: "Kode akses sekolah tidak ditemukan." });
+    }
+    const isMatch =
+      token.password_hash === hashSha256 ||
+      token.pin_hash === hashSha256 ||
+      token.pin_hash === base64Hash;
+
+    if (!isMatch) {
+      return res.status(401).json({ error: "Sandi pribadi salah untuk kode akses ini." });
+    }
+    const { pin_hash, password_hash, ...safeToken } = token;
+    return res.json({
+      ...safeToken,
+      hasPassword: true,
+    });
+  }
+
+  // Case 2: Recovery Key + Password
+  if (recoveryKey) {
+    const token = db.tokens.find(
+      (t) => (t.recovery_key || "").toLowerCase() === recoveryKey,
+    );
+    if (!token) {
+      return res.status(404).json({ error: "Kunci pemulihan tidak ditemukan." });
+    }
+    const isMatch =
+      token.password_hash === hashSha256 ||
+      token.pin_hash === hashSha256 ||
+      token.pin_hash === base64Hash;
+
+    if (!isMatch) {
+      return res.status(401).json({ error: "Sandi pribadi salah." });
+    }
+    const { pin_hash, password_hash, ...safeToken } = token;
+    return res.json({
+      ...safeToken,
+      hasPassword: true,
+    });
+  }
+
+  // Case 3: Password only (with Collision Protection if 2+ tokens have the same password)
+  const matchingTokens = db.tokens.filter(
+    (t) =>
+      t.password_hash === hashSha256 ||
+      t.pin_hash === hashSha256 ||
+      t.pin_hash === base64Hash,
+  );
+
+  if (matchingTokens.length === 0) {
+    return res.status(404).json({
+      error:
+        "Sandi pelajar tidak cocok atau belum diaktivasi dengan kode akses sekolah.",
+    });
+  }
+
+  // Collision prevention: If 2 or more tokens share this password, fail-safe to protect student privacy
+  if (matchingTokens.length > 1) {
+    return res.status(409).json({
+      error:
+        "Terdeteksi beberapa kode akses dengan kata sandi yang sama. Demi privasi dan keamanan akun Anda, masukkan juga Kode Akses Sekolah atau Kunci Pemulihan Anda.",
+      message:
+        "Terdeteksi beberapa kode akses dengan kata sandi yang sama. Demi privasi dan keamanan akun Anda, masukkan juga Kode Akses Sekolah atau Kunci Pemulihan Anda.",
+      isCollision: true,
+      collision: true,
+    });
+  }
+
+  const { pin_hash, password_hash, ...safeToken } = matchingTokens[0];
+  res.json({
+    ...safeToken,
+    hasPassword: true,
+  });
 });
 
 app.post("/api/tokens/activate", (req, res) => {
   const db = getDB();
-  const index = db.tokens.findIndex((t) => t.token_code === req.body.tokenCode);
-  if (index === -1) return res.status(404).json({ error: "Token not found" });
+  const cleanCode = (req.body.tokenCode || "").trim().toUpperCase();
+  const rawPassword = (req.body.password || req.body.pin || "").trim();
+  const index = db.tokens.findIndex(
+    (t) => t.token_code?.toUpperCase() === cleanCode,
+  );
+  if (index === -1)
+    return res.status(404).json({ error: "Kode akses sekolah tidak ditemukan" });
+
+  const passwordHash = rawPassword
+    ? crypto.createHash("sha256").update(rawPassword).digest("hex")
+    : req.body.passwordHash || req.body.pinHash;
+
+  const recoveryKey =
+    db.tokens[index].recovery_key ||
+    `kunci-${Math.random().toString(36).substring(2, 6)}-${Math.floor(1000 + Math.random() * 9000)}`;
 
   db.tokens[index] = {
     ...db.tokens[index],
     is_activated: true,
     status: "Aktif",
-    pin_hash: req.body.pinHash,
+    password_hash: passwordHash,
+    pin_hash: passwordHash,
+    recovery_key: recoveryKey,
     activated_at: new Date().toISOString(),
     usage_count: (db.tokens[index].usage_count || 0) + 1,
   };
 
   saveDB(db);
-  res.json(db.tokens[index]);
+  const { pin_hash, password_hash, ...safeToken } = db.tokens[index];
+  res.json({
+    ...safeToken,
+    hasPassword: true,
+    recoveryKey,
+  });
 });
 
 app.put("/api/tokens/:id/status", (req, res) => {

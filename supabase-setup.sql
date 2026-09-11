@@ -39,11 +39,17 @@ create table if not exists tokens (
   batch_id text,
   is_activated boolean default false,
   is_used_for_report boolean default false,
+  password_hash text,
   pin_hash text,
+  recovery_key text,
   status text default 'Tersedia',
+  usage_count integer default 0,
+  max_usage integer default 1,
   notes text,
   created_at timestamptz default now(),
-  activated_at timestamptz
+  activated_at timestamptz,
+  last_used_at timestamptz,
+  expires_at timestamptz
 );
 
 -- Tickets
@@ -61,7 +67,16 @@ create table if not exists tickets (
   detected_pii text[] default '{}',
   status text default 'diterima',
   recovery_code text unique,
+  secret_pin text,
   action_summary text,
+  resolution_evidence jsonb,
+  student_confirmation jsonb,
+  is_escalated_to_dinas boolean default false,
+  escalated_to text,
+  escalation_reason text,
+  protection_stage text,
+  assigned_expert text,
+  assigned_counselor_id text,
   hash_zkp text,
   is_kiosk_submission boolean default false,
   created_at timestamptz default now(),
@@ -221,6 +236,7 @@ alter table news_articles enable row level security;
 alter table help_articles enable row level security;
 alter table faq_items enable row level security;
 alter table regional_schools enable row level security;
+alter table supervision_notices enable row level security;
 
 -- Policies: allow all for anon (demo)
 create policy "Allow all" on schools for all using (true) with check (true);
@@ -237,10 +253,35 @@ create policy "Allow all" on news_articles for all using (true) with check (true
 create policy "Allow all" on help_articles for all using (true) with check (true);
 create policy "Allow all" on faq_items for all using (true) with check (true);
 create policy "Allow all" on regional_schools for all using (true) with check (true);
+create policy "Allow all" on supervision_notices for all using (true) with check (true);
 
 -- Enable Realtime for live chat
 alter publication supabase_realtime add table ticket_messages;
 alter publication supabase_realtime add table tickets;
 
--- Add hash_zkp column if not exists (for existing databases)
+-- Migration: Add columns if table was created in an earlier version
+alter table tokens add column if not exists password_hash text;
+alter table tokens add column if not exists pin_hash text;
+alter table tokens add column if not exists recovery_key text;
+alter table tokens add column if not exists usage_count integer default 0;
+alter table tokens add column if not exists max_usage integer default 1;
+alter table tokens add column if not exists last_used_at timestamptz;
+alter table tokens add column if not exists expires_at timestamptz;
+
 alter table tickets add column if not exists hash_zkp text;
+alter table tickets add column if not exists secret_pin text;
+alter table tickets add column if not exists resolution_evidence jsonb;
+alter table tickets add column if not exists student_confirmation jsonb;
+alter table tickets add column if not exists is_escalated_to_dinas boolean default false;
+alter table tickets add column if not exists escalated_to text;
+alter table tickets add column if not exists escalation_reason text;
+alter table tickets add column if not exists protection_stage text;
+alter table tickets add column if not exists assigned_expert text;
+alter table tickets add column if not exists assigned_counselor_id text;
+
+-- Performance Indexes
+create index if not exists idx_tokens_token_code on tokens(token_code);
+create index if not exists idx_tokens_recovery_key on tokens(recovery_key);
+create index if not exists idx_tokens_password_hash on tokens(password_hash);
+create index if not exists idx_tickets_recovery_code on tickets(recovery_code);
+create index if not exists idx_tickets_secret_pin on tickets(secret_pin);

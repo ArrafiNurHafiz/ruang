@@ -78,7 +78,12 @@ const DEFAULT_SCHOOL_PROFILE: SchoolProfile = {
   satgasSkDate: "2024-08-17",
   updatedAt: new Date().toISOString(),
 };
-import { MOCK_REGIONAL_SCHOOLS, MOCK_COUNSELOR } from "./data/mockData";
+import {
+  MOCK_REGIONAL_SCHOOLS,
+  MOCK_COUNSELOR,
+  MOCK_USERS,
+  INITIAL_TOKENS,
+} from "./data/mockData";
 import { api } from "./lib/api";
 import { supabase, isSupabaseEnabled } from "./lib/supabase";
 
@@ -151,8 +156,12 @@ export default function App() {
         const get = <T,>(r: PromiseSettledResult<T>, fallback: T): T =>
           r.status === "fulfilled" ? r.value : fallback;
 
-        setTickets(get(results[0], []));
-        setTokensList(get(results[1], []));
+        const fetchedTokens = get(results[1], []);
+        setTokensList(
+          fetchedTokens && fetchedTokens.length > 0
+            ? fetchedTokens
+            : INITIAL_TOKENS,
+        );
         setUsersList(get(results[2], []));
         setAuditLogs(get(results[3], []));
         setRegionalSchools(get(results[4], []));
@@ -333,14 +342,18 @@ export default function App() {
   // Switch Role Handler
   const handleSelectRole = (role: AppUserRole) => {
     setActiveRole(role);
-    const matchedUser = usersList.find((u) => u.role === role) || null;
+    const matchedUser =
+      usersList.find((u) => u.role === role) ||
+      (MOCK_USERS[role] as any) ||
+      null;
     setCurrentUserAccount(matchedUser);
 
     if (role === "siswa") {
       setCurrentTab("beranda");
+      setLoggedCounselor(null);
     } else if (role === "guru") {
       setCurrentTab("admin");
-      if (!loggedCounselor) setLoggedCounselor(MOCK_COUNSELOR);
+      setLoggedCounselor(MOCK_COUNSELOR);
     } else if (role === "admin") {
       setCurrentTab("admin-system");
     } else if (role === "dinas-pendidikan") {
@@ -348,7 +361,12 @@ export default function App() {
     } else if (role === "dinas-perlindungan") {
       setCurrentTab("dinas-pppa");
     }
+    setIsRoleSwitcherOpen(false);
   };
+
+  useEffect(() => {
+    (window as any).__switchRole = handleSelectRole;
+  }, [handleSelectRole]);
 
   // Handlers for Ticket Actions
   const handleReportSubmitted = async (newTicket: ReportTicket) => {
@@ -492,6 +510,38 @@ export default function App() {
     }
   };
 
+  const handleSubmitResolutionEvidence = async (
+    ticketId: string,
+    evidence: {
+      type: string;
+      description: string;
+      fileUrl?: string;
+      submittedBy?: string;
+    },
+  ) => {
+    try {
+      const updated = await api.submitResolutionEvidence(ticketId, evidence);
+      setTickets((prev) =>
+        prev.map((t) =>
+          t.id === ticketId
+            ? {
+                ...t,
+                ...updated,
+                status: "menunggu_siswa",
+                resolutionEvidence: updated.resolutionEvidence || updated.resolution_evidence,
+                updatedAt: new Date().toISOString(),
+              }
+            : t,
+        ),
+      );
+      const logs = await api.getAuditLogs();
+      setAuditLogs(logs);
+    } catch (err) {
+      console.error("Failed to submit resolution evidence:", err);
+      throw err;
+    }
+  };
+
   const handleAddCounselorNote = async (ticketId: string, note: string) => {
     try {
       await api.addCounselorNote(ticketId, note);
@@ -516,13 +566,18 @@ export default function App() {
     setActivatedTokens((prev) => [token, ...prev]);
   };
 
-  const handleStudentTokenVerified = (token: SchoolToken) => {
+  const handleStudentTokenVerified = (
+    token: SchoolToken,
+    method: "token" | "sandi" = "token",
+  ) => {
     const session: StudentSession = {
       tokenCode: token.tokenCode,
-      schoolName: token.schoolName,
-      studentLevel: token.studentLevel,
+      schoolName: token.schoolName || "SMA Negeri 1 Jakarta",
+      studentLevel: token.studentLevel || "Kelas X",
       authenticatedAt: new Date().toISOString(),
       expiresAt: token.expiresAt,
+      isVerified: true,
+      verificationMethod: method,
     };
     setStudentSession(session);
 
@@ -857,6 +912,9 @@ export default function App() {
         onCounselorLogout={() => setLoggedCounselor(null)}
         studentSession={studentSession}
         onOpenStudentGate={() => setIsStudentGateModalOpen(true)}
+        activeRole={activeRole}
+        onOpenRoleSwitcher={() => setIsRoleSwitcherOpen(true)}
+        onLogoutRole={() => handleSelectRole("siswa")}
       />
 
       {/* Kiosk Mode 3-minute Countdown & Action Bar */}
@@ -907,6 +965,7 @@ export default function App() {
             isKioskMode={isKioskActive}
             studentSession={studentSession}
             tokens={tokensList}
+            regionalSchools={regionalSchools}
             onVerifyStudentToken={handleStudentTokenVerified}
             onOpenTokenGate={() => setIsStudentGateModalOpen(true)}
             onLogoutStudentSession={() => setStudentSession(null)}
@@ -941,7 +1000,7 @@ export default function App() {
           />
         )}
 
-        {/* ROLE 2: GURU BK & SATGAS PPKSP VIEW */}
+        {/* ROLE 2: GURU BK & SATGAS PPKSP (ADMIN SEKOLAH) VIEW */}
         {currentTab === "admin" && (
           <AdminCounselorDashboard
             tickets={tickets}
@@ -958,18 +1017,19 @@ export default function App() {
             onAddCounselorNote={handleAddCounselorNote}
             onCounselorReply={handleCounselorReply}
             onEscalateTicket={handleEscalateTicket}
+            onSubmitResolutionEvidence={handleSubmitResolutionEvidence}
             onOpenRoleSwitcher={() => setIsRoleSwitcherOpen(true)}
             schoolProfile={schoolProfile}
-          />
-        )}
-
-        {/* ROLE 3: ADMIN SEKOLAH & SISTEM VIEW */}
-        {currentTab === "admin-system" && (
-          <AdminDashboard
             tokens={tokensList}
             onGenerateBatchTokens={handleGenerateBatchTokens}
             onToggleTokenStatus={handleToggleTokenStatus}
             onDeleteToken={handleDeleteToken}
+          />
+        )}
+
+        {/* ROLE 3: ADMIN SISTEM (SYSTEM ADMINISTRATOR) VIEW */}
+        {currentTab === "admin-system" && (
+          <AdminDashboard
             users={usersList}
             auditLogs={auditLogs}
             onCreateUser={handleCreateUser}
@@ -981,6 +1041,7 @@ export default function App() {
             onUpdateSchoolProfile={handleUpdateSchoolProfile}
             onExportBackup={handleExportBackup}
             onImportBackup={handleImportBackup}
+            regionalSchools={regionalSchools}
           />
         )}
 
@@ -998,6 +1059,7 @@ export default function App() {
         {currentTab === "dinas-pppa" && (
           <DinasPerlindunganDashboard
             interventions={interventions}
+            tickets={tickets}
             onUpdateInterventionStage={handleUpdateInterventionStage}
             onAssignExpert={handleAssignExpert}
             onLogout={() => handleSelectRole("siswa")}
@@ -1047,30 +1109,30 @@ export default function App() {
         {currentTab === "kontak" && <ContactPage />}
       </main>
 
-      {/* Floating Emergency Escape Quick Action for Mobile/Bottom */}
-      <div className="fixed bottom-20 sm:bottom-5 right-4 sm:right-5 z-40 flex flex-col gap-2">
-        <button
-          onClick={handleQuickExit}
-          title="Keluar Cepat: Bersihkan jejak seketika (ESC 2x)"
-          className="flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 rounded-full bg-red-600 hover:bg-red-700 text-white font-bold text-xs shadow-xl shadow-red-600/30 transition-all hover:scale-105 active:scale-95 border border-red-500/50 cursor-pointer"
-        >
-          <LogOut className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          <span className="hidden xs:inline">KELUAR CEPAT</span>
-          <span className="xs:hidden">KELUAR</span>
-          <kbd className="text-[10px] bg-red-800 text-red-100 px-1 py-0.5 rounded font-mono hidden sm:inline">
-            ESC
-          </kbd>
-        </button>
-      </div>
+      {/* Floating Emergency Escape Quick Action for Student/Victim Panic Escape */}
+      {activeRole === "siswa" && (
+        <div className="fixed bottom-16 sm:bottom-4 right-3 sm:right-4 z-40">
+          <button
+            onClick={handleQuickExit}
+            title="Keluar Cepat: Bersihkan jejak seketika (ESC 2x)"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-slate-900/90 hover:bg-rose-600 text-white font-medium text-xs shadow-lg backdrop-blur-xs transition-all hover:scale-105 active:scale-95 border border-white/10 cursor-pointer"
+          >
+            <LogOut className="w-3.5 h-3.5 text-rose-400" />
+            <span className="hidden xs:inline">Keluar Cepat</span>
+            <kbd className="text-[9px] bg-slate-800 text-slate-300 px-1 py-0.5 rounded font-mono hidden sm:inline">
+              ESC
+            </kbd>
+          </button>
+        </div>
+      )}
 
       {/* Mobile Bottom Navigation Bar */}
-      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 py-1.5 flex items-center justify-around shadow-lg">
+      <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 py-1 flex items-center justify-around shadow-md">
         {[
           { id: "beranda", label: "Beranda", icon: Home },
           { id: "lapor", label: "Lapor", icon: Send },
           { id: "status", label: "Status", icon: Search },
           { id: "bantuan", label: "Bantuan", icon: HelpCircle },
-          { id: "kios", label: "Kios", icon: Monitor },
         ].map((item) => {
           const Icon = item.icon;
           const isActive = currentTab === item.id;
@@ -1078,10 +1140,10 @@ export default function App() {
             <button
               key={item.id}
               onClick={() => setCurrentTab(item.id)}
-              className={`flex flex-col items-center justify-center py-1 px-2.5 rounded-xl transition-all cursor-pointer ${
+              className={`flex flex-col items-center justify-center py-1 px-3 rounded-xl transition-all cursor-pointer ${
                 isActive
-                  ? "text-blue-600 font-extrabold scale-105"
-                  : "text-slate-500 hover:text-slate-900 font-medium"
+                  ? "text-blue-600 font-bold"
+                  : "text-slate-500 hover:text-slate-800 font-medium"
               }`}
             >
               <Icon
@@ -1103,9 +1165,18 @@ export default function App() {
             <span className="font-medium text-slate-500">TAMENG</span>
             <span>— Ruang Aman Pelaporan & Konseling Siswa</span>
           </div>
-          <span>
-            Platform ini dihibahkan untuk satuan pendidikan Indonesia.
-          </span>
+          <div className="flex items-center gap-3">
+            <button
+              id="btn-footer-role-switcher"
+              onClick={() => setIsRoleSwitcherOpen(true)}
+              className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold transition cursor-pointer"
+            >
+              Ganti Peran / Portal
+            </button>
+            <span>
+              Platform ini dihibahkan untuk satuan pendidikan Indonesia.
+            </span>
+          </div>
         </div>
       </footer>
 
@@ -1135,15 +1206,8 @@ export default function App() {
         isOpen={isStudentGateModalOpen}
         onClose={() => setIsStudentGateModalOpen(false)}
         tokens={tokensList}
-        onVerifyAndLogin={(token) => {
-          const session: StudentSession = {
-            tokenCode: token.tokenCode,
-            schoolName: token.schoolName || "SMA Negeri 1 Jakarta",
-            studentLevel: token.studentLevel,
-            authenticatedAt: new Date().toISOString(),
-            expiresAt: token.expiresAt,
-          };
-          setStudentSession(session);
+        onVerifyAndLogin={(token, method: "token" | "sandi" = "token") => {
+          handleStudentTokenVerified(token, method);
           setIsStudentGateModalOpen(false);
           setCurrentTab("lapor");
         }}

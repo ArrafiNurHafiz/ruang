@@ -2,25 +2,20 @@ import React, { useState, useRef, useEffect } from "react";
 import {
   ShieldCheck,
   Send,
-  Sparkles,
   AlertTriangle,
   UploadCloud,
   FileText,
-  Image as ImageIcon,
   Mic,
-  Square,
   Trash2,
   CheckCircle2,
   Lock,
   Copy,
   ArrowRight,
   ArrowLeft,
-  Download,
   Info,
   MessageSquare,
+  Eye,
   EyeOff,
-  Cpu,
-  RefreshCw,
   Clock,
   MapPin,
   HelpCircle,
@@ -29,13 +24,17 @@ import {
   Heart,
   DollarSign,
   AlertOctagon,
-  AlertCircle,
-  Zap,
   Check,
   KeyRound,
+  Sparkles,
+  Download,
+  Building2,
+  School,
+  Search,
+  ChevronDown,
+  ChevronUp,
 } from "lucide-react";
 import confetti from "canvas-confetti";
-import { HeroSafetyIllustration } from "./AnimatedIllustrations";
 import {
   ReportCategory,
   ReporterRole,
@@ -44,7 +43,9 @@ import {
   AttachmentItem,
   StudentSession,
   SchoolToken,
+  SchoolRegionalData,
 } from "../types";
+import { MOCK_REGIONAL_SCHOOLS, INITIAL_TOKENS } from "../data/mockData";
 import {
   generateTicketId,
   generateRecoveryKey,
@@ -62,104 +63,20 @@ interface AnonymousReportFormProps {
   isKioskMode?: boolean;
   studentSession?: StudentSession | null;
   tokens?: SchoolToken[];
+  regionalSchools?: SchoolRegionalData[];
   onVerifyStudentToken?: (token: SchoolToken) => void;
   onOpenTokenGate?: () => void;
   onLogoutStudentSession?: () => void;
 }
 
-const CATEGORIES: ReportCategory[] = [
-  "Perundungan / Bullying",
-  "Pelecehan Seksual",
-  "Kekerasan Fisik",
-  "Pemerasan / Pungli",
-  "Cyberbullying / Teror Online",
-  "Kesehatan Mental / Krisis Diri",
-  "Lainnya",
-];
-
-const CATEGORY_DETAILS: Record<
-  ReportCategory,
-  { icon: any; color: string; bg: string; badge: string; desc: string }
-> = {
-  "Perundungan / Bullying": {
-    icon: ShieldAlert,
-    color: "text-amber-600",
-    bg: "bg-amber-50 border-amber-200 text-amber-900",
-    badge: "Verbal / Fisik",
-    desc: "Ejekan berulang, pengucilan, ancaman, atau intimidasi antarsiswa",
-  },
-  "Pelecehan Seksual": {
-    icon: AlertTriangle,
-    color: "text-rose-600",
-    bg: "bg-rose-50 border-rose-200 text-rose-900",
-    badge: "Prioritas Satgas",
-    desc: "Sentuhan tanpa izin, komentar tidak senonoh, atau pemaksaan",
-  },
-  "Kekerasan Fisik": {
-    icon: AlertOctagon,
-    color: "text-red-600",
-    bg: "bg-red-50 border-red-200 text-red-900",
-    badge: "Kritis",
-    desc: "Pemukulan, perkelahian sepihak, dorongan keras, atau perusakan barang",
-  },
-  "Pemerasan / Pungli": {
-    icon: DollarSign,
-    color: "text-orange-600",
-    bg: "bg-orange-50 border-orange-200 text-orange-900",
-    badge: "Finansial",
-    desc: "Pemaksaan meminta uang jajan, barang berharga, atau tugas sekolah",
-  },
-  "Cyberbullying / Teror Online": {
-    icon: Smartphone,
-    color: "text-indigo-600",
-    bg: "bg-indigo-50 border-indigo-200 text-indigo-900",
-    badge: "Digital",
-    desc: "Penyebaran foto/video di medsos, grup WhatsApp, atau akun menfess",
-  },
-  "Kesehatan Mental / Krisis Diri": {
-    icon: Heart,
-    color: "text-emerald-600",
-    bg: "bg-emerald-50 border-emerald-200 text-emerald-900",
-    badge: "Konseling BK",
-    desc: "Stres berlebih, depresi, isolasi sosial, atau butuh teman curhat",
-  },
-  Lainnya: {
-    icon: HelpCircle,
-    color: "text-slate-600",
-    bg: "bg-slate-50 border-slate-200 text-slate-900",
-    badge: "Umum",
-    desc: "Laporan insiden lain di lingkungan sekolah yang butuh perhatian guru",
-  },
-};
-
-const ROLES: ReporterRole[] = [
-  "Siswa (Korban)",
-  "Siswa (Saksi Mata)",
-  "Teman / Kerabat",
-  "Anonim Penuh",
-];
-
-const URGENCIES: { level: ReportUrgency; desc: string; color: string }[] = [
-  {
-    level: "Rendah",
-    desc: "Situasi tidak mendesak, butuh saran/konseling bertahap",
-    color: "border-slate-300 text-slate-700 bg-slate-50",
-  },
-  {
-    level: "Sedang",
-    desc: "Kejadian berulang atau mengganggu kegiatan belajar",
-    color: "border-blue-300 text-blue-800 bg-blue-50",
-  },
-  {
-    level: "Tinggi",
-    desc: "Ancaman aktif, intimidasi fisik/psikis berat",
-    color: "border-amber-300 text-amber-800 bg-amber-50",
-  },
-  {
-    level: "Kritis (Darurat Segera)",
-    desc: "Bahaya cedera fisik, luka, atau ancaman keselamatan jiwa",
-    color: "border-rose-400 text-rose-900 bg-rose-50 font-bold",
-  },
+const CATEGORIES: { id: ReportCategory; label: string; icon: any }[] = [
+  { id: "Perundungan / Bullying", label: "Perundungan / Bullying", icon: ShieldAlert },
+  { id: "Pelecehan Seksual", label: "Pelecehan Seksual", icon: AlertTriangle },
+  { id: "Kekerasan Fisik", label: "Kekerasan Fisik", icon: AlertOctagon },
+  { id: "Cyberbullying / Teror Online", label: "Cyberbullying / Teror Medsos", icon: Smartphone },
+  { id: "Pemerasan / Pungli", label: "Pemerasan / Pemalakan", icon: DollarSign },
+  { id: "Kesehatan Mental / Krisis Diri", label: "Krisis Mental & Teman Curhat", icon: Heart },
+  { id: "Lainnya", label: "Masalah Lainnya", icon: HelpCircle },
 ];
 
 export const AnonymousReportForm: React.FC<AnonymousReportFormProps> = ({
@@ -168,77 +85,123 @@ export const AnonymousReportForm: React.FC<AnonymousReportFormProps> = ({
   isKioskMode = false,
   studentSession = null,
   tokens = [],
+  regionalSchools = [],
   onVerifyStudentToken,
-  onOpenTokenGate,
-  onLogoutStudentSession,
 }) => {
-  const [currentStep, setCurrentStep] = useState<number>(1);
+  const [currentStep, setCurrentStep] = useState<1 | 2>(1);
 
-  // Anti-infiltrator inline code state
-  const [inlineCode, setInlineCode] = useState<string>("");
-  const [inlineCodeError, setInlineCodeError] = useState<string>("");
-  const [inlineCodeSuccess, setInlineCodeSuccess] = useState<string>("");
-  const [tokenGateError, setTokenGateError] = useState<string>("");
-
-  // Step 1: Identitas & Ruang Lingkup
-  const [category, setCategory] = useState<ReportCategory>(
-    "Perundungan / Bullying",
+  // Cakupan Nasional: Pilihan Satuan Pendidikan Asal Pelapor
+  const availableSchools =
+    regionalSchools && regionalSchools.length > 0
+      ? regionalSchools
+      : MOCK_REGIONAL_SCHOOLS;
+  const [selectedSchool, setSelectedSchool] = useState<string>(
+    studentSession?.schoolName || "SMA Negeri 1 Jakarta",
   );
-  const [reporterRole, setReporterRole] =
-    useState<ReporterRole>("Siswa (Korban)");
-  const [location, setLocation] = useState<string>("");
-  const [incidentDate, setIncidentDate] = useState<string>(
-    "Hari ini / Baru saja",
-  );
+  const [customSchoolName, setCustomSchoolName] = useState<string>("");
+  const [customSchoolProvince, setCustomSchoolProvince] = useState<string>("");
 
-  const handleInlineVerify = async (codeToTest: string) => {
-    const clean = codeToTest.trim().toUpperCase();
-    if (!clean) {
-      setInlineCodeError("Harap masukkan kode akses resmi dari sekolah.");
-      return;
+  useEffect(() => {
+    if (studentSession?.schoolName) {
+      setSelectedSchool(studentSession.schoolName);
     }
+  }, [studentSession]);
 
-    try {
-      const found = await api.verifyToken(clean);
-      if (found.status === "Kedaluwarsa") {
-        setInlineCodeError("Kode ini telah kedaluwarsa / dinonaktifkan.");
-        return;
-      }
-      setInlineCodeError("");
-      setInlineCodeSuccess(`Kode ${clean} terverifikasi!`);
-      if (onVerifyStudentToken) {
-        onVerifyStudentToken(found);
-      }
-    } catch (err) {
-      setInlineCodeError("Kode tidak terdaftar di database sekolah.");
-    }
-  };
+  const activeSchoolDisplayName =
+    studentSession?.schoolName ||
+    (selectedSchool === "other"
+      ? customSchoolName.trim()
+        ? `${customSchoolName.trim()}${
+            customSchoolProvince.trim()
+              ? ` (${customSchoolProvince.trim()})`
+              : ""
+          }`
+        : "Satuan Pendidikan Terdaftar"
+      : selectedSchool);
 
-  // Step 2: Kronologi & PII Deteksi
+  // Form Fields
+  const [category, setCategory] = useState<ReportCategory>("Perundungan / Bullying");
+  const [reporterRole, setReporterRole] = useState<ReporterRole>("Siswa (Korban)");
   const [story, setStory] = useState<string>("");
+  const [location, setLocation] = useState<string>("");
+  const [incidentDate, setIncidentDate] = useState<string>("Hari ini / Baru saja");
   const [urgency, setUrgency] = useState<ReportUrgency>("Sedang");
-  const [detectedEntities, setDetectedEntities] = useState<DetectedEntity[]>(
-    [],
-  );
-  const [isRedacted, setIsRedacted] = useState<boolean>(false);
+  const [showOptionalDetails, setShowOptionalDetails] = useState<boolean>(false);
 
-  // Step 3: Bukti Lampiran
+  // Student Token Code (Optional)
+  const [tokenInput, setTokenInput] = useState<string>("");
+  const [tokenStatusMessage, setTokenStatusMessage] = useState<string>("");
+
+  // Student Pre-Verification Gate State: Pilih Kode Akses ATAU Sandi Pribadi
+  const [isStudentVerified, setIsStudentVerified] = useState<boolean>(
+    Boolean(studentSession?.isVerified || studentSession?.tokenCode),
+  );
+  const [activeGateTab, setActiveGateTab] = useState<"token" | "sandi">("token");
+  const [verificationMethod, setVerificationMethod] = useState<"token" | "sandi">(
+    studentSession?.verificationMethod || "token",
+  );
+
+  // Input verifikasi kode akses
+  const [tokenGateInput, setTokenGateInput] = useState<string>("");
+  const [tokenGateError, setTokenGateError] = useState<string>("");
+  const [isVerifyingToken, setIsVerifyingToken] = useState<boolean>(false);
+
+  // Input verifikasi sandi pribadi
+  const [passwordInput, setPasswordInput] = useState<string>("");
+  const [passwordError, setPasswordError] = useState<string>("");
+  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [isVerifyingPassword, setIsVerifyingPassword] = useState<boolean>(false);
+
+  // Flow Buat Sandi Baru dari Kode Akses
+  const [isCreatingPassword, setIsCreatingPassword] = useState<boolean>(false);
+  const [newPasswordTokenCode, setNewPasswordTokenCode] = useState<string>("");
+  const [newPasswordValue, setNewPasswordValue] = useState<string>("");
+  const [newPasswordConfirm, setNewPasswordConfirm] = useState<string>("");
+  const [showNewPassword, setShowNewPassword] = useState<boolean>(false);
+  const [createPasswordError, setCreatePasswordError] = useState<string>("");
+  const [createPasswordSuccess, setCreatePasswordSuccess] = useState<boolean>(false);
+  const [isSubmittingNewPassword, setIsSubmittingNewPassword] = useState<boolean>(false);
+
+  // Verifikasi 2-Langkah: Wajib Buat/Masukkan Sandi Sebelum Bisa Melapor
+  const [gateFlowStep, setGateFlowStep] = useState<
+    "step1" | "step2_create_password" | "step2_enter_password"
+  >("step1");
+  const [pendingVerifiedToken, setPendingVerifiedToken] = useState<SchoolToken | null>(null);
+
+  // Recovery Key & Collision State (Tab 2: Lupa Kode Akses)
+  const [recoveryKeyInput, setRecoveryKeyInput] = useState<string>("");
+  const [hasCollision, setHasCollision] = useState<boolean>(false);
+  const [collisionCodeInput, setCollisionCodeInput] = useState<string>("");
+  const [newlyCreatedRecoveryKey, setNewlyCreatedRecoveryKey] = useState<string>("");
+
+  useEffect(() => {
+    if (studentSession?.isVerified || studentSession?.tokenCode) {
+      setIsStudentVerified(true);
+      if (studentSession.verificationMethod) {
+        setVerificationMethod(studentSession.verificationMethod);
+      }
+    }
+  }, [studentSession]);
+
+  // Second Verification: Secret PIN or Memorable Secret Keyword
+  const [secretPin, setSecretPin] = useState<string>("");
+  const [downloadReceiptDone, setDownloadReceiptDone] = useState<boolean>(false);
+
+  // Attachments
   const [attachments, setAttachments] = useState<AttachmentItem[]>([]);
   const [isRecording, setIsRecording] = useState<boolean>(false);
   const [recordingSeconds, setRecordingSeconds] = useState<number>(0);
   const recordingTimerRef = useRef<any>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Step 4: Submission State & Crypto Proof
+  // PII & Crypto
+  const [detectedEntities, setDetectedEntities] = useState<DetectedEntity[]>([]);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-  const [zkpHash, setZkpHash] = useState<string>("");
-  const [powProgress, setPowProgress] = useState<number>(0);
-  const [submittedTicket, setSubmittedTicket] = useState<ReportTicket | null>(
-    null,
-  );
+  const [submittedTicket, setSubmittedTicket] = useState<ReportTicket | null>(null);
+  const [copiedTicketId, setCopiedTicketId] = useState<boolean>(false);
   const [copiedKey, setCopiedKey] = useState<boolean>(false);
 
-  // Live PII Detection on story changes
+  // Real-time PII detection
   useEffect(() => {
     if (story) {
       const detected = detectPII(story);
@@ -248,7 +211,7 @@ export const AnonymousReportForm: React.FC<AnonymousReportFormProps> = ({
     }
   }, [story]);
 
-  // Audio recording timer simulation
+  // Voice recording timer
   useEffect(() => {
     if (isRecording) {
       recordingTimerRef.current = setInterval(() => {
@@ -263,30 +226,13 @@ export const AnonymousReportForm: React.FC<AnonymousReportFormProps> = ({
     };
   }, [isRecording]);
 
-  const handleApplyRedaction = () => {
-    const redacted = autoRedactText(story, detectedEntities);
-    setStory(redacted);
-    setIsRedacted(true);
-    setDetectedEntities([]);
-  };
-
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files || files.length === 0) return;
 
-    const currentTotalSize = attachments.reduce(
-      (acc, curr) => acc + curr.size,
-      0,
-    );
     const newItems: AttachmentItem[] = [];
-
     for (let i = 0; i < files.length; i++) {
       const file = files[i];
-      if (currentTotalSize + file.size > 25 * 1024 * 1024) {
-        alert("Total ukuran lampiran melebihi batas maksimal 25 MB.");
-        break;
-      }
-
       const isImg = file.type.startsWith("image/");
       const isAud = file.type.startsWith("audio/");
 
@@ -309,10 +255,9 @@ export const AnonymousReportForm: React.FC<AnonymousReportFormProps> = ({
       setIsRecording(true);
     } else {
       setIsRecording(false);
-      // create mock voice memo attachment
       const voiceAttachment: AttachmentItem = {
         id: `att-voice-${Date.now()}`,
-        name: `rekaman_suara_aman_${new Date().toLocaleTimeString().replace(/:/g, "-")}.mp3`,
+        name: `rekaman_suara_${new Date().toLocaleTimeString().replace(/:/g, "-")}.mp3`,
         size: Math.max(120000, recordingSeconds * 32000),
         type: "audio/mpeg",
         isAudio: true,
@@ -321,1087 +266,1390 @@ export const AnonymousReportForm: React.FC<AnonymousReportFormProps> = ({
     }
   };
 
-  const handleRemoveAttachment = (id: string) => {
-    setAttachments((prev) => prev.filter((item) => item.id !== id));
+  const handleVerifyTokenOptional = async () => {
+    const clean = tokenInput.trim().toUpperCase();
+    if (!clean) return;
+    try {
+      const verified = await api.verifyToken(clean);
+      setTokenStatusMessage(`Kode sekolah ${clean} valid!`);
+      if (onVerifyStudentToken) onVerifyStudentToken(verified);
+    } catch {
+      setTokenStatusMessage("Kode tidak terdaftar (laporan tetap bisa dikirim).");
+    }
   };
 
-  const handleSubmitReport = async () => {
-    // Require token verification (unless kiosk mode)
-    if (!studentSession && !isKioskMode) {
+  // 1. Verifikasi dengan Kode Akses Sekolah (Langkah 1 dari 2)
+  const handleVerifyByToken = async (codeOverride?: string) => {
+    const clean = (codeOverride || tokenGateInput).trim().toUpperCase();
+    if (!clean) {
       setTokenGateError(
-        "Anda harus memverifikasi kode akses sekolah terlebih dahulu sebelum mengirim laporan.",
+        "Harap masukkan kode akses siswa yang dibagikan pihak sekolah.",
       );
-      if (onOpenTokenGate) onOpenTokenGate();
+      return;
+    }
+    setIsVerifyingToken(true);
+    setTokenGateError("");
+    try {
+      let verified: SchoolToken;
+      try {
+        verified = await api.verifyToken(clean);
+      } catch (apiErr) {
+        const allTokens = [...(tokens || []), ...INITIAL_TOKENS];
+        const localMatch = allTokens.find(
+          (t) => t.tokenCode?.toUpperCase() === clean,
+        );
+        if (localMatch) {
+          verified = localMatch;
+        } else {
+          throw apiErr;
+        }
+      }
+
+      setPendingVerifiedToken(verified);
+      setNewPasswordTokenCode(verified.tokenCode);
+
+      // Verifikasi 2 Langkah Wajib:
+      // A. Jika belum memiliki sandi -> Wajib buat kata sandi pribadi terlebih dahulu
+      if (!verified.hasPassword) {
+        setGateFlowStep("step2_create_password");
+        setCreatePasswordError("");
+        setNewPasswordValue("");
+        setNewPasswordConfirm("");
+      } else {
+        // B. Jika sudah memiliki sandi -> Wajib masukkan sandi pribadi untuk membuka formulir
+        setGateFlowStep("step2_enter_password");
+        setPasswordInput("");
+        setPasswordError("");
+      }
+    } catch {
+      setTokenGateError(
+        "Kode akses tidak ditemukan di database sekolah. Pastikan kode sesuai dengan slip resmi atau gunakan Sandi Pribadi.",
+      );
+    } finally {
+      setIsVerifyingToken(false);
+    }
+  };
+
+  // 1.B Verifikasi Sandi untuk Kode yang Sudah Punya Sandi (Langkah 2 dari 2)
+  const handleVerifyStep2Password = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pendingVerifiedToken) return;
+    const cleanPass = passwordInput.trim();
+    if (!cleanPass) {
+      setPasswordError("Harap masukkan kata sandi pribadi untuk kode akses ini.");
+      return;
+    }
+    setIsVerifyingPassword(true);
+    setPasswordError("");
+    try {
+      const verified = await api.verifyTokenByPassword(
+        cleanPass,
+        pendingVerifiedToken.tokenCode,
+      );
+      setVerificationMethod("token");
+      setIsStudentVerified(true);
+      if (onVerifyStudentToken) onVerifyStudentToken(verified, "token");
+      try {
+        confetti({ particleCount: 35, spread: 50, origin: { y: 0.6 } });
+      } catch {}
+    } catch (err: any) {
+      setPasswordError(
+        err.message ||
+          "Kata sandi salah untuk kode akses ini. Silakan coba lagi.",
+      );
+    } finally {
+      setIsVerifyingPassword(false);
+    }
+  };
+
+  // 2. Verifikasi dengan Sandi Pribadi Pelajar (Tab 2: Lupa Kode Akses)
+  const handleVerifyByPassword = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    const clean = passwordInput.trim();
+    const cleanRecovery = recoveryKeyInput.trim();
+    const cleanCollision = collisionCodeInput.trim().toUpperCase();
+
+    if (!clean) {
+      setPasswordError("Harap masukkan sandi pribadi yang pernah Anda buat.");
+      return;
+    }
+    setIsVerifyingPassword(true);
+    setPasswordError("");
+    setHasCollision(false);
+
+    try {
+      const verified = await api.verifyTokenByPassword(
+        clean,
+        cleanCollision || undefined,
+        cleanRecovery || undefined,
+      );
+      setVerificationMethod("sandi");
+      setIsStudentVerified(true);
+      if (onVerifyStudentToken) onVerifyStudentToken(verified, "sandi");
+      try {
+        confetti({ particleCount: 35, spread: 50, origin: { y: 0.6 } });
+      } catch {}
+    } catch (err: any) {
+      if (
+        err.isCollision ||
+        err.message?.includes("beberapa kode akses") ||
+        err.message?.includes("sama")
+      ) {
+        setHasCollision(true);
+        setPasswordError(
+          "Terdeteksi beberapa akun siswa dengan kata sandi yang sama. Demi melindungi kerahasiaan data Anda, masukkan Kode Akses Sekolah atau Kunci Pemulihan Anda di bawah ini.",
+        );
+      } else {
+        setPasswordError(
+          err.message ||
+            "Sandi pelajar tidak cocok atau belum pernah diaktivasi dengan kode sekolah.",
+        );
+      }
+    } finally {
+      setIsVerifyingPassword(false);
+    }
+  };
+
+  // 3. Aktivasi Kode & Buat Sandi Pribadi Baru (Langkah 2 dari 2: Wajib Sebelum Melapor)
+  const handleCreateStudentPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCreatePasswordError("");
+    const code =
+      pendingVerifiedToken?.tokenCode ||
+      newPasswordTokenCode.trim().toUpperCase();
+    const pass = newPasswordValue.trim();
+    const conf = newPasswordConfirm.trim();
+
+    if (!code) {
+      setCreatePasswordError("Harap masukkan kode akses dari sekolah.");
+      return;
+    }
+    if (pass.length < 4) {
+      setCreatePasswordError(
+        "Sandi minimal 4 karakter (angka atau kombinasi huruf).",
+      );
+      return;
+    }
+    if (pass !== conf) {
+      setCreatePasswordError("Konfirmasi sandi tidak sesuai.");
+      return;
+    }
+
+    setIsSubmittingNewPassword(true);
+    try {
+      // Activate token and hash password securely
+      const activated = await api.activateToken(code, btoa(pass), pass);
+      setCreatePasswordSuccess(true);
+      if (activated.recoveryKey) {
+        setNewlyCreatedRecoveryKey(activated.recoveryKey);
+      }
+      try {
+        confetti({ particleCount: 45, spread: 60, origin: { y: 0.6 } });
+      } catch {}
+
+      setTimeout(() => {
+        setVerificationMethod("sandi");
+        setIsStudentVerified(true);
+        if (onVerifyStudentToken) onVerifyStudentToken(activated, "sandi");
+      }, 1000);
+    } catch (err: any) {
+      setCreatePasswordError(
+        err.message ||
+          "Kode akses sekolah tidak ditemukan atau sudah tidak aktif. Hubungi Guru BK / Satgas.",
+      );
+    } finally {
+      setIsSubmittingNewPassword(false);
+    }
+  };
+
+  const handleSubmitReport = async (e?: React.FormEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    if (!story.trim()) {
+      alert("Harap tuliskan cerita atau kejadian yang Anda alami.");
       return;
     }
 
     setIsSubmitting(true);
-    setPowProgress(10);
-
-    // Simulate Proof-of-Work anti-spam calculation and ZKP hashing
-    const interval = setInterval(() => {
-      setPowProgress((prev) => {
-        if (prev >= 90) {
-          clearInterval(interval);
-          return 90;
-        }
-        return prev + 25;
-      });
-    }, 200);
-
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    clearInterval(interval);
-    setPowProgress(100);
-
-    const sanitized =
-      detectedEntities.length > 0
-        ? autoRedactText(story, detectedEntities)
-        : story;
 
     try {
-      const createdTicket = await onReportSubmitted({
+      const ticketId = generateTicketId();
+      const recoveryKey = generateRecoveryKey();
+      const timestamp = Math.floor(Date.now() / 1000);
+      const zkpHash = await generateZKPHash(story, timestamp);
+
+      // Auto-redact sensitive PII automatically
+      const entities = detectPII(story);
+      const redactedStory = autoRedactText(story, entities);
+
+      const newTicket: ReportTicket = {
+        id: ticketId,
         category,
         reporterRole,
-        location: location || "Lokasi Dirahasiakan / Lingkungan Sekolah",
-        incidentDate: incidentDate || "Waktu Dirahasiakan",
+        location: location.trim() || "Lingkungan Sekolah",
+        incidentDate: incidentDate || "Hari ini",
         urgency,
-        story: story, // Send original story
-        redactedStory: sanitized,
-        detectedPII: detectedEntities.map((e) => `${e.type}: ${e.text}`),
-        attachments,
-        isKioskSubmission: isKioskMode,
-      } as any);
-
-      if (createdTicket) {
-        setSubmittedTicket(createdTicket);
-        setZkpHash(createdTicket.hashZKP);
-
-        // Confetti celebration
-        try {
-          confetti({
-            particleCount: 150,
-            spread: 70,
-            origin: { y: 0.6 },
-            colors: ["#2563eb", "#10b981", "#6366f1"],
-          });
-        } catch (e) {}
-      }
-    } catch (err) {
-      console.error("Failed to submit report via API:", err);
-      // Fallback for safety
-      setSubmittedTicket({
-        id: "ERROR",
-        category,
-        reporterRole,
-        location,
-        incidentDate,
-        urgency,
-        story: sanitized,
-        redactedStory: sanitized,
-        detectedPII: [],
-        status: "diterima",
+        story,
+        redactedStory,
+        detectedPII: entities.map((e) => e.type),
+        recoveryCode: recoveryKey,
+        secretPin: secretPin.trim() || undefined,
+        hashZKP: zkpHash,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        hashZKP: "error-hash",
-        recoveryCode: "error-code",
+        status: "diterima",
+        isKioskSubmission: isKioskMode,
+        isStudentVerified: true,
+        verificationMethod,
+        verifiedSchoolToken:
+          studentSession?.tokenCode ||
+          (verificationMethod === "token"
+            ? tokenGateInput.trim().toUpperCase()
+            : undefined),
+        schoolName: activeSchoolDisplayName,
+        studentBatch: studentSession?.studentLevel || "Kelas X",
+        attachments,
         messages: [],
-      } as any);
+      };
+
+      const result = await onReportSubmitted(newTicket);
+      setSubmittedTicket(result || newTicket);
+      setCurrentStep(2);
+
+      try {
+        confetti({
+          particleCount: 50,
+          spread: 60,
+          origin: { y: 0.7 },
+        });
+      } catch {}
+    } catch (err) {
+      console.error("Gagal mengirim laporan:", err);
+      alert("Terjadi kendala jaringan saat mengirim laporan. Silakan coba lagi.");
     } finally {
       setIsSubmitting(false);
-      setPowProgress(100);
     }
   };
 
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    setCopiedKey(true);
-    setTimeout(() => setCopiedKey(false), 2000);
+  const handleDownloadReceipt = () => {
+    if (!submittedTicket) return;
+    const content = `=================================================
+BUKTI LAPORAN TAMENG (RUANG AMAN PPKSP)
+100% Rahasia, Aman & Terenkripsi E2EE
+=================================================
+
+NOMOR TIKET ANDA : ${submittedTicket.id}
+KUNCI PEMULIHAN  : ${submittedTicket.recoveryCode}
+PIN RAHASIA ANDA : ${secretPin.trim() || "(Tidak disetel)"}
+KATEGORI KEJADIAN: ${submittedTicket.category}
+URGENSI          : ${submittedTicket.urgency}
+TANGGAL LAPOR    : ${new Date(submittedTicket.createdAt).toLocaleString("id-ID")}
+
+CARA CEK BALASAN GURU BK:
+1. Buka situs TAMENG di browser.
+2. Klik menu 'Pantau Tiket'.
+3. Masukkan Nomor Tiket atau gunakan menu 'Pulihkan dengan Verifikasi Kedua' menggunakan PIN Rahasia Anda.
+4. Anda dapat membaca tanggapan sekolah dan mengonfirmasi penyelesaian.
+
+Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
+=================================================`;
+    const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `bukti-tiket-tameng-${submittedTicket.id.slice(0, 8)}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setDownloadReceiptDone(true);
+    setTimeout(() => setDownloadReceiptDone(false), 3000);
   };
 
-  // SUCCESS VIEW
-  if (submittedTicket) {
-    return (
-      <div className="max-w-3xl mx-auto py-8 px-4 sm:px-6">
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden animate-fadeIn">
-          {/* Header Banner */}
-          <div className="bg-gradient-to-br from-[#1d4ed8] via-[#2563eb] to-[#1e40af] text-white p-6 sm:p-8 text-center space-y-2 relative overflow-hidden">
-            <div className="w-16 h-16 bg-white/15 border border-white/30 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-lg shadow-blue-950/20 backdrop-blur-md">
-              <ShieldCheck className="w-9 h-9 text-sky-200" />
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
-              Laporan Berhasil Terkirim &amp; Terenkripsi!
-            </h2>
-            <p className="text-sm text-blue-100 max-w-lg mx-auto">
-              Identitasmu 100% anonim dan terlindungi secara kriptografis tanpa
-              jejak server.
-            </p>
-          </div>
+  const handleCopyTicket = () => {
+    if (submittedTicket) {
+      navigator.clipboard.writeText(submittedTicket.id);
+      setCopiedTicketId(true);
+      setTimeout(() => setCopiedTicketId(false), 2000);
+    }
+  };
 
-          {/* Ticket Information Card */}
-          <div className="p-6 sm:p-8 space-y-6">
-            <div className="bg-slate-900 text-white rounded-2xl p-6 relative overflow-hidden shadow-xl border border-slate-800">
-              <div className="absolute top-0 right-0 p-6 opacity-10 pointer-events-none">
-                <Lock className="w-32 h-32 text-indigo-400" />
-              </div>
+  const handleCopyKey = () => {
+    if (submittedTicket) {
+      navigator.clipboard.writeText(submittedTicket.recoveryCode);
+      setCopiedKey(true);
+      setTimeout(() => setCopiedKey(false), 2000);
+    }
+  };
 
-              <div className="relative z-10 space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-800 pb-3">
-                  <span className="text-xs font-mono uppercase tracking-widest text-indigo-400 font-bold">
-                    KARTU TIKET PELAPORAN ANONIM
-                  </span>
-                  <span className="text-xs bg-emerald-500/20 text-emerald-300 px-2.5 py-0.5 rounded-full border border-emerald-500/40 font-bold">
-                    Zero-Knowledge Verified
-                  </span>
-                </div>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-xs text-slate-400 block mb-1">
-                      Nomor Tiket (Tracking):
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl sm:text-2xl font-mono font-black text-indigo-300 tracking-wider">
-                        {submittedTicket.id}
-                      </span>
-                      <button
-                        onClick={() => copyToClipboard(submittedTicket.id)}
-                        className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
-                        title="Salin Nomor Tiket"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-
-                  <div>
-                    <span className="text-xs text-slate-400 block mb-1">
-                      Kode Pemulihan Cadangan:
-                    </span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs sm:text-sm font-mono font-bold text-slate-200 bg-slate-800/80 px-2.5 py-1.5 rounded-lg border border-slate-700">
-                        {submittedTicket.recoveryCode}
-                      </span>
-                      <button
-                        onClick={() =>
-                          copyToClipboard(submittedTicket.recoveryCode)
-                        }
-                        className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 transition-colors"
-                        title="Salin Kode Pemulihan"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="pt-2 text-[11px] font-mono text-slate-400 truncate border-t border-slate-800/60">
-                  <span className="text-slate-500">Hash ZKP: </span>
-                  {submittedTicket.hashZKP}
-                </div>
-              </div>
-            </div>
-
-            {/* Crucial Instructions */}
-            <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 sm:p-5 flex items-start gap-3.5 text-amber-900 text-xs sm:text-sm">
-              <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-              <div className="space-y-1">
-                <strong className="font-bold text-amber-950 block">
-                  Simpan Nomor Tiket Anda Sekarang!
-                </strong>
-                <p className="text-slate-700">
-                  Karena sistem ini tidak meminta email atau nama, Anda hanya
-                  bisa mengecek status tindak lanjut dan berkomunikasi dua arah
-                  dengan Guru BK menggunakan Nomor Tiket ini.
-                </p>
-              </div>
-            </div>
-
-            {/* Quick Action Navigation */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <button
-                id="jump-to-counseling-chat-btn"
-                onClick={() => onNavigateToChat(submittedTicket.id)}
-                className="flex-1 flex items-center justify-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-indigo-600/25 transition-all hover:scale-101"
-              >
-                <MessageSquare className="w-5 h-5" />
-                <span>Buka Ruang Obrolan dengan Guru BK</span>
-                <ArrowRight className="w-4 h-4 ml-1" />
-              </button>
-
-              <button
-                onClick={() => {
-                  setSubmittedTicket(null);
-                  setCurrentStep(1);
-                  setStory("");
-                  setAttachments([]);
-                }}
-                className="flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 px-5 rounded-xl transition-colors text-sm"
-              >
-                <RefreshCw className="w-4 h-4" />
-                <span>Buat Laporan Baru</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // STEP WIZARD FORM
   return (
-    <div className="max-w-4xl mx-auto py-6 sm:py-10 px-4 sm:px-6 space-y-6">
-      {/* Themed Hero Visual Banner */}
-      <div className="bg-gradient-to-br from-[#1d4ed8] via-[#2563eb] to-[#1e40af] rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden shadow-xl shadow-blue-950/20 border border-blue-400/30">
-        <div className="absolute inset-0 pointer-events-none opacity-20 overflow-hidden">
-          <svg
-            className="w-full h-full"
-            viewBox="0 0 800 400"
-            fill="none"
-            preserveAspectRatio="none"
-          >
-            <path
-              d="M-50 100 C200 50 450 250 850 150"
-              stroke="white"
-              strokeWidth="2"
-              strokeDasharray="6 8"
-            />
-            <path
-              d="M-50 200 C300 150 500 350 850 250"
-              stroke="white"
-              strokeWidth="2.5"
-            />
-          </svg>
-        </div>
-
-        <div className="absolute -right-6 -bottom-6 sm:right-2 sm:top-2 w-72 sm:w-80 h-64 sm:h-auto opacity-30 sm:opacity-85 pointer-events-none">
-          <HeroSafetyIllustration className="w-full h-full" animate={true} />
-        </div>
-
-        <div className="relative z-10 max-w-lg space-y-4">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/15 text-white text-xs font-medium border border-white/25 backdrop-blur-md">
-            <ShieldCheck className="w-3.5 h-3.5 text-sky-200" />
-            <span>Kanal Resmi PPKSP Sesuai Permendikbud No. 46/2023</span>
-          </div>
-
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
-            Ruang Aman Pengaduan Anonim Siswa
-          </h1>
-
-          <p className="text-xs sm:text-sm text-blue-100 leading-relaxed font-normal">
-            Laporkan perundungan, pemalakan, atau intimidasi dengan perlindungan
-            privasi mutlak. Guru BK &amp; Satgas PPKSP siap membantu tanpa
-            prasangka dan tanpa rekam jejak identitas.
-          </p>
-
-          <div className="flex flex-wrap gap-4 pt-1 text-xs">
-            <div className="flex items-center gap-2 text-blue-100 font-semibold">
-              <ShieldCheck className="w-4 h-4 text-emerald-300" />
-              <span>100% Bebas Jejak (ZKP)</span>
-            </div>
-            <div className="flex items-center gap-2 text-blue-100 font-semibold">
-              <Zap className="w-4 h-4 text-amber-300" />
-              <span>Respon Tim BK &lt; 24 Jam</span>
-            </div>
-            <div className="flex items-center gap-2 text-blue-100 font-semibold">
-              <Heart className="w-4 h-4 text-rose-300" />
-              <span>Pendampingan Psikologis Gratis</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Stepper Progress Indicator */}
-      <div>
-        <div className="grid grid-cols-4 gap-2 sm:gap-2.5 text-center text-xs font-bold">
-          {[
-            {
-              step: 1,
-              shortLabel: "1. Identitas",
-              label: "1. Identitas & Lingkup",
-            },
-            {
-              step: 2,
-              shortLabel: "2. Kronologi",
-              label: "2. Kronologi & Deteksi",
-            },
-            { step: 3, shortLabel: "3. Bukti", label: "3. Bukti & Lampiran" },
-            {
-              step: 4,
-              shortLabel: "4. Enkripsi",
-              label: "4. Review & Enkripsi",
-            },
-          ].map((item) => (
-            <div key={item.step} className="space-y-1.5">
-              <div
-                className={`h-2 rounded-full transition-all duration-300 ${
-                  currentStep >= item.step
-                    ? "bg-blue-600 shadow-xs"
-                    : "bg-slate-200"
-                }`}
-              />
-              <span
-                className={`block text-[11px] sm:text-xs truncate ${currentStep === item.step ? "text-blue-700 font-extrabold" : "text-slate-400 font-medium"}`}
-              >
-                <span className="sm:hidden">{item.shortLabel}</span>
-                <span className="hidden sm:inline">{item.label}</span>
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Form Card Container */}
-      <div className="bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 p-6 sm:p-8">
-        {/* STEP 1: IDENTITAS & RUANG LINGKUP */}
-        {currentStep === 1 && (
-          <div className="space-y-6 animate-fadeIn">
-            <div className="border-b border-slate-100 pb-4">
-              <h2 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-indigo-600" />
-                <span>Langkah 1: Identitas & Ruang Lingkup Laporan</span>
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                Data identitas Anda 100% anonim. Tidak ada nama, NISN, atau IP
-                yang dikirim ke server.
-              </p>
-            </div>
-
-            {/* Zero-Data Sent Guarantee Box */}
-            <div className="bg-indigo-50/60 border border-indigo-200/80 rounded-2xl p-4 flex items-start gap-3">
-              <div className="p-2 rounded-xl bg-indigo-600 text-white shrink-0 shadow-sm shadow-indigo-600/20">
-                <Lock className="w-4 h-4" />
-              </div>
-              <div className="text-xs text-indigo-950 space-y-1">
-                <span className="font-bold block text-indigo-900">
-                  Jaminan Privasi Penuh:
-                </span>
-                <p className="text-slate-700">
-                  Formulir ini tidak meminta nama Anda. Guru BK hanya akan
-                  menerima nomor tiket acak dan isi kejadian untuk segera
-                  membantu tanpa prasangka.
-                </p>
-              </div>
-            </div>
-
-            {/* Anti-Infiltrator School Access Code Verification Section */}
-            <div className="rounded-2xl border p-4 space-y-3 transition-all">
-              {studentSession ? (
-                /* Authenticated State */
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-emerald-50/80 border border-emerald-300 rounded-xl p-3.5">
-                  <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
-                      <ShieldCheck className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-bold text-emerald-950">
-                          Siswa Terverifikasi Sekolah (Bebas Penyusup)
-                        </span>
-                        <span className="text-[10px] font-mono font-extrabold px-2 py-0.5 rounded bg-emerald-200/80 text-emerald-900 border border-emerald-300">
-                          {studentSession.tokenCode}
-                        </span>
-                      </div>
-                    </div>
+    <div className="min-h-[80vh] py-8 sm:py-12 bg-slate-50 text-slate-800">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6">
+        {/* GERBANG VERIFIKASI SISWA SEBELUM MEMBUAT LAPORAN */}
+        {!isStudentVerified && currentStep === 1 && (
+          <div className="bg-white border border-slate-200/90 rounded-3xl shadow-sm p-6 sm:p-8 animate-fadeIn">
+            {/* KASUS A: LANGKAH 1 (PILIH KODE AKSES ATAU SANDI) */}
+            {gateFlowStep === "step1" && (
+              <>
+                {/* Header */}
+                <div className="mb-6 border-b border-slate-100 pb-5">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold mb-2">
+                    <ShieldCheck className="w-4 h-4 text-blue-600" />
+                    <span>Verifikasi Siswa • Platform PPKSP Satuan Pendidikan Nasional</span>
                   </div>
-
-                  <div className="flex items-center gap-2 self-end sm:self-center">
-                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-1 rounded-md">
-                      ✓ Valid
-                    </span>
-                    {onLogoutStudentSession && (
-                      <button
-                        type="button"
-                        onClick={onLogoutStudentSession}
-                        className="text-[11px] text-slate-500 hover:text-red-600 font-semibold underline px-1.5 cursor-pointer"
-                      >
-                        Ganti Kode
-                      </button>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                /* Unauthenticated / Require Code State */
-                <div className="bg-blue-50/70 border border-blue-200 rounded-xl p-4 space-y-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-2">
-                      <ShieldAlert className="w-4 h-4 text-blue-700 shrink-0" />
-                      <span className="text-xs font-bold text-blue-950">
-                        Proteksi Anti-Penyusup: Masukkan Kode Akses Sekolah
-                      </span>
-                    </div>
-                    {onOpenTokenGate && (
-                      <button
-                        type="button"
-                        onClick={onOpenTokenGate}
-                        className="text-[11px] text-blue-700 font-bold hover:underline cursor-pointer"
-                      >
-                        Buka Gerbang Login →
-                      </button>
-                    )}
-                  </div>
-
-                  <p className="text-[11px] text-slate-600 leading-relaxed">
-                    Untuk mencegah pihak luar atau penyusup mengirimkan laporan
-                    palsu, silakan masukkan kode akses resmi yang dibagikan oleh
-                    pihak sekolah Anda.
+                  <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                    Verifikasi Siswa Sebelum Melapor
+                  </h1>
+                  <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
+                    Untuk memastikan laporan berasal dari siswa sah dan mencegah pihak luar/spam menyusup, sistem menerapkan <strong>Verifikasi 2 Langkah</strong>. Masukkan <strong>Kode Akses Sekolah</strong> Anda untuk memulai, atau gunakan <strong>Sandi Pribadi Pelajar</strong> jika Anda lupa kode slip. Identitas Anda tetap 100% anonim.
                   </p>
-
-                  <div className="flex flex-col sm:flex-row gap-2 pt-1">
-                    <div className="relative flex-1">
-                      <input
-                        type="text"
-                        value={inlineCode}
-                        onChange={(e) => {
-                          setInlineCode(e.target.value.toUpperCase());
-                          setInlineCodeError("");
-                          setInlineCodeSuccess("");
-                        }}
-                        placeholder="Contoh: SCH-X1-8831"
-                        className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-xl text-xs font-mono font-bold uppercase tracking-wider text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 placeholder:normal-case placeholder:font-normal"
-                      />
-                      <KeyRound className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
-                    </div>
-
-                    <button
-                      type="button"
-                      onClick={() => handleInlineVerify(inlineCode)}
-                      className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-xl transition-all shadow-xs cursor-pointer shrink-0 flex items-center justify-center gap-1.5"
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      <span>Verifikasi Kode</span>
-                    </button>
-                  </div>
-
-                  {inlineCodeError && (
-                    <p className="text-[11px] font-semibold text-red-600 flex items-center gap-1">
-                      <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                      <span>{inlineCodeError}</span>
-                    </p>
-                  )}
-
-                  {inlineCodeSuccess && (
-                    <p className="text-[11px] font-semibold text-emerald-600 flex items-center gap-1">
-                      <Check className="w-3.5 h-3.5 shrink-0" />
-                      <span>{inlineCodeSuccess}</span>
-                    </p>
-                  )}
                 </div>
-              )}
-            </div>
 
-            {/* Reporter Role */}
-            <div className="space-y-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Status Keterlibatan Anda:
-              </label>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                {ROLES.map((role) => (
+                {/* Tab Selector: Pilih Salah Satu (Kode Akses atau Sandi Pribadi) */}
+                <div className="flex rounded-2xl bg-slate-100 p-1.5 mb-6">
                   <button
-                    key={role}
                     type="button"
-                    onClick={() => setReporterRole(role)}
-                    className={`p-3 rounded-xl border text-xs font-bold text-left transition-all cursor-pointer ${
-                      reporterRole === role
-                        ? "border-indigo-600 bg-indigo-50 text-indigo-950 ring-1 ring-indigo-500 shadow-xs"
-                        : "border-slate-200 hover:border-slate-300 text-slate-700 bg-white"
+                    onClick={() => {
+                      setActiveGateTab("token");
+                      setTokenGateError("");
+                      setPasswordError("");
+                      setHasCollision(false);
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                      activeGateTab === "token"
+                        ? "bg-white text-blue-900 shadow-xs"
+                        : "text-slate-600 hover:text-slate-900"
                     }`}
                   >
-                    {role}
+                    <KeyRound className="w-4 h-4 text-blue-600" />
+                    <span>1. Gunakan Kode Akses Sekolah</span>
                   </button>
-                ))}
-              </div>
-            </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setActiveGateTab("sandi");
+                      setTokenGateError("");
+                      setPasswordError("");
+                      setHasCollision(false);
+                    }}
+                    className={`flex-1 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                      activeGateTab === "sandi"
+                        ? "bg-white text-blue-900 shadow-xs"
+                        : "text-slate-600 hover:text-slate-900"
+                    }`}
+                  >
+                    <Lock className="w-4 h-4 text-indigo-600" />
+                    <span>2. Lupa Kode? Gunakan Sandi Pribadi</span>
+                  </button>
+                </div>
 
-            {/* Category Picker with Themed Badges & Icons */}
-            <div className="space-y-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Kategori Masalah / Kejadian:
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                {CATEGORIES.map((cat) => {
-                  const details = CATEGORY_DETAILS[cat];
-                  const Icon = details.icon;
-                  const isSelected = category === cat;
-                  return (
-                    <button
-                      key={cat}
-                      type="button"
-                      onClick={() => setCategory(cat)}
-                      className={`p-4 rounded-2xl border text-left transition-all duration-200 cursor-pointer flex flex-col justify-between space-y-2 ${
-                        isSelected
-                          ? "border-indigo-600 bg-indigo-50/90 text-indigo-950 ring-2 ring-indigo-500/60 shadow-sm"
-                          : "border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50/60"
-                      }`}
-                    >
-                      <div className="flex items-start justify-between gap-2">
-                        <div
-                          className={`p-2 rounded-xl ${isSelected ? "bg-indigo-600 text-white" : "bg-slate-100 text-slate-700"}`}
-                        >
-                          <Icon className="w-4 h-4" />
-                        </div>
-                        <span
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${isSelected ? "bg-indigo-200 text-indigo-900" : "bg-slate-100 text-slate-600"}`}
-                        >
-                          {details.badge}
+                {/* TAB 1: KODE AKSES SISWA */}
+                {activeGateTab === "token" && (
+                  <div className="space-y-4 animate-fadeIn">
+                    <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                          Langkah 1: Masukkan Kode Akses Pelajar
+                        </label>
+                        <span className="text-[11px] text-slate-500">
+                          Dari kartu MPLS / dibagikan wali kelas
                         </span>
                       </div>
-
-                      <div>
-                        <div className="text-xs font-bold text-slate-900">
-                          {cat}
-                        </div>
-                        <div className="text-[11px] text-slate-500 line-clamp-2 mt-0.5 leading-relaxed">
-                          {details.desc}
-                        </div>
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          placeholder="Misal: SCH-X1-8831"
+                          value={tokenGateInput}
+                          onChange={(e) => {
+                            setTokenGateInput(e.target.value.toUpperCase());
+                            setTokenGateError("");
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              e.preventDefault();
+                              handleVerifyByToken();
+                            }
+                          }}
+                          className="flex-1 px-4 py-3 rounded-xl border border-slate-200 text-sm font-mono tracking-wider focus:outline-hidden focus:border-blue-600 bg-white"
+                        />
+                        <button
+                          type="button"
+                          disabled={isVerifyingToken}
+                          onClick={() => handleVerifyByToken()}
+                          className="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold text-xs transition-colors cursor-pointer shrink-0"
+                        >
+                          {isVerifyingToken ? "Memeriksa..." : "Verifikasi"}
+                        </button>
                       </div>
+
+                      {tokenGateError && (
+                        <p className="text-xs text-red-600 mt-2 flex items-center gap-1.5">
+                          <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                          <span>{tokenGateError}</span>
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Informasi Verifikasi 2 Langkah Wajib */}
+                    <div className="rounded-2xl border border-blue-200/90 bg-blue-50/40 p-4 transition-all">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2.5">
+                          <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center text-blue-700">
+                            <Sparkles className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <h2 className="text-xs font-bold text-slate-900">
+                              Alur Verifikasi 2 Langkah Wajib
+                            </h2>
+                            <p className="text-[11px] text-slate-500">
+                              Setelah kode diverifikasi, Anda wajib memasangkan sandi pribadi sebelum formulir laporan terbuka agar privasi Anda terlindungi penuh.
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            if (tokenGateInput.trim()) {
+                              handleVerifyByToken();
+                            } else {
+                              setTokenGateError("Ketik kode akses Anda di atas terlebih dahulu, lalu klik Verifikasi.");
+                            }
+                          }}
+                          className="px-3 py-1.5 rounded-lg bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 text-xs font-semibold transition-colors cursor-pointer shrink-0"
+                        >
+                          Lanjut Verifikasi
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* TAB 2: SANDI PRIBADI PELAJAR (LUPA KODE AKSES) */}
+                {activeGateTab === "sandi" && (
+                  <div className="space-y-4 animate-fadeIn">
+                    <form
+                      onSubmit={handleVerifyByPassword}
+                      className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3"
+                    >
+                      <div className="flex items-center justify-between">
+                        <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                          Masukkan Sandi Pribadi Pelajar
+                        </label>
+                        <span className="text-[11px] text-slate-500">
+                          Sandi rahasia yang pernah Anda buat
+                        </span>
+                      </div>
+                      <div className="flex gap-2 relative">
+                        <div className="relative flex-1">
+                          <input
+                            type={showPassword ? "text" : "password"}
+                            placeholder="Masukkan sandi rahasia Anda..."
+                            value={passwordInput}
+                            onChange={(e) => {
+                              setPasswordInput(e.target.value);
+                              setPasswordError("");
+                              setHasCollision(false);
+                            }}
+                            className="w-full px-4 py-3 pr-10 rounded-xl border border-slate-200 text-sm focus:outline-hidden focus:border-indigo-600 bg-white"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                          >
+                            {showPassword ? (
+                              <EyeOff className="w-4 h-4" />
+                            ) : (
+                              <Eye className="w-4 h-4" />
+                            )}
+                          </button>
+                        </div>
+                        <button
+                          type="submit"
+                          disabled={isVerifyingPassword}
+                          className="px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold text-xs transition-colors cursor-pointer shrink-0"
+                        >
+                          {isVerifyingPassword ? "Memeriksa..." : "Verifikasi Sandi"}
+                        </button>
+                      </div>
+
+                      {passwordError && !hasCollision && (
+                        <p className="text-xs text-red-600 mt-2 flex items-center gap-1.5">
+                          <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                          <span>{passwordError}</span>
+                        </p>
+                      )}
+
+                      {/* DETEKSI TABRAKAN SANDI (COLLISION PROTECTION) */}
+                      {hasCollision && (
+                        <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-slate-800 space-y-2 animate-fadeIn">
+                          <div className="flex items-center gap-2 text-amber-900 font-bold text-xs">
+                            <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
+                            <span>Perlindungan Privasi: Tabrakan Sandi Terdeteksi</span>
+                          </div>
+                          <p className="text-xs text-amber-800 leading-relaxed">
+                            Terdeteksi lebih dari satu akun di sistem dengan kata sandi yang sama. Demi melindungi privasi Anda dan mencegah laporan tertukar dengan siswa lain, sistem menolak masuk secara acak. Silakan masukkan salah satu pengenal di bawah ini:
+                          </p>
+                          <div className="space-y-2 pt-1">
+                            <input
+                              type="text"
+                              placeholder="Masukkan Kode Akses Sekolah (Misal: SCH-XXXX) ATAU Kunci Pemulihan (Misal: kunci-xxxx-1234)"
+                              value={collisionCodeInput || recoveryKeyInput}
+                              onChange={(e) => {
+                                const val = e.target.value;
+                                if (val.toLowerCase().startsWith("kunci-")) {
+                                  setRecoveryKeyInput(val.toLowerCase());
+                                  setCollisionCodeInput("");
+                                } else {
+                                  setCollisionCodeInput(val.toUpperCase());
+                                  setRecoveryKeyInput("");
+                                }
+                              }}
+                              className="w-full px-3 py-2 rounded-lg border border-amber-300 text-xs font-mono bg-white focus:outline-hidden focus:border-amber-600"
+                            />
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                disabled={isVerifyingPassword}
+                                onClick={() => handleVerifyByPassword()}
+                                className="flex-1 py-2 px-3 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs transition-colors cursor-pointer"
+                              >
+                                {isVerifyingPassword ? "Memverifikasi..." : "Lanjut Verifikasi Pengaman"}
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setHasCollision(false);
+                                  setActiveGateTab("token");
+                                }}
+                                className="py-2 px-3 rounded-lg bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 text-xs font-semibold transition-colors cursor-pointer"
+                              >
+                                Ambil Slip Baru / Batal
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+
+                      <p className="text-[11px] text-slate-500">
+                        Lupa kode slip sekolah? Cukup gunakan sandi pribadi yang pernah Anda buat untuk melapor dengan aman. Jika sandi Anda sama dengan siswa lain, sistem keamanan akan meminta pengenal cadangan.
+                      </p>
+                    </form>
+                  </div>
+                )}
+              </>
+            )}
+
+            {/* KASUS B: LANGKAH 2 DARI 2 (TOKEN BELUM PUNYA SANDI -> WAJIB BUAT SANDI BARU) */}
+            {gateFlowStep === "step2_create_password" && pendingVerifiedToken && (
+              <div className="space-y-5 animate-fadeIn">
+                {/* Stepper Breadcrumb */}
+                <div className="flex items-center gap-2 p-3 rounded-2xl bg-blue-50/70 border border-blue-200">
+                  <div className="flex items-center gap-1 text-xs font-semibold text-emerald-700">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>1. Kode Sekolah Valid ({pendingVerifiedToken.tokenCode})</span>
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 text-blue-400" />
+                  <div className="flex items-center gap-1 text-xs font-bold text-blue-900">
+                    <Lock className="w-4 h-4 text-blue-600" />
+                    <span>2. Buat Sandi Pribadi Pelajar (Wajib)</span>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold mb-2">
+                    <ShieldCheck className="w-4 h-4 text-indigo-600" />
+                    <span>Verifikasi 2 Langkah • Langkah 2 dari 2</span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                    Buat Kata Sandi Pribadi Pelajar
+                  </h2>
+                  <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+                    Kode akses <strong>{pendingVerifiedToken.tokenCode}</strong> valid terdaftar di {pendingVerifiedToken.schoolName || activeSchoolDisplayName}. Sesuai standar keamanan, Anda <strong>wajib membuat kata sandi pribadi</strong> terlebih dahulu agar orang lain yang menemukan slip Anda tidak dapat melihat laporan Anda.
+                  </p>
+                </div>
+
+                <form onSubmit={handleCreateStudentPassword} className="space-y-4">
+                  <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
+                    <div>
+                      <span className="text-slate-500 font-medium block">Kode Akses Sekolah:</span>
+                      <span className="font-mono font-bold text-slate-900 text-sm">
+                        {pendingVerifiedToken.tokenCode}
+                      </span>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-semibold flex items-center gap-1">
+                      <Check className="w-3 h-3 text-emerald-600" />
+                      Terdaftar Sah
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                        Buat Kata Sandi Pribadi *
+                      </label>
+                      <div className="relative">
+                        <input
+                          type={showNewPassword ? "text" : "password"}
+                          required
+                          placeholder="Minimal 4 karakter (angka/huruf)"
+                          value={newPasswordValue}
+                          onChange={(e) => setNewPasswordValue(e.target.value)}
+                          className="w-full px-3.5 py-2.5 pr-9 rounded-xl border border-slate-200 text-sm bg-white focus:outline-hidden focus:border-blue-600"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowNewPassword(!showNewPassword)}
+                          className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                        >
+                          {showNewPassword ? (
+                            <EyeOff className="w-4 h-4" />
+                          ) : (
+                            <Eye className="w-4 h-4" />
+                          )}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                        Ulangi Kata Sandi *
+                      </label>
+                      <input
+                        type={showNewPassword ? "text" : "password"}
+                        required
+                        placeholder="Ketik ulang kata sandi"
+                        value={newPasswordConfirm}
+                        onChange={(e) => setNewPasswordConfirm(e.target.value)}
+                        className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-hidden focus:border-blue-600"
+                      />
+                    </div>
+                  </div>
+
+                  {createPasswordError && (
+                    <p className="text-xs text-red-600 flex items-center gap-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                      <span>{createPasswordError}</span>
+                    </p>
+                  )}
+
+                  {createPasswordSuccess && (
+                    <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 space-y-1">
+                      <p className="flex items-center gap-1.5 font-semibold">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                        <span>Sandi berhasil disimpan &amp; terenkripsi! Membuka formulir laporan...</span>
+                      </p>
+                      {newlyCreatedRecoveryKey && (
+                        <p className="font-mono text-[11px] text-emerald-900 bg-emerald-100 px-2 py-1 rounded">
+                          Kunci Pemulihan Anda: <strong>{newlyCreatedRecoveryKey}</strong> (Simpan jika sewaktu-waktu lupa kode sekolah)
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  <div className="p-3 rounded-xl bg-blue-50/60 border border-blue-100 text-[11px] text-slate-600 leading-relaxed">
+                    <strong>Catatan Rahasia:</strong> Sandi ini hanya diketahui oleh Anda. Guru BK dan pihak sekolah pun tidak dapat melihat kata sandi Anda. Anda akan mendapatkan Kunci Pemulihan unik untuk cadangan jika lupa kode slip.
+                  </div>
+
+                  <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                    <button
+                      type="submit"
+                      disabled={isSubmittingNewPassword}
+                      className="flex-1 py-3 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold text-xs transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-xs"
+                    >
+                      <Lock className="w-4 h-4" />
+                      <span>
+                        {isSubmittingNewPassword
+                          ? "Menyimpan sandi terenkripsi..."
+                          : "Simpan Sandi & Buka Formulir Laporan"}
+                      </span>
+                      <ArrowRight className="w-4 h-4" />
                     </button>
-                  );
-                })}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setGateFlowStep("step1");
+                        setCreatePasswordError("");
+                      }}
+                      className="py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
+                    >
+                      Ganti Kode Lain
+                    </button>
+                  </div>
+                </form>
               </div>
-            </div>
+            )}
 
-            {/* Location & Time approximation */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-slate-400" />
-                  <span>Lokasi Kejadian (Umum):</span>
-                </label>
-                <input
-                  type="text"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  placeholder="Contoh: Toilet Lt 2 / Kantin Belakang / Grup WhatsApp"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-                <span className="text-[11px] text-slate-400">
-                  Hindari menyebut nama spesifik Anda jika ingin tetap anonim.
-                </span>
+            {/* KASUS C: LANGKAH 2 DARI 2 (TOKEN SUDAH PUNYA SANDI -> MASUKKAN SANDI PRIBADI) */}
+            {gateFlowStep === "step2_enter_password" && pendingVerifiedToken && (
+              <div className="space-y-5 animate-fadeIn">
+                {/* Stepper Breadcrumb */}
+                <div className="flex items-center gap-2 p-3 rounded-2xl bg-indigo-50/70 border border-indigo-200">
+                  <div className="flex items-center gap-1 text-xs font-semibold text-emerald-700">
+                    <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    <span>1. Kode Sekolah Valid ({pendingVerifiedToken.tokenCode})</span>
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 text-indigo-400" />
+                  <div className="flex items-center gap-1 text-xs font-bold text-indigo-900">
+                    <Lock className="w-4 h-4 text-indigo-600" />
+                    <span>2. Masukkan Sandi Pribadi (Terproteksi)</span>
+                  </div>
+                </div>
+
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold mb-2">
+                    <Lock className="w-4 h-4 text-indigo-600" />
+                    <span>Verifikasi 2 Langkah • Langkah 2 dari 2</span>
+                  </div>
+                  <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+                    Masukkan Sandi Pribadi Pelajar
+                  </h2>
+                  <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
+                    Kode akses <strong>{pendingVerifiedToken.tokenCode}</strong> telah dilindungi kata sandi pribadi Anda. Masukkan sandi Anda untuk membuka formulir laporan.
+                  </p>
+                </div>
+
+                <form onSubmit={handleVerifyStep2Password} className="space-y-4">
+                  <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
+                    <div>
+                      <span className="text-slate-500 font-medium block">Kode Akses Terverifikasi:</span>
+                      <span className="font-mono font-bold text-slate-900 text-sm">
+                        {pendingVerifiedToken.tokenCode}
+                      </span>
+                    </div>
+                    <span className="px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 text-[11px] font-semibold flex items-center gap-1">
+                      <Lock className="w-3 h-3 text-indigo-600" />
+                      Terproteksi Sandi
+                    </span>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                      Sandi Pribadi Pelajar *
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        required
+                        placeholder="Masukkan sandi rahasia Anda..."
+                        value={passwordInput}
+                        onChange={(e) => {
+                          setPasswordInput(e.target.value);
+                          setPasswordError("");
+                        }}
+                        className="w-full px-4 py-3 pr-10 rounded-xl border border-slate-200 text-sm bg-white focus:outline-hidden focus:border-indigo-600"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                      >
+                        {showPassword ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+
+                  {passwordError && (
+                    <p className="text-xs text-red-600 flex items-center gap-1.5">
+                      <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
+                      <span>{passwordError}</span>
+                    </p>
+                  )}
+
+                  <div className="flex flex-col sm:flex-row gap-2 pt-2">
+                    <button
+                      type="submit"
+                      disabled={isVerifyingPassword}
+                      className="flex-1 py-3 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold text-xs transition-colors cursor-pointer flex items-center justify-center gap-2 shadow-xs"
+                    >
+                      <Lock className="w-4 h-4" />
+                      <span>
+                        {isVerifyingPassword ? "Memeriksa..." : "Verifikasi Sandi & Buka Formulir Laporan"}
+                      </span>
+                      <ArrowRight className="w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setGateFlowStep("step1");
+                        setPasswordError("");
+                      }}
+                      className="py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
+                    >
+                      Ganti Kode Lain
+                    </button>
+                  </div>
+                </form>
               </div>
+            )}
 
-              <div className="space-y-1.5">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-slate-400" />
-                  <span>Perkiraan Waktu:</span>
-                </label>
-                <input
-                  type="text"
-                  value={incidentDate}
-                  onChange={(e) => setIncidentDate(e.target.value)}
-                  placeholder="Contoh: Istirahat pertama / Kemarin sore"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                />
-              </div>
-            </div>
-
-            <div className="flex justify-end pt-4 border-t border-slate-100">
-              <button
-                type="button"
-                id="form-step-1-next"
-                onClick={() => setCurrentStep(2)}
-                className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl shadow-md shadow-indigo-600/20 transition-all"
-              >
-                <span>Lanjut ke Kronologi</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+            {/* Footer Anonymity Guarantee */}
+            <div className="mt-6 pt-5 border-t border-slate-100 flex items-center gap-3 text-xs text-slate-500">
+              <Lock className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>
+                <strong>Jaminan Kerahasiaan Kriptografi:</strong> Seluruh sandi dienkripsi dengan hash satu arah (SHA-256). Sistem tidak pernah menyimpan teks asli sandi dan tidak meminta nama lengkap, nomor HP, atau NISN Anda.
+              </span>
             </div>
           </div>
         )}
 
-        {/* STEP 2: KRONOLOGI & DETEKSI OTOMATIS PII */}
-        {currentStep === 2 && (
-          <div className="space-y-6 animate-fadeIn">
-            <div className="border-b border-slate-100 pb-4">
-              <div className="flex items-center justify-between">
+        {/* STEP 1: INPUT FORMULIR (HANYA MUNCUL SETELAH SISWA TERVERIFIKASI) */}
+        {isStudentVerified && currentStep === 1 && (
+          <div className="bg-white border border-slate-200/90 rounded-3xl shadow-sm p-6 sm:p-8 animate-fadeIn">
+            {/* Status Pelajar Terverifikasi */}
+            <div className="mb-6 p-4 rounded-2xl bg-emerald-50 border border-emerald-200/90 flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-xl bg-emerald-100 flex items-center justify-center text-emerald-700">
+                  <CheckCircle2 className="w-5 h-5" />
+                </div>
                 <div>
-                  <h2 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-indigo-600" />
-                    <span>
-                      Langkah 2: Kronologi & Deteksi Otomatis Identitas
+                  <div className="text-xs font-bold text-emerald-900 flex flex-wrap items-center gap-2">
+                    <span>Terverifikasi: Siswa Sah {activeSchoolDisplayName}</span>
+                    <span className="px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-800 text-[10px]">
+                      {verificationMethod === "token"
+                        ? "Kode Akses Sekolah"
+                        : "Sandi Pribadi Pelajar"}
                     </span>
-                  </h2>
-                  <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                    Ceritakan apa yang terjadi. Fitur cerdas TAMENG akan
-                    mendeteksi nama atau kelas yang tidak sengaja tertulis.
+                  </div>
+                  <p className="text-[11px] text-emerald-700 mt-0.5">
+                    Laporan Anda sah dari warga sekolah &amp; identitas Anda tetap 100% rahasia tanpa jejak.
                   </p>
                 </div>
-                <div className="hidden sm:flex items-center gap-1.5 text-xs text-indigo-700 font-bold bg-indigo-50 px-3 py-1.5 rounded-full border border-indigo-200">
-                  <Sparkles className="w-4 h-4 text-indigo-600" />
-                  <span>Pattern Sanitizer Aktif</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setIsStudentVerified(false)}
+                className="text-xs font-medium text-emerald-800 hover:text-emerald-950 underline cursor-pointer"
+              >
+                Ganti
+              </button>
+            </div>
+
+            {/* Header */}
+            <div className="mb-6 border-b border-slate-100 pb-5">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold mb-2">
+                <ShieldCheck className="w-4 h-4 text-blue-600" />
+                <span>100% Rahasia &amp; Bebas Jejak</span>
+              </div>
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+                Buat Laporan Aman
+              </h1>
+              <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                Ceritakan apa yang terjadi. Identitasmu tidak akan pernah ditampilkan atau dibagikan ke siapapun.
+              </p>
+            </div>
+
+            <div className="space-y-6">
+              {/* 0. Satuan Pendidikan Asal Pelapor (Cakupan Nasional) */}
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-slate-50 to-blue-50/40 border border-slate-200">
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
+                    <Building2 className="w-3.5 h-3.5 text-blue-600" />
+                    <span>Satuan Pendidikan Asal (Cakupan Nasional)</span>
+                  </label>
+                  <span className="text-[10px] font-semibold text-blue-700 bg-blue-100/80 px-2 py-0.5 rounded-full">
+                    38 Provinsi
+                  </span>
+                </div>
+
+                {studentSession?.schoolName ? (
+                  <div className="flex items-center justify-between p-3 bg-white rounded-xl border border-blue-200">
+                    <div className="flex items-center gap-2.5">
+                      <School className="w-4 h-4 text-blue-600 shrink-0" />
+                      <div>
+                        <div className="text-xs font-bold text-slate-900">
+                          {studentSession.schoolName}
+                        </div>
+                        <div className="text-[11px] text-slate-500">
+                          Terverifikasi otomatis via sesi pelajar sekolah
+                        </div>
+                      </div>
+                    </div>
+                    <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
+                      Tervalidasi
+                    </span>
+                  </div>
+                ) : (
+                  <div className="space-y-2">
+                    <select
+                      value={selectedSchool}
+                      onChange={(e) => setSelectedSchool(e.target.value)}
+                      className="w-full px-3 py-2 bg-white rounded-xl border border-slate-200 text-xs font-medium text-slate-800 focus:outline-hidden focus:ring-2 focus:ring-blue-500 cursor-pointer"
+                    >
+                      {availableSchools.map((sch) => (
+                        <option key={sch.id} value={sch.schoolName}>
+                          {sch.schoolName} — {sch.district || ""}, {sch.province || "Indonesia"} {sch.npsn ? `(NPSN: ${sch.npsn})` : ""}
+                        </option>
+                      ))}
+                      <option value="other">+ Sekolah Lainnya (Ketik Nama Sekolah)</option>
+                    </select>
+
+                    {selectedSchool === "other" && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 animate-fadeIn">
+                        <input
+                          type="text"
+                          required
+                          placeholder="Nama Satuan Pendidikan (misal: SMP Negeri 1 Medan)"
+                          value={customSchoolName}
+                          onChange={(e) => setCustomSchoolName(e.target.value)}
+                          className="px-3 py-2 bg-white rounded-xl border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Provinsi / Kota (misal: Sumatera Utara)"
+                          value={customSchoolProvince}
+                          onChange={(e) => setCustomSchoolProvince(e.target.value)}
+                          className="px-3 py-2 bg-white rounded-xl border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                        />
+                      </div>
+                    )}
+                    <p className="text-[11px] text-slate-500">
+                      Laporan akan diteruskan ke Satgas PPKSP satuan pendidikan dan dapat dipantau oleh Dinas Pendidikan terkait.
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              {/* 1. Pilih Kategori */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">
+                  1. Pilih Jenis Kejadian
+                </label>
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {CATEGORIES.map((cat) => {
+                    const Icon = cat.icon;
+                    const isSelected = category === cat.id;
+                    return (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        onClick={() => setCategory(cat.id)}
+                        className={`flex items-center gap-2 p-3 rounded-xl border text-left text-xs font-semibold transition-all cursor-pointer ${
+                          isSelected
+                            ? "bg-blue-50 border-blue-600 text-blue-900 shadow-2xs"
+                            : "bg-white border-slate-200 text-slate-700 hover:border-slate-300 hover:bg-slate-50"
+                        }`}
+                      >
+                        <Icon
+                          className={`w-4 h-4 shrink-0 ${
+                            isSelected ? "text-blue-600" : "text-slate-400"
+                          }`}
+                        />
+                        <span className="truncate">{cat.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
-            </div>
 
-            {/* Urgency Selector */}
-            <div className="space-y-2">
-              <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Tingkat Urgensi / Kegawatan:
-              </label>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5">
-                {URGENCIES.map((u) => (
-                  <button
-                    key={u.level}
-                    type="button"
-                    onClick={() => setUrgency(u.level)}
-                    className={`p-3 rounded-xl border text-left transition-all ${
-                      urgency === u.level
-                        ? `${u.color} ring-2 ring-indigo-500 shadow-xs font-bold`
-                        : "border-slate-200 hover:border-slate-300 text-slate-700 bg-white"
-                    }`}
-                  >
-                    <div className="text-xs font-bold">{u.level}</div>
-                    <div className="text-[11px] text-slate-500 mt-0.5 leading-tight">
-                      {u.desc}
-                    </div>
-                  </button>
-                ))}
-              </div>
-            </div>
+              {/* 2. Isi Cerita / Kronologi */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    2. Ceritakan Apa yang Terjadi *
+                  </label>
+                  <span className="text-[11px] text-slate-400">
+                    {story.length} karakter
+                  </span>
+                </div>
+                <textarea
+                  required
+                  rows={5}
+                  value={story}
+                  onChange={(e) => setStory(e.target.value)}
+                  placeholder="Ceritakan dengan tenang apa yang kamu alami atau saksikan... Siapa saja yang terlibat, bagaimana kronologinya, atau apa bantuan yang kamu butuhkan."
+                  className="w-full p-4 rounded-2xl border border-slate-200 text-sm placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500 leading-relaxed bg-slate-50/50"
+                />
 
-            {/* Story Textarea */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                  Ceritakan Kejadian Secara Rinci:
-                </label>
-                <span className="text-xs text-slate-400">
-                  {story.length} karakter
-                </span>
-              </div>
-
-              <textarea
-                value={story}
-                onChange={(e) => {
-                  setStory(e.target.value);
-                  setIsRedacted(false);
-                }}
-                rows={6}
-                placeholder="Tuliskan apa yang Anda alami atau saksikan... (Contoh: Saat istirahat di lorong kelas XII IPA 2, ada sekelompok siswa yang mengambil paksa barang dan mengancam...)"
-                className="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 font-sans leading-relaxed"
-              />
-            </div>
-
-            {/* Live Detected PII Notification & Redaction Trigger */}
-            {detectedEntities.length > 0 && (
-              <div className="bg-amber-50/90 border border-amber-300 rounded-2xl p-4 space-y-3 animate-fadeIn">
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-2">
-                    <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0" />
+                {/* Reassuring Live PII Redaction Indicator */}
+                {detectedEntities.length > 0 ? (
+                  <div className="mt-2.5 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs flex items-start gap-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                     <div>
-                      <h4 className="text-xs sm:text-sm font-bold text-amber-950">
-                        Deteksi Otomatis: Ditemukan {detectedEntities.length}{" "}
-                        Potensi Pengenal Pribadi
-                      </h4>
-                      <p className="text-xs text-amber-800">
-                        Untuk menjaga kerahasiaan Anda, kami menyarankan untuk
-                        menyamarkan kata-kata berikut:
+                      <span className="font-bold">
+                        Privasi Terdeteksi &amp; Diamankan:{" "}
+                      </span>
+                      {detectedEntities.map((e, idx) => (
+                        <span
+                          key={idx}
+                          className="inline-block bg-white px-1.5 py-0.5 rounded text-[11px] font-mono text-emerald-900 border border-emerald-200 mx-0.5"
+                        >
+                          {e.type}
+                        </span>
+                      ))}
+                      <p className="mt-0.5 text-[11px] text-emerald-700">
+                        Data pengenal ini otomatis disamarkan (DIRAHASIAKAN) pada sistem agar identitasmu tetap aman.
                       </p>
                     </div>
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={handleApplyRedaction}
-                    className="flex items-center gap-1.5 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-3.5 py-2 rounded-xl shadow-xs transition-colors shrink-0"
-                  >
-                    <EyeOff className="w-3.5 h-3.5" />
-                    <span>Sensor Otomatis</span>
-                  </button>
-                </div>
-
-                <div className="flex flex-wrap gap-1.5 pt-1">
-                  {detectedEntities.map((item, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-flex items-center gap-1 bg-white border border-amber-300 text-amber-900 text-xs px-2.5 py-1 rounded-lg font-mono font-medium shadow-2xs"
-                    >
-                      <span className="text-[10px] font-bold text-amber-600 uppercase">
-                        [{item.type}]:
-                      </span>
-                      <span>"{item.text}"</span>
+                ) : (
+                  <p className="mt-1.5 text-[11px] text-slate-500 flex items-center gap-1">
+                    <Lock className="w-3 h-3 text-slate-400" />
+                    <span>
+                      Sistem secara otomatis menyamarkan nama, nomor HP, atau kelas yang Anda tulis.
                     </span>
-                  ))}
+                  </p>
+                )}
+              </div>
+
+              {/* 3. Tingkat Urgensi */}
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
+                  3. Tingkat Urgensi Penanganan
+                </label>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  {[
+                    {
+                      id: "Rendah" as ReportUrgency,
+                      title: "Biasa / Konseling",
+                      desc: "Butuh saran bertahap",
+                    },
+                    {
+                      id: "Sedang" as ReportUrgency,
+                      title: "Penting",
+                      desc: "Kejadian berulang / mengganggu",
+                    },
+                    {
+                      id: "Kritis (Darurat Segera)" as ReportUrgency,
+                      title: "Darurat Segera",
+                      desc: "Ada ancaman fisik / bahaya",
+                    },
+                  ].map((lvl) => {
+                    const isSelected = urgency === lvl.id;
+                    return (
+                      <button
+                        key={lvl.id}
+                        type="button"
+                        onClick={() => setUrgency(lvl.id)}
+                        className={`p-3 rounded-xl border text-left transition-all cursor-pointer ${
+                          isSelected
+                            ? "border-blue-600 bg-blue-50/70 text-blue-950"
+                            : "border-slate-200 hover:border-slate-300 text-slate-700"
+                        }`}
+                      >
+                        <div className="flex items-center justify-between">
+                          <span className="font-bold text-xs">{lvl.title}</span>
+                          {isSelected && (
+                            <Check className="w-3.5 h-3.5 text-blue-600" />
+                          )}
+                        </div>
+                        <p className="text-[11px] text-slate-500 mt-0.5">
+                          {lvl.desc}
+                        </p>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
-            )}
 
-            {isRedacted && (
-              <div className="bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-xl p-3 text-xs flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>
-                  Seluruh data pengenal pribadi telah disamarkan dengan tanda
-                  [TERLINDUNGI].
-                </span>
+              {/* 4. Verifikasi Kedua: PIN Rahasia (Antisipasi jika Lupa Nomor Tiket) */}
+              <div className="p-4 rounded-2xl bg-sky-50/70 border border-sky-200">
+                <div className="flex items-center gap-2 mb-1.5">
+                  <KeyRound className="w-4 h-4 text-sky-600 shrink-0" />
+                  <label className="text-xs font-bold text-sky-950 uppercase tracking-wider">
+                    4. PIN Rahasia / Kata Sandi Pemulihan (Opsional)
+                  </label>
+                </div>
+                <p className="text-[11px] text-sky-800 leading-relaxed mb-2.5">
+                  Jika suatu saat Anda lupa atau kehilangan Nomor Tiket, Anda bisa membuka kembali laporan menggunakan jenis masalah dan PIN rahasia yang Anda buat di sini.
+                </p>
+                <input
+                  type="text"
+                  value={secretPin}
+                  onChange={(e) => setSecretPin(e.target.value)}
+                  placeholder="Contoh: 1234 atau kata rahasiamu (kucingoren)"
+                  className="w-full sm:max-w-xs px-3.5 py-2.5 rounded-xl border border-sky-200 bg-white text-xs font-mono text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
+                />
               </div>
-            )}
 
-            {/* Navigation buttons */}
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-              <button
-                type="button"
-                onClick={() => setCurrentStep(1)}
-                className="flex items-center gap-2 text-slate-600 hover:text-slate-900 font-bold text-xs sm:text-sm py-2 px-4 rounded-lg hover:bg-slate-100"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Kembali</span>
-              </button>
+              {/* 5. Opsi Tambahan (Collapsible toggle for simplicity) */}
+              <div className="pt-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowOptionalDetails(!showOptionalDetails)}
+                  className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 cursor-pointer"
+                >
+                  {showOptionalDetails ? (
+                    <ChevronUp className="w-3.5 h-3.5" />
+                  ) : (
+                    <ChevronDown className="w-3.5 h-3.5" />
+                  )}
+                  <span>
+                    {showOptionalDetails
+                      ? "Sembunyikan detail tambahan"
+                      : "Tambah detail opsional (lokasi, lampiran bukti, atau kode sekolah)"}
+                  </span>
+                </button>
 
-              <button
-                type="button"
-                id="form-step-2-next"
-                disabled={!story.trim()}
-                onClick={() => setCurrentStep(3)}
-                className={`flex items-center gap-2 font-bold py-3 px-6 rounded-xl shadow-md transition-all ${
-                  story.trim()
-                    ? "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/20 cursor-pointer"
-                    : "bg-slate-200 text-slate-400 cursor-not-allowed"
-                }`}
-              >
-                <span>Lanjut ke Bukti & Lampiran</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
+                {showOptionalDetails && (
+                  <div className="mt-4 space-y-4 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                          Lokasi Kejadian (Opsional)
+                        </label>
+                        <input
+                          type="text"
+                          value={location}
+                          onChange={(e) => setLocation(e.target.value)}
+                          placeholder="Contoh: Belakang kantin, Lab komputer"
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                          Waktu / Kapan Terjadi (Opsional)
+                        </label>
+                        <input
+                          type="text"
+                          value={incidentDate}
+                          onChange={(e) => setIncidentDate(e.target.value)}
+                          placeholder="Contoh: Kemarin saat istirahat kedua"
+                          className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Lampiran Bukti */}
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 mb-1.5">
+                        Lampirkan Bukti Foto / Tangkapan Layar (Opsional)
+                      </label>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-100 cursor-pointer">
+                          <UploadCloud className="w-3.5 h-3.5 text-slate-500" />
+                          <span>Pilih Foto/Berkas</span>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            multiple
+                            accept="image/*,audio/*,.pdf"
+                            onChange={handleFileUpload}
+                            className="hidden"
+                          />
+                        </label>
+
+                        <button
+                          type="button"
+                          onClick={handleToggleRecordAudio}
+                          className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl border text-xs font-semibold cursor-pointer transition-colors ${
+                            isRecording
+                              ? "bg-rose-600 text-white border-rose-600 animate-pulse"
+                              : "bg-white border-slate-200 text-slate-700 hover:bg-slate-100"
+                          }`}
+                        >
+                          <Mic className="w-3.5 h-3.5" />
+                          <span>
+                            {isRecording
+                              ? `Merekam (${recordingSeconds}s) - Klik Selesai`
+                              : "Rekam Suara (Opsional)"}
+                          </span>
+                        </button>
+                      </div>
+
+                      {/* File attachment list */}
+                      {attachments.length > 0 && (
+                        <div className="mt-2 space-y-1">
+                          {attachments.map((att) => (
+                            <div
+                              key={att.id}
+                              className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-white border border-slate-200 text-xs text-slate-700"
+                            >
+                              <span className="truncate max-w-[240px]">
+                                {att.name} ({formatBytes(att.size)})
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setAttachments((prev) =>
+                                    prev.filter((a) => a.id !== att.id),
+                                  )
+                                }
+                                className="text-slate-400 hover:text-rose-600 cursor-pointer"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Kode Akses Sekolah (Opsional) */}
+                    <div>
+                      <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                        Kode Akses Sekolah (Opsional, jika dibagikan)
+                      </label>
+                      <div className="flex items-center gap-2 max-w-sm">
+                        <input
+                          type="text"
+                          value={tokenInput}
+                          onChange={(e) => setTokenInput(e.target.value)}
+                          placeholder="Contoh: SCH-X1-8821"
+                          className="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-xs uppercase font-mono bg-white focus:outline-hidden"
+                        />
+                        <button
+                          type="button"
+                          onClick={handleVerifyTokenOptional}
+                          className="px-3 py-2 rounded-xl bg-slate-800 text-white text-xs font-semibold cursor-pointer"
+                        >
+                          Periksa
+                        </button>
+                      </div>
+                      {tokenStatusMessage && (
+                        <p className="mt-1 text-[11px] text-blue-600 font-medium">
+                          {tokenStatusMessage}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Submit Button */}
+              <div className="pt-4 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={handleSubmitReport}
+                  disabled={isSubmitting}
+                  className="w-full py-3.5 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
+                >
+                  {isSubmitting ? (
+                    <span>Mengirim secara rahasia...</span>
+                  ) : (
+                    <>
+                      <Send className="w-4 h-4" />
+                      <span>Kirim Laporan Secara Rahasia</span>
+                    </>
+                  )}
+                </button>
+                <p className="text-center text-[11px] text-slate-400 mt-2">
+                  Laporan dienkripsi langsung ke tim Guru BK &amp; Satgas PPKSP.
+                </p>
+              </div>
             </div>
           </div>
         )}
 
-        {/* STEP 3: BUKTI & LAMPIRAN */}
-        {currentStep === 3 && (
-          <div className="space-y-6 animate-fadeIn">
-            <div className="border-b border-slate-100 pb-4">
-              <h2 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
-                <UploadCloud className="w-5 h-5 text-indigo-600" />
-                <span>Langkah 3: Unggah Bukti & Lampiran (Maks 25 MB)</span>
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                Screenshot pesan, foto luka/kejadian, atau rekaman suara. Lokasi
-                GPS dan data perangkat (EXIF) otomatis dibersihkan.
-              </p>
+        {/* STEP 2: SUKSES & TIKET TERBIT */}
+        {currentStep === 2 && submittedTicket && (
+          <div className="bg-white border border-slate-200/90 rounded-3xl shadow-sm p-6 sm:p-8 text-center animate-fade-in">
+            <div className="w-14 h-14 rounded-2xl bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto mb-4">
+              <CheckCircle2 className="w-8 h-8" />
             </div>
 
-            {/* EXIF Stripper Privacy Guarantee */}
-            <div className="bg-slate-900 text-slate-100 rounded-2xl p-4 flex items-center justify-between gap-3 text-xs">
-              <div className="flex items-center gap-2.5">
-                <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400">
-                  <ShieldCheck className="w-4 h-4" />
-                </div>
-                <div>
-                  <span className="font-bold text-indigo-300 block">
-                    EXIF Scrubbing Otomatis Aktif
-                  </span>
-                  <span className="text-slate-300">
-                    Data tipe HP, koordinat GPS, dan metadata foto dihapus saat
-                    diunggah.
-                  </span>
-                </div>
-              </div>
-              <span className="text-[10px] font-mono bg-slate-800 text-slate-300 px-2.5 py-1 rounded border border-slate-700 shrink-0">
-                Anon-Upload v2
-              </span>
-            </div>
+            <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
+              Laporan Berhasil Terkirim
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto mt-2 leading-relaxed">
+              Laporanmu telah diterima secara rahasia oleh Guru BK. Simpan kode tiket di bawah ini untuk memantau tanggapan dan melanjutkan chat.
+            </p>
 
-            {/* Drag & Drop Upload Zone */}
-            <div
-              onClick={() => fileInputRef.current?.click()}
-              className="border-2 border-dashed border-slate-200 hover:border-indigo-500 rounded-2xl p-6 sm:p-8 text-center cursor-pointer bg-slate-50/50 hover:bg-indigo-50/30 transition-all space-y-3"
-            >
-              <input
-                ref={fileInputRef}
-                type="file"
-                multiple
-                accept="image/*,audio/*,.pdf,.doc,.docx"
-                onChange={handleFileUpload}
-                className="hidden"
-              />
-              <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mx-auto shadow-xs">
-                <UploadCloud className="w-6 h-6" />
-              </div>
+            {/* Ticket Credentials Card */}
+            <div className="mt-6 max-w-md mx-auto p-5 rounded-2xl bg-slate-50 border border-slate-200 text-left space-y-4">
               <div>
-                <span className="font-bold text-slate-900 text-sm block">
-                  Klik untuk Memilih File atau Tarik ke Sini
+                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                  Nomor Tiket Anda
                 </span>
-                <span className="text-xs text-slate-500">
-                  Mendukung Foto (JPG, PNG), Rekaman Suara (MP3, WAV), atau
-                  Dokumen (PDF) hingga 25 MB
-                </span>
-              </div>
-            </div>
-
-            {/* Voice Recorder Simulation with Audio Waveforms */}
-            <div className="border border-slate-200 rounded-2xl p-4 bg-slate-50/60 flex flex-col sm:flex-row items-center justify-between gap-4">
-              <div className="flex items-center gap-3 w-full sm:w-auto">
-                <div
-                  className={`p-2.5 rounded-xl ${isRecording ? "bg-red-500 text-white animate-pulse" : "bg-slate-200 text-slate-700"}`}
-                >
-                  <Mic className="w-5 h-5" />
-                </div>
-                <div className="space-y-1">
-                  <div className="font-bold text-xs sm:text-sm text-slate-800 flex items-center gap-2">
-                    <span>
-                      {isRecording
-                        ? `Sedang Merekam: 00:${recordingSeconds < 10 ? "0" + recordingSeconds : recordingSeconds}`
-                        : "Rekam Suara Cerita Anda (Opsional)"}
-                    </span>
-                    {isRecording && (
-                      <span className="flex h-2 w-2 relative">
-                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
-                        <span className="relative inline-flex rounded-full h-2 w-2 bg-red-500"></span>
-                      </span>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-xl sm:text-2xl font-mono font-extrabold text-blue-700">
+                    {submittedTicket.id}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyTicket}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white border border-slate-200 hover:bg-slate-100 text-xs font-semibold text-slate-700 transition-colors cursor-pointer"
+                  >
+                    {copiedTicketId ? (
+                      <>
+                        <Check className="w-3.5 h-3.5 text-emerald-600" />
+                        <span className="text-emerald-700">Tersalin</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="w-3.5 h-3.5 text-slate-500" />
+                        <span>Salin</span>
+                      </>
                     )}
-                  </div>
-                  <div className="text-[11px] text-slate-500">
-                    Bagus jika Anda lebih nyaman menceritakan kronologi lewat
-                    rekaman audio suara.
-                  </div>
+                  </button>
                 </div>
               </div>
 
-              {/* Animated wave bars if recording */}
-              {isRecording && (
-                <div className="flex items-center gap-1 h-6 px-3 py-1 bg-red-50 border border-red-200 rounded-lg">
-                  {[40, 70, 90, 60, 100, 45, 80, 50, 95, 30, 85, 60].map(
-                    (height, i) => (
-                      <div
-                        key={i}
-                        className="w-1 bg-red-500 rounded-full animate-pulse"
-                        style={{
-                          height: `${Math.max(20, (height * ((recordingSeconds % 3) + 1)) % 100)}%`,
-                          animationDelay: `${i * 0.1}s`,
-                        }}
-                      />
-                    ),
-                  )}
+              <div className="pt-3 border-t border-slate-200">
+                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                  Kunci Pemulihan Rahasia
+                </span>
+                <div className="flex items-center justify-between mt-1">
+                  <span className="text-xs font-mono text-slate-600 select-all truncate max-w-[200px]">
+                    {submittedTicket.recoveryCode}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleCopyKey}
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-white border border-slate-200 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer"
+                  >
+                    {copiedKey ? "Tersalin" : "Salin Kunci"}
+                  </button>
+                </div>
+              </div>
+
+              {secretPin.trim() && (
+                <div className="pt-3 border-t border-slate-200">
+                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                    PIN Rahasia Pemulihan Anda
+                  </span>
+                  <div className="mt-1 flex items-center gap-2">
+                    <span className="text-xs font-mono font-bold text-sky-800 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
+                      {secretPin.trim()}
+                    </span>
+                    <span className="text-[11px] text-slate-500">
+                      (Dapat dipakai jika lupa nomor tiket)
+                    </span>
+                  </div>
                 </div>
               )}
 
-              <button
-                type="button"
-                onClick={handleToggleRecordAudio}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
-                  isRecording
-                    ? "bg-red-600 hover:bg-red-700 text-white shadow-md shadow-red-600/30"
-                    : "bg-white hover:bg-slate-100 text-slate-800 border border-slate-300"
-                }`}
-              >
-                {isRecording ? (
-                  <>
-                    <Square className="w-3.5 h-3.5 fill-current" />
-                    <span>Selesai & Lampirkan</span>
-                  </>
-                ) : (
-                  <>
-                    <Mic className="w-3.5 h-3.5" />
-                    <span>Mulai Rekam</span>
-                  </>
-                )}
-              </button>
-            </div>
-
-            {/* Attachment List */}
-            {attachments.length > 0 && (
-              <div className="space-y-2">
-                <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                  File Terlampir ({attachments.length}):
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  {attachments.map((file) => (
-                    <div
-                      key={file.id}
-                      className="border border-slate-200 rounded-xl p-3 flex items-center justify-between gap-2 bg-white shadow-2xs"
-                    >
-                      <div className="flex items-center gap-2.5 overflow-hidden">
-                        {file.previewUrl ? (
-                          <img
-                            src={file.previewUrl}
-                            alt={file.name}
-                            className="w-10 h-10 rounded-lg object-cover border shrink-0"
-                          />
-                        ) : (
-                          <div className="w-10 h-10 rounded-lg bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0">
-                            {file.isAudio ? (
-                              <Mic className="w-5 h-5" />
-                            ) : (
-                              <FileText className="w-5 h-5" />
-                            )}
-                          </div>
-                        )}
-                        <div className="overflow-hidden">
-                          <p className="text-xs font-bold text-slate-800 truncate">
-                            {file.name}
-                          </p>
-                          <p className="text-[10px] text-slate-400 font-mono">
-                            {formatBytes(file.size)}
-                          </p>
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveAttachment(file.id)}
-                        className="text-slate-400 hover:text-red-600 p-1 rounded"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Navigation buttons */}
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-              <button
-                type="button"
-                onClick={() => setCurrentStep(2)}
-                className="flex items-center gap-2 text-slate-600 hover:text-slate-900 font-bold text-xs sm:text-sm py-2 px-4 rounded-lg hover:bg-slate-100"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Kembali</span>
-              </button>
-
-              <button
-                type="button"
-                id="form-step-3-next"
-                onClick={() => setCurrentStep(4)}
-                className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl shadow-md shadow-indigo-600/20 transition-all"
-              >
-                <span>Lanjut ke Review & Enkripsi</span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-        )}
-
-        {/* STEP 4: REVIEW & ENKRIPSI KRIPTOGRAFIS */}
-        {currentStep === 4 && (
-          <div className="space-y-6 animate-fadeIn">
-            <div className="border-b border-slate-100 pb-4">
-              <h2 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
-                <Lock className="w-5 h-5 text-indigo-600" />
-                <span>Langkah 4: Pratinjau & Enkripsi Zero-Knowledge</span>
-              </h2>
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                Tinjau ringkasan laporan sebelum dikunci secara kriptografis dan
-                dikirim ke Guru BK.
-              </p>
-            </div>
-
-            {/* Report Summary Card */}
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-4 text-xs sm:text-sm">
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 border-b border-slate-200 pb-3">
-                <div>
-                  <span className="text-slate-400 block text-[11px]">
-                    Kategori:
-                  </span>
-                  <strong className="text-slate-900 font-bold">
-                    {category}
-                  </strong>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[11px]">
-                    Status Pelapor:
-                  </span>
-                  <strong className="text-slate-900 font-bold">
-                    {reporterRole}
-                  </strong>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[11px]">
-                    Urgensi:
-                  </span>
-                  <span className="inline-block px-2 py-0.5 rounded font-bold text-xs bg-slate-200 text-slate-800">
-                    {urgency}
-                  </span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block text-[11px]">
-                    Lampiran:
-                  </span>
-                  <strong className="text-slate-900 font-bold">
-                    {attachments.length} file
-                  </strong>
-                </div>
-              </div>
-
-              <div>
-                <span className="text-slate-400 block text-[11px] mb-1">
-                  Isi Kronologi Kejadian:
-                </span>
-                <div className="p-3.5 bg-white rounded-xl border border-slate-200 text-slate-800 leading-relaxed font-sans">
-                  {story}
-                </div>
-              </div>
-            </div>
-
-            {/* Cryptographic Proof Verification Card */}
-            <div className="border border-indigo-200 bg-indigo-50/50 rounded-2xl p-4 space-y-2">
-              <div className="flex items-center gap-2 font-bold text-xs text-indigo-900">
-                <Cpu className="w-4 h-4 text-indigo-600" />
-                <span>Protokol Keamanan & Anti-Spam Zero-Knowledge</span>
-              </div>
-              <ul className="text-xs text-slate-600 space-y-1 list-disc list-inside">
-                <li>
-                  Enkripsi simetris end-to-end dengan derivasi kunci aman.
-                </li>
-                <li>Anti-Spam Proof-of-Work ringan mencegah flood otomatis.</li>
-                <li>
-                  Tidak ada data metadata IP, OS, atau browser yang direkam.
-                </li>
-              </ul>
-            </div>
-
-            {/* Progress if submitting */}
-            {isSubmitting && (
-              <div className="space-y-2 animate-fadeIn">
-                <div className="flex items-center justify-between text-xs font-bold text-indigo-900">
-                  <span>Mengunci & Mengenkripsi Laporan (ZKP)...</span>
-                  <span>{powProgress}%</span>
-                </div>
-                <div className="w-full h-2.5 bg-slate-200 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-indigo-600 transition-all duration-300"
-                    style={{ width: `${powProgress}%` }}
-                  />
-                </div>
-              </div>
-            )}
-
-            {/* Submit Action */}
-            <div className="flex items-center justify-between pt-4 border-t border-slate-100">
-              <button
-                type="button"
-                disabled={isSubmitting}
-                onClick={() => setCurrentStep(3)}
-                className="flex items-center gap-2 text-slate-600 hover:text-slate-900 font-bold text-xs sm:text-sm py-2 px-4 rounded-lg hover:bg-slate-100"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Kembali</span>
-              </button>
-
-              <div className="flex items-center gap-3">
-                {!studentSession && !isKioskMode && (
-                  <span className="text-[11px] text-red-600 font-bold">
-                    Wajib verifikasi kode akses
-                  </span>
-                )}
+              <div className="pt-3 border-t border-slate-200">
                 <button
                   type="button"
-                  id="submit-anonymous-report-btn"
-                  disabled={isSubmitting || (!studentSession && !isKioskMode)}
-                  onClick={handleSubmitReport}
-                  className={`flex items-center gap-2 font-extrabold py-3.5 px-8 rounded-xl shadow-lg transition-all cursor-pointer ${
-                    !studentSession && !isKioskMode
-                      ? "bg-slate-300 text-slate-500 shadow-none cursor-not-allowed"
-                      : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-600/25 hover:scale-102"
-                  }`}
+                  onClick={handleDownloadReceipt}
+                  className="w-full flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-semibold transition-colors cursor-pointer"
                 >
-                  <Send className="w-4 h-4" />
+                  <Download className="w-3.5 h-3.5 text-slate-600" />
                   <span>
-                    {isSubmitting
-                      ? "Memproses Enkripsi..."
-                      : "Kirim Laporan Terenkripsi"}
+                    {downloadReceiptDone ? "Bukti Tiket Berhasil Diunduh" : "Unduh Bukti Tiket (.txt)"}
                   </span>
                 </button>
               </div>
+            </div>
+
+            {/* Primary Action: Go Straight to Chat! */}
+            <div className="mt-8 max-w-md mx-auto space-y-3">
+              <button
+                type="button"
+                onClick={() => onNavigateToChat(submittedTicket.id)}
+                className="w-full py-3.5 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
+              >
+                <MessageSquare className="w-4 h-4" />
+                <span>Buka Chat Konseling Sekarang</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setCurrentStep(1);
+                  setStory("");
+                }}
+                className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
+              >
+                Buat Laporan Lain
+              </button>
             </div>
           </div>
         )}

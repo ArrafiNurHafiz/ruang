@@ -110,6 +110,7 @@ export const api = {
     detectedPII: string[];
     schoolId?: string;
     isKiosk?: boolean;
+    secretPin?: string;
   }): Promise<ReportTicket> {
     const ticketNumber = generateTicketNumber();
     const recoveryCode = generateRecoveryCode();
@@ -122,6 +123,7 @@ export const api = {
         ...input,
         ticket_number: ticketNumber,
         recovery_code: recoveryCode,
+        secret_pin: input.secretPin,
         hash_zkp: hashZKP,
         status: "diterima",
         school_id: input.schoolId || "default-school",
@@ -141,8 +143,11 @@ export const api = {
       redactedStory: data.redacted_story,
       detectedPII: data.detected_pii,
       recoveryCode: data.recovery_code,
+      secretPin: data.secret_pin || data.secretPin,
       hashZKP: data.hash_zkp,
       isKioskSubmission: data.is_kiosk_submission,
+      resolutionEvidence: data.resolution_evidence || data.resolutionEvidence,
+      studentConfirmation: data.student_confirmation || data.studentConfirmation,
       messages: (data.ticket_messages ?? data.messages ?? []).map((m: any) => ({
         id: m.id,
         sender: m.sender_type ?? m.sender,
@@ -154,6 +159,76 @@ export const api = {
         isEncrypted: m.is_encrypted ?? m.isEncrypted,
       })),
     };
+  },
+
+  async recoverTicketByPin(category: string, secretPin: string): Promise<ReportTicket> {
+    const response = await fetchWithTimeout(`${API_URL}/tickets/recover-by-pin`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ category, secretPin }),
+    });
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      throw new Error(err.error || "Tiket tidak ditemukan dengan PIN tersebut");
+    }
+    const data = await response.json();
+    return {
+      ...data,
+      reporterRole: data.reporter_role || data.reporterRole,
+      incidentDate: data.incident_date || data.incidentDate,
+      redactedStory: data.redacted_story || data.redactedStory,
+      detectedPII: data.detected_pii || data.detectedPII,
+      recoveryCode: data.recovery_code || data.recoveryCode,
+      secretPin: data.secret_pin || data.secretPin,
+      resolutionEvidence: data.resolution_evidence || data.resolutionEvidence,
+      studentConfirmation: data.student_confirmation || data.studentConfirmation,
+      messages: (data.ticket_messages ?? data.messages ?? []).map((m: any) => ({
+        id: m.id,
+        sender: m.sender_type ?? m.sender,
+        senderTitle: m.sender_title ?? m.senderTitle,
+        text: m.message_text ?? m.text,
+        timestamp: new Date(m.created_at ?? m.timestamp).toLocaleString("id-ID"),
+        isEncrypted: m.is_encrypted ?? m.isEncrypted,
+      })),
+    };
+  },
+
+  async submitResolutionEvidence(
+    ticketId: string,
+    evidence: {
+      type: string;
+      description: string;
+      fileUrl?: string;
+      submittedBy?: string;
+    },
+  ) {
+    const response = await fetchWithTimeout(
+      `${API_URL}/tickets/${ticketId}/resolution-evidence`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(evidence),
+      },
+    );
+    if (!response.ok) throw new Error("Gagal mengunggah bukti penyelesaian");
+    return response.json();
+  },
+
+  async confirmResolution(
+    ticketId: string,
+    isSatisfied: boolean,
+    feedback?: string,
+  ) {
+    const response = await fetchWithTimeout(
+      `${API_URL}/tickets/${ticketId}/student-confirm`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ isSatisfied, feedback }),
+      },
+    );
+    if (!response.ok) throw new Error("Gagal mengonfirmasi penyelesaian");
+    return response.json();
   },
 
   async getTicketByRecoveryCode(recoveryCode: string): Promise<ReportTicket> {
@@ -326,36 +401,80 @@ export const api = {
     const data = await response.json();
     return {
       ...data,
-      tokenCode: data.token_code,
-      schoolName: "SMA Negeri 1 Jakarta",
-      studentLevel: data.student_level,
-      batchId: data.batch_id,
-      isActivated: data.is_activated,
-      isUsedForReport: data.is_used_for_report,
-      createdAt: data.created_at,
+      tokenCode: data.token_code || data.tokenCode,
+      schoolName: data.school_name || data.schoolName || "SMA Negeri 1 Jakarta",
+      studentLevel: data.student_level || data.studentLevel,
+      batchId: data.batch_id || data.batchId,
+      isActivated: data.is_activated || data.isActivated,
+      isUsedForReport: data.is_used_for_report || data.isUsedForReport,
+      createdAt: data.created_at || data.createdAt,
+      hasPassword: Boolean(data.hasPassword),
+      recoveryKey: data.recovery_key || data.recoveryKey,
     };
   },
 
   async activateToken(
     tokenCode: string,
     pinHash: string,
+    password?: string,
   ): Promise<SchoolToken> {
     const response = await fetchWithTimeout(`${API_URL}/tokens/activate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ tokenCode, pinHash }),
+      body: JSON.stringify({ tokenCode, pinHash, password }),
     });
     if (!response.ok) throw new Error("Failed to activate token");
     const data = await response.json();
     return {
       ...data,
-      tokenCode: data.token_code,
-      schoolName: "SMA Negeri 1 Jakarta",
-      studentLevel: data.student_level,
-      batchId: data.batch_id,
-      isActivated: data.is_activated,
-      isUsedForReport: data.is_used_for_report,
-      createdAt: data.created_at,
+      tokenCode: data.token_code || data.tokenCode,
+      schoolName: data.school_name || data.schoolName || "SMA Negeri 1 Jakarta",
+      studentLevel: data.student_level || data.studentLevel,
+      batchId: data.batch_id || data.batchId,
+      isActivated: data.is_activated || data.isActivated,
+      isUsedForReport: data.is_used_for_report || data.isUsedForReport,
+      createdAt: data.created_at || data.createdAt,
+      hasPassword: true,
+      recoveryKey: data.recovery_key || data.recoveryKey,
+    };
+  },
+
+  async verifyTokenByPassword(
+    password: string,
+    tokenCode?: string,
+    recoveryKey?: string,
+  ): Promise<SchoolToken> {
+    const response = await fetchWithTimeout(
+      `${API_URL}/tokens/verify-by-password`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ password, tokenCode, recoveryKey }),
+      },
+    );
+    if (!response.ok) {
+      const err = await response.json().catch(() => ({}));
+      const errorObj: any = new Error(
+        err.error ||
+          err.message ||
+          "Sandi pelajar tidak cocok atau belum diaktivasi dengan kode sekolah",
+      );
+      errorObj.isCollision = Boolean(err.isCollision || err.collision || response.status === 409);
+      errorObj.status = response.status;
+      throw errorObj;
+    }
+    const data = await response.json();
+    return {
+      ...data,
+      tokenCode: data.token_code || data.tokenCode,
+      schoolName: data.school_name || data.schoolName || "SMA Negeri 1 Jakarta",
+      studentLevel: data.student_level || data.studentLevel,
+      batchId: data.batch_id || data.batchId,
+      isActivated: data.is_activated ?? data.isActivated,
+      isUsedForReport: data.is_used_for_report ?? data.isUsedForReport,
+      createdAt: data.created_at || data.createdAt,
+      hasPassword: data.hasPassword,
+      recoveryKey: data.recovery_key || data.recoveryKey,
     };
   },
 
