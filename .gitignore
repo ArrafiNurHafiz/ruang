@@ -17,3 +17,6 @@ dist/
 .claude/
 ruvector.db
 *.db
+proposal/
+*.docx
+*.pdf

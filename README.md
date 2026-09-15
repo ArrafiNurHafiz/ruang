@@ -122,11 +122,6 @@ Aplikasi menyediakan kredensial peran resmi untuk pengujian alur penanganan keke
 ## 📂 Struktur Direktori Proyek
 
 ```text
-├── proposal/                      # Berkas resmi proposal kompetisi
-│   ├── PROPOSAL_RUANG_AMAN_FINAL.docx  # Naskah proposal Word (Standar Lomba)
-│   ├── PROPOSAL_RUANG_AMAN_FINAL.pdf   # Naskah proposal siap submit
-│   ├── DEFENSE_QA_BANK.md              # Bank soal & jawaban dewan juri
-│   └── web-technology.pdf              # Panduan resmi kompetisi
 ├── src/                           # Source code React & TypeScript
 │   ├── components/                # Komponen antarmuka (Dashboard, Form, Kiosk, dll.)
 │   ├── lib/                       # Modul koneksi API & Supabase Client
@@ -140,7 +135,7 @@ Aplikasi menyediakan kredensial peran resmi untuk pengujian alur penanganan keke
 │   ├── backend-local-integration.test.ts # Pengujian integrasi endpoint API
 │   ├── security-regression.test.ts       # Pengujian batas keamanan & kriptografi
 │   └── frontend-logic.test.ts            # Pengujian unit PII & key generation
-├── scripts/                       # Skrip otomatisasi dokumen & benchmark
+├── scripts/                       # Skrip otomatisasi & benchmark
 ├── server.cjs                     # Backend API Server (Node.js Express)
 ├── db.json                        # Database persisten lokal
 ├── package.json                   # Konfigurasi dependensi & npm scripts
