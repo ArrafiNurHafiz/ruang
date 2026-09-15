@@ -108,6 +108,51 @@
       "permissions": [],
       "is_active": true,
       "created_at": "2026-09-11T10:00:07.189Z"
+    },
+    {
+      "id": "c8e3e1e9-9292-4e4c-a994-604e6281af6c",
+      "name": "Admin Kedua",
+      "email": "admin2@ruang.com",
+      "role": "admin",
+      "roleTitle": "Administrator Kedua",
+      "organization": "Pusat Kendali TAMENG",
+      "created_at": "2026-09-15T14:05:22.198Z"
+    },
+    {
+      "id": "fc0e26d0-663e-4c0e-a836-afde2265ab28",
+      "name": "Drs. H. Mulyadi, M.Pd",
+      "email": "admin.sekolah.1789481122209@sekolah.sch.id",
+      "role": "guru",
+      "roleTitle": "Admin Sekolah (Guru BK)",
+      "organization": "SMA Negeri 2 Bandung",
+      "created_at": "2026-09-15T14:05:22.214Z"
+    },
+    {
+      "id": "ab26bf1b-dc54-4972-a344-f7aff3acefd9",
+      "name": "Admin Kedua",
+      "email": "admin2@ruang.com",
+      "role": "admin",
+      "roleTitle": "Administrator Kedua",
+      "organization": "Pusat Kendali TAMENG",
+      "created_at": "2026-09-15T14:05:41.710Z"
+    },
+    {
+      "id": "c34bc2fc-e582-481d-a89f-5f028ce84c39",
+      "name": "Drs. H. Mulyadi, M.Pd",
+      "email": "admin.sekolah.1789481141726@sekolah.sch.id",
+      "role": "guru",
+      "roleTitle": "Admin Sekolah (Guru BK)",
+      "organization": "SMA Negeri 2 Bandung",
+      "created_at": "2026-09-15T14:05:41.732Z"
+    },
+    {
+      "id": "199ac7b3-975a-4827-a99e-621ece1f521f",
+      "name": "Drs. H. Mulyadi, M.Pd",
+      "email": "admin.sekolah.1789481183759@sekolah.sch.id",
+      "role": "guru",
+      "roleTitle": "Admin Sekolah (Guru BK)",
+      "organization": "SMA Negeri 2 Bandung",
+      "created_at": "2026-09-15T14:06:23.766Z"
     }
   ],
   "tokens": [
@@ -1124,6 +1169,661 @@
       "recovery_key": "kunci-pjv0-9946",
       "activated_at": "2026-09-11T11:12:46.745Z",
       "usage_count": 1
+    },
+    {
+      "id": "26bcda28-3fe4-4b01-b2a7-3fb6fd85d554",
+      "token_code": "TEST-SMAN1-UDYH-5422",
+      "school_id": "default-school",
+      "student_level": "Kelas 10",
+      "batch_id": "BATCH-1789479759465",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "notes": "Automated Integration Test",
+      "created_at": "2026-09-15T13:42:39.465Z",
+      "password_hash": "d2340b0d8c47baddb79c1aa6f60cb5c5a6e5ee38e6a047a338c9d35abc901b3d",
+      "pin_hash": "d2340b0d8c47baddb79c1aa6f60cb5c5a6e5ee38e6a047a338c9d35abc901b3d",
+      "recovery_key": "kunci-uku9-6905",
+      "activated_at": "2026-09-15T13:42:39.485Z",
+      "usage_count": 1
+    },
+    {
+      "id": "0ebc1a03-4fe3-4cbe-8b4e-ab9b4892552d",
+      "token_code": "TEST-SMAN1-4TUZ-7767",
+      "school_id": "default-school",
+      "student_level": "Kelas 10",
+      "batch_id": "BATCH-1789479759465",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Automated Integration Test",
+      "created_at": "2026-09-15T13:42:39.465Z"
+    },
+    {
+      "id": "dbdd7ede-d810-4c37-ae62-b1e6ee18d43b",
+      "token_code": "COLLISION-TEST-MI9B-2653",
+      "school_id": "default-school",
+      "student_level": "Kelas 11",
+      "batch_id": "BATCH-1789479759507",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "created_at": "2026-09-15T13:42:39.507Z",
+      "password_hash": "1fe7bbbcc0a14c281064c589ae388b3f58bbd07411971c03d6d4b7408e860b80",
+      "pin_hash": "1fe7bbbcc0a14c281064c589ae388b3f58bbd07411971c03d6d4b7408e860b80",
+      "recovery_key": "kunci-5tcq-9234",
+      "activated_at": "2026-09-15T13:42:39.515Z",
+      "usage_count": 1
+    },
+    {
+      "id": "3b3007c8-4ecc-45c0-b0d1-ec5210de0594",
+      "token_code": "COLLISION-TEST-CGWJ-6224",
+      "school_id": "default-school",
+      "student_level": "Kelas 11",
+      "batch_id": "BATCH-1789479759507",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "created_at": "2026-09-15T13:42:39.507Z",
+      "password_hash": "1fe7bbbcc0a14c281064c589ae388b3f58bbd07411971c03d6d4b7408e860b80",
+      "pin_hash": "1fe7bbbcc0a14c281064c589ae388b3f58bbd07411971c03d6d4b7408e860b80",
+      "recovery_key": "kunci-fphr-6017",
+      "activated_at": "2026-09-15T13:42:39.524Z",
+      "usage_count": 1
+    },
+    {
+      "id": "e8bfc2ab-6f6b-4c56-bd41-bba953122f03",
+      "token_code": "SCH-LIVE-AVXF-2755",
+      "school_id": "default-school",
+      "student_level": "Kelas X MIPA 1",
+      "batch_id": "BATCH-1789479949933",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "notes": "Live Playwright E2E Token",
+      "created_at": "2026-09-15T13:45:49.933Z",
+      "password_hash": "338007fa7b3a4a85d5177d7bab0ca68251049e1c7b5f375c58ae1c225c0fbbff",
+      "pin_hash": "338007fa7b3a4a85d5177d7bab0ca68251049e1c7b5f375c58ae1c225c0fbbff",
+      "recovery_key": "kunci-lujn-4897",
+      "activated_at": "2026-09-15T13:45:50.826Z",
+      "usage_count": 1
+    },
+    {
+      "id": "ff0ed3c4-6b34-4f9f-b9a6-554f632da087",
+      "token_code": "SCH-X1-SW7P-9881",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789479959817",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T13:45:59.817Z"
+    },
+    {
+      "id": "77781391-3e06-4c26-a7ef-6cd097c3a71d",
+      "token_code": "SCH-X1-IKWN-7919",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789479959817",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T13:45:59.817Z"
+    },
+    {
+      "id": "3efd6c9f-745e-4f7e-b660-38de4b5d3f44",
+      "token_code": "SCH-X1-ZONI-5734",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789479959817",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T13:45:59.817Z"
+    },
+    {
+      "id": "ed887408-ab65-4a43-b4db-59db1ac294ff",
+      "token_code": "SCH-X1-58Y8-4193",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789479959817",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T13:45:59.817Z"
+    },
+    {
+      "id": "f010bda2-3fe7-4000-ace1-ba291e193018",
+      "token_code": "SCH-X1-KXZY-3612",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789479959817",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T13:45:59.817Z"
+    },
+    {
+      "id": "f45c39e6-9bab-4081-9113-b08407dbcb5a",
+      "token_code": "SCH-X1-09U3-8756",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789479959817",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T13:45:59.817Z"
+    },
+    {
+      "id": "5e4dae82-3263-4015-b45a-9ea5e084c97b",
+      "token_code": "SCH-X1-632J-5982",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789479959817",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T13:45:59.817Z"
+    },
+    {
+      "id": "be16a2ca-217a-460b-88b0-6c45607ea332",
+      "token_code": "SCH-X1-TPI4-3899",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789479959817",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T13:45:59.817Z"
+    },
+    {
+      "id": "7d5530c2-21fc-4970-9197-f499889dc63d",
+      "token_code": "SCH-X1-3GC1-2679",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789479959817",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T13:45:59.817Z"
+    },
+    {
+      "id": "3553624f-04cb-4570-874e-ad7004d1a907",
+      "token_code": "SCH-X1-ONV1-2634",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789479959817",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T13:45:59.817Z"
+    },
+    {
+      "id": "36f84fa3-cb82-45ef-bab3-e98a7f855396",
+      "token_code": "TEST-SMAN1-PK6N-3849",
+      "school_id": "default-school",
+      "student_level": "Kelas 10",
+      "batch_id": "BATCH-1789481122228",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "notes": "Automated Integration Test",
+      "created_at": "2026-09-15T14:05:22.228Z",
+      "password_hash": "dd8f8b5ee89a081dc4fa0a245ae4a5b0c9b414e47a483c0162d5b7d028551bd1",
+      "pin_hash": "dd8f8b5ee89a081dc4fa0a245ae4a5b0c9b414e47a483c0162d5b7d028551bd1",
+      "recovery_key": "kunci-snx0-2211",
+      "activated_at": "2026-09-15T14:05:22.245Z",
+      "usage_count": 1
+    },
+    {
+      "id": "51811764-a76e-4102-bf24-ec6aa9cd3e05",
+      "token_code": "TEST-SMAN1-KIU0-9800",
+      "school_id": "default-school",
+      "student_level": "Kelas 10",
+      "batch_id": "BATCH-1789481122228",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Automated Integration Test",
+      "created_at": "2026-09-15T14:05:22.228Z"
+    },
+    {
+      "id": "e0a02cc6-f416-4172-8b21-5c915d192fae",
+      "token_code": "COLLISION-TEST-TMOO-8659",
+      "school_id": "default-school",
+      "student_level": "Kelas 11",
+      "batch_id": "BATCH-1789481122266",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "created_at": "2026-09-15T14:05:22.266Z",
+      "password_hash": "133e30ab29ff477fe35081b53fda5d4f0c5002d97fc712c3ac78f3de447a107a",
+      "pin_hash": "133e30ab29ff477fe35081b53fda5d4f0c5002d97fc712c3ac78f3de447a107a",
+      "recovery_key": "kunci-haji-4114",
+      "activated_at": "2026-09-15T14:05:22.275Z",
+      "usage_count": 1
+    },
+    {
+      "id": "145ea5d0-600a-4e79-b6d5-5267351a69b5",
+      "token_code": "COLLISION-TEST-5QWI-8369",
+      "school_id": "default-school",
+      "student_level": "Kelas 11",
+      "batch_id": "BATCH-1789481122266",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "created_at": "2026-09-15T14:05:22.266Z",
+      "password_hash": "133e30ab29ff477fe35081b53fda5d4f0c5002d97fc712c3ac78f3de447a107a",
+      "pin_hash": "133e30ab29ff477fe35081b53fda5d4f0c5002d97fc712c3ac78f3de447a107a",
+      "recovery_key": "kunci-hycf-9247",
+      "activated_at": "2026-09-15T14:05:22.284Z",
+      "usage_count": 1
+    },
+    {
+      "id": "e36500cf-73c7-47e1-bf49-97bdf78844f9",
+      "token_code": "TEST-SMAN1-NWKG-4661",
+      "school_id": "default-school",
+      "student_level": "Kelas 10",
+      "batch_id": "BATCH-1789481141756",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "notes": "Automated Integration Test",
+      "created_at": "2026-09-15T14:05:41.756Z",
+      "password_hash": "c344e6f10bf7934a0bd13ee122a4d51730a43afa1c5aa989b24cafad771fdc5f",
+      "pin_hash": "c344e6f10bf7934a0bd13ee122a4d51730a43afa1c5aa989b24cafad771fdc5f",
+      "recovery_key": "kunci-llra-2725",
+      "activated_at": "2026-09-15T14:05:41.775Z",
+      "usage_count": 1
+    },
+    {
+      "id": "ee5547f0-c2d4-4162-9146-f8e82e8f1803",
+      "token_code": "TEST-SMAN1-BX1E-2859",
+      "school_id": "default-school",
+      "student_level": "Kelas 10",
+      "batch_id": "BATCH-1789481141756",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Automated Integration Test",
+      "created_at": "2026-09-15T14:05:41.756Z"
+    },
+    {
+      "id": "3854f0c6-2fb3-4d49-adf9-f7bbf3959f10",
+      "token_code": "COLLISION-TEST-5WE3-4445",
+      "school_id": "default-school",
+      "student_level": "Kelas 11",
+      "batch_id": "BATCH-1789481141803",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "created_at": "2026-09-15T14:05:41.803Z",
+      "password_hash": "bb74e4863bfb96e6296126a5ac6585708b98bcb70ffe012c61f5f80d7cc31cf5",
+      "pin_hash": "bb74e4863bfb96e6296126a5ac6585708b98bcb70ffe012c61f5f80d7cc31cf5",
+      "recovery_key": "kunci-jzq5-6343",
+      "activated_at": "2026-09-15T14:05:41.814Z",
+      "usage_count": 1
+    },
+    {
+      "id": "d8149606-1133-4ef6-8a8c-1966802e69e4",
+      "token_code": "COLLISION-TEST-4N69-8800",
+      "school_id": "default-school",
+      "student_level": "Kelas 11",
+      "batch_id": "BATCH-1789481141803",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "created_at": "2026-09-15T14:05:41.803Z",
+      "password_hash": "bb74e4863bfb96e6296126a5ac6585708b98bcb70ffe012c61f5f80d7cc31cf5",
+      "pin_hash": "bb74e4863bfb96e6296126a5ac6585708b98bcb70ffe012c61f5f80d7cc31cf5",
+      "recovery_key": "kunci-js68-2085",
+      "activated_at": "2026-09-15T14:05:41.824Z",
+      "usage_count": 1
+    },
+    {
+      "id": "79e5b5bb-963e-41c8-9db1-d56b3ba059b0",
+      "token_code": "SCH-LIVE-C845-1896",
+      "school_id": "default-school",
+      "student_level": "Kelas X MIPA 1",
+      "batch_id": "BATCH-1789481147638",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "notes": "Live Playwright E2E Token",
+      "created_at": "2026-09-15T14:05:47.638Z",
+      "password_hash": "338007fa7b3a4a85d5177d7bab0ca68251049e1c7b5f375c58ae1c225c0fbbff",
+      "pin_hash": "338007fa7b3a4a85d5177d7bab0ca68251049e1c7b5f375c58ae1c225c0fbbff",
+      "recovery_key": "kunci-qg6j-2789",
+      "activated_at": "2026-09-15T14:05:48.461Z",
+      "usage_count": 1
+    },
+    {
+      "id": "e142abfd-e923-4d08-b908-6ff38f55436c",
+      "token_code": "SCH-X1-ZQQK-5194",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481157469",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:05:57.469Z"
+    },
+    {
+      "id": "faee75f2-d3c1-40ca-baca-94eacf09f987",
+      "token_code": "SCH-X1-URHW-9171",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481157469",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:05:57.469Z"
+    },
+    {
+      "id": "b3eaa454-813d-4d4d-a000-15c85a0c39d5",
+      "token_code": "SCH-X1-HLFW-2010",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481157469",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:05:57.469Z"
+    },
+    {
+      "id": "cce7e9f9-ef6f-4d0a-8966-10d54b599b84",
+      "token_code": "SCH-X1-K4RO-7308",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481157469",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:05:57.469Z"
+    },
+    {
+      "id": "4efeac5b-b0f5-4c16-b8e3-1706d90f8b1d",
+      "token_code": "SCH-X1-70J1-2744",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481157469",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:05:57.469Z"
+    },
+    {
+      "id": "8bb554b2-0c22-4f0b-ab00-41eab6e6ee1a",
+      "token_code": "SCH-X1-9Q2E-5454",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481157469",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:05:57.469Z"
+    },
+    {
+      "id": "72d11e8d-d1ef-47c3-a29b-4bcacc3d58ba",
+      "token_code": "SCH-X1-NFIE-1941",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481157469",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:05:57.469Z"
+    },
+    {
+      "id": "93c75be4-b94e-4966-83cb-5d0dd0b5d358",
+      "token_code": "SCH-X1-8G7T-4505",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481157469",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:05:57.469Z"
+    },
+    {
+      "id": "6fbc6e15-058a-4b4d-a2e6-eef58a24b459",
+      "token_code": "SCH-X1-4045-2732",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481157469",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:05:57.469Z"
+    },
+    {
+      "id": "e6ead50f-9ffe-4b1f-a5af-ad797eb70059",
+      "token_code": "SCH-X1-NT5T-2982",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481157469",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:05:57.469Z"
+    },
+    {
+      "id": "84397631-057f-4e3e-b04e-923962beb8f0",
+      "token_code": "TEST-SMAN1-XUIR-4782",
+      "school_id": "default-school",
+      "student_level": "Kelas 10",
+      "batch_id": "BATCH-1789481183794",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "notes": "Automated Integration Test",
+      "created_at": "2026-09-15T14:06:23.795Z",
+      "password_hash": "0fa23d8d992037ad47a040e2a03683af79eafb357ae557694e557b855992ca60",
+      "pin_hash": "0fa23d8d992037ad47a040e2a03683af79eafb357ae557694e557b855992ca60",
+      "recovery_key": "kunci-dq2d-9029",
+      "activated_at": "2026-09-15T14:06:23.816Z",
+      "usage_count": 1
+    },
+    {
+      "id": "681720a8-468b-4208-a825-e04d3e4d8ce4",
+      "token_code": "TEST-SMAN1-SU53-3952",
+      "school_id": "default-school",
+      "student_level": "Kelas 10",
+      "batch_id": "BATCH-1789481183794",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Automated Integration Test",
+      "created_at": "2026-09-15T14:06:23.795Z"
+    },
+    {
+      "id": "ae05137f-cefe-4b65-8730-ea939ef4b125",
+      "token_code": "COLLISION-TEST-LD0V-1705",
+      "school_id": "default-school",
+      "student_level": "Kelas 11",
+      "batch_id": "BATCH-1789481183843",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "created_at": "2026-09-15T14:06:23.843Z",
+      "password_hash": "5abbceed7fc66800aa166eccad032f8e78a03fc1d05a7c3e15f6b438a25ef867",
+      "pin_hash": "5abbceed7fc66800aa166eccad032f8e78a03fc1d05a7c3e15f6b438a25ef867",
+      "recovery_key": "kunci-nh4w-6366",
+      "activated_at": "2026-09-15T14:06:23.855Z",
+      "usage_count": 1
+    },
+    {
+      "id": "b079a8a9-f8db-4832-9aab-3a0e819f799d",
+      "token_code": "COLLISION-TEST-GZPE-1243",
+      "school_id": "default-school",
+      "student_level": "Kelas 11",
+      "batch_id": "BATCH-1789481183843",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "created_at": "2026-09-15T14:06:23.843Z",
+      "password_hash": "5abbceed7fc66800aa166eccad032f8e78a03fc1d05a7c3e15f6b438a25ef867",
+      "pin_hash": "5abbceed7fc66800aa166eccad032f8e78a03fc1d05a7c3e15f6b438a25ef867",
+      "recovery_key": "kunci-3moh-3862",
+      "activated_at": "2026-09-15T14:06:23.865Z",
+      "usage_count": 1
+    },
+    {
+      "id": "b291abb2-bb11-49c5-a2ff-3583238871c8",
+      "token_code": "SCH-LIVE-26AA-9944",
+      "school_id": "default-school",
+      "student_level": "Kelas X MIPA 1",
+      "batch_id": "BATCH-1789481189925",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "notes": "Live Playwright E2E Token",
+      "created_at": "2026-09-15T14:06:29.925Z",
+      "password_hash": "338007fa7b3a4a85d5177d7bab0ca68251049e1c7b5f375c58ae1c225c0fbbff",
+      "pin_hash": "338007fa7b3a4a85d5177d7bab0ca68251049e1c7b5f375c58ae1c225c0fbbff",
+      "recovery_key": "kunci-9oa7-7187",
+      "activated_at": "2026-09-15T14:06:30.854Z",
+      "usage_count": 1
+    },
+    {
+      "id": "24439d50-2c9b-46e4-be18-04191575566e",
+      "token_code": "SCH-X1-209B-1411",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481199960",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:06:39.961Z"
+    },
+    {
+      "id": "334f860e-339e-429b-ae71-8d7195851eba",
+      "token_code": "SCH-X1-27BO-1909",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481199960",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:06:39.961Z"
+    },
+    {
+      "id": "dc1bcb38-79c7-4bcb-bfb6-26b307da26b2",
+      "token_code": "SCH-X1-D17S-4287",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481199960",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:06:39.961Z"
+    },
+    {
+      "id": "161ed8e2-4a40-45b9-90c3-a518795ae5e8",
+      "token_code": "SCH-X1-E3CT-4360",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481199960",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:06:39.961Z"
+    },
+    {
+      "id": "03eb5da5-ac7e-44d9-bd9f-9e81eab4b52c",
+      "token_code": "SCH-X1-TRO4-7095",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481199960",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:06:39.961Z"
+    },
+    {
+      "id": "6ec86054-0a23-4a5f-bacd-e822638a4da0",
+      "token_code": "SCH-X1-AYOE-4085",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481199960",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:06:39.961Z"
+    },
+    {
+      "id": "ded9406b-b0e7-4202-8f91-4d1e4af3c31b",
+      "token_code": "SCH-X1-03S6-7339",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481199960",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:06:39.961Z"
+    },
+    {
+      "id": "258797c8-0e41-49a4-8234-c08964ebb124",
+      "token_code": "SCH-X1-GQM8-3186",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481199960",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:06:39.961Z"
+    },
+    {
+      "id": "2bc97d96-a0f6-4693-9529-b8b9fd81c020",
+      "token_code": "SCH-X1-HKXP-5134",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481199960",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:06:39.961Z"
+    },
+    {
+      "id": "baa4eeed-7ed3-445e-b165-349ca1ef22c2",
+      "token_code": "SCH-X1-YAKH-1121",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1",
+      "batch_id": "BATCH-1789481199960",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Dibuat oleh Admin",
+      "created_at": "2026-09-15T14:06:39.961Z"
     }
   ],
   "tickets": [
@@ -4116,6 +4816,467 @@
         "isSatisfied": true,
         "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
       }
+    },
+    {
+      "status": "ditutup",
+      "hash_zkp": "integrity-sha256:0xb89667d54c02ec96721021ebfe6dbc6aba309e18c9ef4fa897d9d9c42430afdb",
+      "is_student_verified": true,
+      "verification_method": "token",
+      "ticket_number": "TMG-2026-T8940",
+      "category": "Perundungan / Bullying",
+      "reporterRole": "Siswa (Korban)",
+      "location": "Kantin Sekolah",
+      "incidentDate": "2026-09-10",
+      "urgency": "Tinggi",
+      "story": "Ada siswa mengejek dan memalak uang di kantin",
+      "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
+      "detectedPII": [],
+      "recovery_code": "aman-tameng-test-1789479759306",
+      "secret_pin": "5836",
+      "school_id": "default-school",
+      "is_kiosk": false,
+      "id": "028b3084-4751-4c4c-909d-13225bc34ce5",
+      "created_at": "2026-09-15T13:42:39.552Z",
+      "updated_at": "2026-09-15T13:42:39.612Z",
+      "messages": [
+        {
+          "id": "088b9762-29a2-428c-950d-bf4f5cea503f",
+          "sender_type": "system",
+          "message_text": "Laporan Anda berhasil dienkripsi dan diterima oleh Tim Bimbingan Konseling (BK) & Satgas PPKSP Sekolah.",
+          "created_at": "2026-09-15T13:42:39.552Z",
+          "is_encrypted": true
+        },
+        {
+          "id": "91e3dcfd-6521-40e3-8eca-9d6bfb69bd83",
+          "sender_type": "pelapor",
+          "message_text": "Halo Bu Guru BK, saya sangat takut datang ke kantin.",
+          "is_encrypted": true,
+          "created_at": "2026-09-15T13:42:39.565Z"
+        },
+        {
+          "id": "4d16f6f0-4adb-40dd-adf6-668971df7388",
+          "sender_type": "counselor",
+          "sender_title": "Guru BK",
+          "message_text": "Jangan khawatir Nak, laporanmu aman bersama kami. Kami akan dampingi.",
+          "is_encrypted": true,
+          "created_at": "2026-09-15T13:42:39.573Z"
+        },
+        {
+          "id": "d86835ff-6829-4926-8e0d-c5ce2d01a6a5",
+          "sender_type": "system",
+          "message_text": "[BUKTI TINDAK LANJUT SEKOLAH]: Pihak sekolah telah mengunggah bukti penanganan (Surat Permintaan Maaf Pelaku & Mediasi): \"Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai\". Menunggu konfirmasi penyelesaian dari siswa pelapor.",
+          "created_at": "2026-09-15T13:42:39.604Z",
+          "is_encrypted": true
+        },
+        {
+          "id": "a7b31eab-2624-4f4d-98bb-f44d9269cef3",
+          "sender_type": "system",
+          "message_text": "[KASUS RESMI SELESAI]: Siswa pelapor telah mengonfirmasi bahwa masalah telah diselesaikan dengan baik. Kasus resmi ditutup. Terima kasih telah berani bersuara.",
+          "created_at": "2026-09-15T13:42:39.612Z",
+          "is_encrypted": true
+        }
+      ],
+      "counselorNotes": [
+        "Koordinasi dengan satpam pengawas area kantin saat jam istirahat."
+      ],
+      "actionSummary": "Sekolah mengirimkan bukti tindak lanjut: Surat Permintaan Maaf Pelaku & Mediasi",
+      "resolution_evidence": {
+        "type": "Surat Permintaan Maaf Pelaku & Mediasi",
+        "description": "Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai",
+        "fileUrl": "",
+        "submittedAt": "2026-09-15T13:42:39.604Z",
+        "submittedBy": "Guru BK / Satgas PPKSP"
+      },
+      "resolutionEvidence": {
+        "type": "Surat Permintaan Maaf Pelaku & Mediasi",
+        "description": "Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai",
+        "fileUrl": "",
+        "submittedAt": "2026-09-15T13:42:39.604Z",
+        "submittedBy": "Guru BK / Satgas PPKSP"
+      },
+      "action_summary": "Sekolah mengirimkan bukti tindak lanjut: Surat Permintaan Maaf Pelaku & Mediasi",
+      "student_confirmation": {
+        "confirmedAt": "2026-09-15T13:42:39.612Z",
+        "isSatisfied": true,
+        "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
+      },
+      "studentConfirmation": {
+        "confirmedAt": "2026-09-15T13:42:39.612Z",
+        "isSatisfied": true,
+        "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
+      }
+    },
+    {
+      "status": "diterima",
+      "hash_zkp": {},
+      "is_student_verified": true,
+      "verification_method": "token",
+      "category": "Perundungan / Bullying",
+      "reporterRole": "Siswa (Korban)",
+      "location": "Lingkungan Sekolah",
+      "incidentDate": "Hari ini / Baru saja",
+      "urgency": "Sedang",
+      "story": "Saya Budi Santoso dari kelas XI MIPA 3 dengan no wa 081299887766 melihat bullying fisik di lorong kantin",
+      "redactedStory": "Saya Budi Santoso dari [KELAS-DIRAHAASIAKAN] dengan no wa [NOMOR-KONTAK-DIRAHASIAKAN] melihat bullying fisik di lorong kantin",
+      "detectedPII": [
+        "Nomor Kontak",
+        "Kelas / Rombel"
+      ],
+      "schoolId": "default-school",
+      "isKiosk": false,
+      "ticket_number": "TMG-2026-YZZ5",
+      "recovery_code": "fajar-aman-satria-4709",
+      "school_id": "default-school",
+      "is_kiosk_submission": false,
+      "id": "9d796420-2f6e-49de-b0f6-38ad588b27cd",
+      "created_at": "2026-09-15T13:45:52.981Z",
+      "updated_at": "2026-09-15T13:45:52.981Z",
+      "messages": [
+        {
+          "id": "2a855227-4950-4ad9-8f91-fd8af79e5f6a",
+          "sender_type": "system",
+          "message_text": "Laporan Anda berhasil dienkripsi dan diterima oleh Tim Bimbingan Konseling (BK) & Satgas PPKSP Sekolah.",
+          "created_at": "2026-09-15T13:45:52.981Z",
+          "is_encrypted": true
+        }
+      ]
+    },
+    {
+      "status": "ditutup",
+      "hash_zkp": "integrity-sha256:0x5d00ed18bd7d3e2ce111c981086943f421cc84ad9d6e96c056bb921948a9b6df",
+      "is_student_verified": true,
+      "verification_method": "token",
+      "ticket_number": "TMG-2026-T1374",
+      "category": "Perundungan / Bullying",
+      "reporterRole": "Siswa (Korban)",
+      "location": "Kantin Sekolah",
+      "incidentDate": "2026-09-10",
+      "urgency": "Tinggi",
+      "story": "Ada siswa mengejek dan memalak uang di kantin",
+      "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
+      "detectedPII": [],
+      "recovery_code": "aman-tameng-test-1789481122076",
+      "secret_pin": "9323",
+      "school_id": "default-school",
+      "is_kiosk": false,
+      "id": "0815357d-13df-4900-a1b6-763d3e98e987",
+      "created_at": "2026-09-15T14:05:22.307Z",
+      "updated_at": "2026-09-15T14:05:22.379Z",
+      "messages": [
+        {
+          "id": "65c4918a-b08d-44bd-a24a-2df837ac0985",
+          "sender_type": "system",
+          "message_text": "Laporan Anda berhasil dienkripsi dan diterima oleh Tim Bimbingan Konseling (BK) & Satgas PPKSP Sekolah.",
+          "created_at": "2026-09-15T14:05:22.307Z",
+          "is_encrypted": true
+        },
+        {
+          "id": "15a1ed8c-0443-43e6-8dd7-68b4fcd4857e",
+          "sender_type": "pelapor",
+          "message_text": "Halo Bu Guru BK, saya sangat takut datang ke kantin.",
+          "is_encrypted": true,
+          "created_at": "2026-09-15T14:05:22.326Z"
+        },
+        {
+          "id": "8cdffebe-db47-40df-9195-c1c6d8a0c01a",
+          "sender_type": "counselor",
+          "sender_title": "Guru BK",
+          "message_text": "Jangan khawatir Nak, laporanmu aman bersama kami. Kami akan dampingi.",
+          "is_encrypted": true,
+          "created_at": "2026-09-15T14:05:22.336Z"
+        },
+        {
+          "id": "c25bf89b-6863-47c8-bd42-b627db4a6a78",
+          "sender_type": "system",
+          "message_text": "[BUKTI TINDAK LANJUT SEKOLAH]: Pihak sekolah telah mengunggah bukti penanganan (Surat Permintaan Maaf Pelaku & Mediasi): \"Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai\". Menunggu konfirmasi penyelesaian dari siswa pelapor.",
+          "created_at": "2026-09-15T14:05:22.371Z",
+          "is_encrypted": true
+        },
+        {
+          "id": "70f53598-a321-4969-8e19-2e4805ccd6de",
+          "sender_type": "system",
+          "message_text": "[KASUS RESMI SELESAI]: Siswa pelapor telah mengonfirmasi bahwa masalah telah diselesaikan dengan baik. Kasus resmi ditutup. Terima kasih telah berani bersuara.",
+          "created_at": "2026-09-15T14:05:22.379Z",
+          "is_encrypted": true
+        }
+      ],
+      "counselorNotes": [
+        "Koordinasi dengan satpam pengawas area kantin saat jam istirahat."
+      ],
+      "actionSummary": "Sekolah mengirimkan bukti tindak lanjut: Surat Permintaan Maaf Pelaku & Mediasi",
+      "resolution_evidence": {
+        "type": "Surat Permintaan Maaf Pelaku & Mediasi",
+        "description": "Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai",
+        "fileUrl": "",
+        "submittedAt": "2026-09-15T14:05:22.371Z",
+        "submittedBy": "Guru BK / Satgas PPKSP"
+      },
+      "resolutionEvidence": {
+        "type": "Surat Permintaan Maaf Pelaku & Mediasi",
+        "description": "Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai",
+        "fileUrl": "",
+        "submittedAt": "2026-09-15T14:05:22.371Z",
+        "submittedBy": "Guru BK / Satgas PPKSP"
+      },
+      "action_summary": "Sekolah mengirimkan bukti tindak lanjut: Surat Permintaan Maaf Pelaku & Mediasi",
+      "student_confirmation": {
+        "confirmedAt": "2026-09-15T14:05:22.379Z",
+        "isSatisfied": true,
+        "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
+      },
+      "studentConfirmation": {
+        "confirmedAt": "2026-09-15T14:05:22.379Z",
+        "isSatisfied": true,
+        "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
+      }
+    },
+    {
+      "status": "ditutup",
+      "hash_zkp": "integrity-sha256:0xbdcf9c251ab262007ea9346b26b3de0c10d924e50f7c6b47404aad6acb3347a5",
+      "is_student_verified": true,
+      "verification_method": "token",
+      "ticket_number": "TMG-2026-T2870",
+      "category": "Perundungan / Bullying",
+      "reporterRole": "Siswa (Korban)",
+      "location": "Kantin Sekolah",
+      "incidentDate": "2026-09-10",
+      "urgency": "Tinggi",
+      "story": "Ada siswa mengejek dan memalak uang di kantin",
+      "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
+      "detectedPII": [],
+      "recovery_code": "aman-tameng-test-1789481141563",
+      "secret_pin": "6299",
+      "school_id": "default-school",
+      "is_kiosk": false,
+      "id": "5e3fa12a-591e-4139-a3b4-55a37053bd08",
+      "created_at": "2026-09-15T14:05:41.854Z",
+      "updated_at": "2026-09-15T14:05:41.930Z",
+      "messages": [
+        {
+          "id": "b8be1c1e-24ed-4969-b3db-2f625eefd486",
+          "sender_type": "system",
+          "message_text": "Laporan Anda berhasil dienkripsi dan diterima oleh Tim Bimbingan Konseling (BK) & Satgas PPKSP Sekolah.",
+          "created_at": "2026-09-15T14:05:41.854Z",
+          "is_encrypted": true
+        },
+        {
+          "id": "51162b3c-2709-4c92-81b4-77cc1459e90e",
+          "sender_type": "pelapor",
+          "message_text": "Halo Bu Guru BK, saya sangat takut datang ke kantin.",
+          "is_encrypted": true,
+          "created_at": "2026-09-15T14:05:41.871Z"
+        },
+        {
+          "id": "e5d674e6-8a73-4a33-8cd6-f95b2893ad21",
+          "sender_type": "counselor",
+          "sender_title": "Guru BK",
+          "message_text": "Jangan khawatir Nak, laporanmu aman bersama kami. Kami akan dampingi.",
+          "is_encrypted": true,
+          "created_at": "2026-09-15T14:05:41.881Z"
+        },
+        {
+          "id": "a4d6462c-6d30-4a83-b917-82570a552e0e",
+          "sender_type": "system",
+          "message_text": "[BUKTI TINDAK LANJUT SEKOLAH]: Pihak sekolah telah mengunggah bukti penanganan (Surat Permintaan Maaf Pelaku & Mediasi): \"Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai\". Menunggu konfirmasi penyelesaian dari siswa pelapor.",
+          "created_at": "2026-09-15T14:05:41.918Z",
+          "is_encrypted": true
+        },
+        {
+          "id": "23a24d7a-077e-4797-a89a-32ec54cc98fa",
+          "sender_type": "system",
+          "message_text": "[KASUS RESMI SELESAI]: Siswa pelapor telah mengonfirmasi bahwa masalah telah diselesaikan dengan baik. Kasus resmi ditutup. Terima kasih telah berani bersuara.",
+          "created_at": "2026-09-15T14:05:41.930Z",
+          "is_encrypted": true
+        }
+      ],
+      "counselorNotes": [
+        "Koordinasi dengan satpam pengawas area kantin saat jam istirahat."
+      ],
+      "actionSummary": "Sekolah mengirimkan bukti tindak lanjut: Surat Permintaan Maaf Pelaku & Mediasi",
+      "resolution_evidence": {
+        "type": "Surat Permintaan Maaf Pelaku & Mediasi",
+        "description": "Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai",
+        "fileUrl": "",
+        "submittedAt": "2026-09-15T14:05:41.917Z",
+        "submittedBy": "Guru BK / Satgas PPKSP"
+      },
+      "resolutionEvidence": {
+        "type": "Surat Permintaan Maaf Pelaku & Mediasi",
+        "description": "Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai",
+        "fileUrl": "",
+        "submittedAt": "2026-09-15T14:05:41.917Z",
+        "submittedBy": "Guru BK / Satgas PPKSP"
+      },
+      "action_summary": "Sekolah mengirimkan bukti tindak lanjut: Surat Permintaan Maaf Pelaku & Mediasi",
+      "student_confirmation": {
+        "confirmedAt": "2026-09-15T14:05:41.930Z",
+        "isSatisfied": true,
+        "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
+      },
+      "studentConfirmation": {
+        "confirmedAt": "2026-09-15T14:05:41.930Z",
+        "isSatisfied": true,
+        "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
+      }
+    },
+    {
+      "status": "diterima",
+      "hash_zkp": {},
+      "is_student_verified": true,
+      "verification_method": "token",
+      "category": "Perundungan / Bullying",
+      "reporterRole": "Siswa (Korban)",
+      "location": "Lingkungan Sekolah",
+      "incidentDate": "Hari ini / Baru saja",
+      "urgency": "Sedang",
+      "story": "Saya Budi Santoso dari kelas XI MIPA 3 dengan no wa 081299887766 melihat bullying fisik di lorong kantin",
+      "redactedStory": "Saya Budi Santoso dari [KELAS-DIRAHAASIAKAN] dengan no wa [NOMOR-KONTAK-DIRAHASIAKAN] melihat bullying fisik di lorong kantin",
+      "detectedPII": [
+        "Nomor Kontak",
+        "Kelas / Rombel"
+      ],
+      "schoolId": "default-school",
+      "isKiosk": false,
+      "ticket_number": "TMG-2026-S6DL",
+      "recovery_code": "fajar-benteng-lindung-6510",
+      "school_id": "default-school",
+      "is_kiosk_submission": false,
+      "id": "1c96a1b6-b5bf-4b61-806b-b7b1252bdf0a",
+      "created_at": "2026-09-15T14:05:50.624Z",
+      "updated_at": "2026-09-15T14:05:50.624Z",
+      "messages": [
+        {
+          "id": "9ab5bd5b-0b65-4efb-bde5-6579864382c5",
+          "sender_type": "system",
+          "message_text": "Laporan Anda berhasil dienkripsi dan diterima oleh Tim Bimbingan Konseling (BK) & Satgas PPKSP Sekolah.",
+          "created_at": "2026-09-15T14:05:50.624Z",
+          "is_encrypted": true
+        }
+      ]
+    },
+    {
+      "status": "ditutup",
+      "hash_zkp": "integrity-sha256:0x096f030241e63077992c11b22f435faa79e5994927b9c26fd7a8430fa5609e34",
+      "is_student_verified": true,
+      "verification_method": "token",
+      "ticket_number": "TMG-2026-T3068",
+      "category": "Perundungan / Bullying",
+      "reporterRole": "Siswa (Korban)",
+      "location": "Kantin Sekolah",
+      "incidentDate": "2026-09-10",
+      "urgency": "Tinggi",
+      "story": "Ada siswa mengejek dan memalak uang di kantin",
+      "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
+      "detectedPII": [],
+      "recovery_code": "aman-tameng-test-1789481183567",
+      "secret_pin": "3160",
+      "school_id": "default-school",
+      "is_kiosk": false,
+      "id": "856bdb0f-8f0c-43aa-9cc1-938565d27df8",
+      "created_at": "2026-09-15T14:06:23.895Z",
+      "updated_at": "2026-09-15T14:06:23.975Z",
+      "messages": [
+        {
+          "id": "13a82724-5c39-467b-b71a-24bf752b2b9c",
+          "sender_type": "system",
+          "message_text": "Laporan Anda berhasil dienkripsi dan diterima oleh Tim Bimbingan Konseling (BK) & Satgas PPKSP Sekolah.",
+          "created_at": "2026-09-15T14:06:23.895Z",
+          "is_encrypted": true
+        },
+        {
+          "id": "2d2db1f4-6baa-4fe7-a5f2-5dc9a2055977",
+          "sender_type": "pelapor",
+          "message_text": "Halo Bu Guru BK, saya sangat takut datang ke kantin.",
+          "is_encrypted": true,
+          "created_at": "2026-09-15T14:06:23.912Z"
+        },
+        {
+          "id": "ee35dfbf-8d9f-4061-9935-3b96cbe55658",
+          "sender_type": "counselor",
+          "sender_title": "Guru BK",
+          "message_text": "Jangan khawatir Nak, laporanmu aman bersama kami. Kami akan dampingi.",
+          "is_encrypted": true,
+          "created_at": "2026-09-15T14:06:23.922Z"
+        },
+        {
+          "id": "9f376766-fe62-4840-b7c9-0a97db0a4641",
+          "sender_type": "system",
+          "message_text": "[BUKTI TINDAK LANJUT SEKOLAH]: Pihak sekolah telah mengunggah bukti penanganan (Surat Permintaan Maaf Pelaku & Mediasi): \"Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai\". Menunggu konfirmasi penyelesaian dari siswa pelapor.",
+          "created_at": "2026-09-15T14:06:23.963Z",
+          "is_encrypted": true
+        },
+        {
+          "id": "8de9acf3-49b2-4a07-84ff-0b8727a40968",
+          "sender_type": "system",
+          "message_text": "[KASUS RESMI SELESAI]: Siswa pelapor telah mengonfirmasi bahwa masalah telah diselesaikan dengan baik. Kasus resmi ditutup. Terima kasih telah berani bersuara.",
+          "created_at": "2026-09-15T14:06:23.975Z",
+          "is_encrypted": true
+        }
+      ],
+      "counselorNotes": [
+        "Koordinasi dengan satpam pengawas area kantin saat jam istirahat."
+      ],
+      "actionSummary": "Sekolah mengirimkan bukti tindak lanjut: Surat Permintaan Maaf Pelaku & Mediasi",
+      "resolution_evidence": {
+        "type": "Surat Permintaan Maaf Pelaku & Mediasi",
+        "description": "Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai",
+        "fileUrl": "",
+        "submittedAt": "2026-09-15T14:06:23.963Z",
+        "submittedBy": "Guru BK / Satgas PPKSP"
+      },
+      "resolutionEvidence": {
+        "type": "Surat Permintaan Maaf Pelaku & Mediasi",
+        "description": "Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai",
+        "fileUrl": "",
+        "submittedAt": "2026-09-15T14:06:23.963Z",
+        "submittedBy": "Guru BK / Satgas PPKSP"
+      },
+      "action_summary": "Sekolah mengirimkan bukti tindak lanjut: Surat Permintaan Maaf Pelaku & Mediasi",
+      "student_confirmation": {
+        "confirmedAt": "2026-09-15T14:06:23.975Z",
+        "isSatisfied": true,
+        "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
+      },
+      "studentConfirmation": {
+        "confirmedAt": "2026-09-15T14:06:23.975Z",
+        "isSatisfied": true,
+        "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
+      }
+    },
+    {
+      "status": "diterima",
+      "hash_zkp": {},
+      "is_student_verified": true,
+      "verification_method": "token",
+      "category": "Perundungan / Bullying",
+      "reporterRole": "Siswa (Korban)",
+      "location": "Lingkungan Sekolah",
+      "incidentDate": "Hari ini / Baru saja",
+      "urgency": "Sedang",
+      "story": "Saya Budi Santoso dari kelas XI MIPA 3 dengan no wa 081299887766 melihat bullying fisik di lorong kantin",
+      "redactedStory": "Saya Budi Santoso dari [KELAS-DIRAHAASIAKAN] dengan no wa [NOMOR-KONTAK-DIRAHASIAKAN] melihat bullying fisik di lorong kantin",
+      "detectedPII": [
+        "Nomor Kontak",
+        "Kelas / Rombel"
+      ],
+      "schoolId": "default-school",
+      "isKiosk": false,
+      "ticket_number": "TMG-2026-3997",
+      "recovery_code": "suara-merdeka-aman-5287",
+      "school_id": "default-school",
+      "is_kiosk_submission": false,
+      "id": "1e363c85-e135-4176-aa86-c425b18e3560",
+      "created_at": "2026-09-15T14:06:33.090Z",
+      "updated_at": "2026-09-15T14:06:33.090Z",
+      "messages": [
+        {
+          "id": "9467e0e6-f77c-4a55-8054-ace34f140000",
+          "sender_type": "system",
+          "message_text": "Laporan Anda berhasil dienkripsi dan diterima oleh Tim Bimbingan Konseling (BK) & Satgas PPKSP Sekolah.",
+          "created_at": "2026-09-15T14:06:33.090Z",
+          "is_encrypted": true
+        }
+      ]
     }
   ],
   "audit_logs": [
@@ -4798,6 +5959,116 @@
       "details": "Bukti Surat Permintaan Maaf Pelaku & Mediasi diunggah untuk tiket #a5e4aecc-9244-470b-8c7e-cfeda807744c. Status: Menunggu Konfirmasi Siswa.",
       "zkp_proof_status": "Tervalidasi",
       "created_at": "2026-09-11T11:12:46.808Z"
+    },
+    {
+      "id": "39f698b2-def9-4fa3-99f6-782d01292709",
+      "school_id": "default-school",
+      "action": "Laporan Baru Dibuat",
+      "actor_role": "Siswa (Anonim)",
+      "actor_name": "Sistem",
+      "details": "Laporan baru #TMG-2026-T8940 kategori Perundungan / Bullying (Terverifikasi: token)",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-09-15T13:42:39.552Z"
+    },
+    {
+      "id": "e5051aea-b27c-4b9f-b325-941cf4dbfa6b",
+      "school_id": "default-school",
+      "action": "Bukti Tindak Lanjut Diunggah",
+      "actor_role": "Guru BK",
+      "actor_name": "Guru BK / Satgas PPKSP",
+      "details": "Bukti Surat Permintaan Maaf Pelaku & Mediasi diunggah untuk tiket #028b3084-4751-4c4c-909d-13225bc34ce5. Status: Menunggu Konfirmasi Siswa.",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-09-15T13:42:39.604Z"
+    },
+    {
+      "id": "faf768dc-d8b9-43f8-998d-9031bc042624",
+      "school_id": "default-school",
+      "action": "Laporan Baru Dibuat",
+      "actor_role": "Siswa (Anonim)",
+      "actor_name": "Sistem",
+      "details": "Laporan baru #TMG-2026-YZZ5 kategori Perundungan / Bullying (Terverifikasi: token)",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-09-15T13:45:52.981Z"
+    },
+    {
+      "id": "d09b06dc-be74-48b1-9eb4-d4a05f292ea6",
+      "school_id": "default-school",
+      "action": "Laporan Baru Dibuat",
+      "actor_role": "Siswa (Anonim)",
+      "actor_name": "Sistem",
+      "details": "Laporan baru #TMG-2026-T1374 kategori Perundungan / Bullying (Terverifikasi: token)",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-09-15T14:05:22.307Z"
+    },
+    {
+      "id": "412c6573-bf49-41b9-8bf4-5fab278c5f97",
+      "school_id": "default-school",
+      "action": "Bukti Tindak Lanjut Diunggah",
+      "actor_role": "Guru BK",
+      "actor_name": "Guru BK / Satgas PPKSP",
+      "details": "Bukti Surat Permintaan Maaf Pelaku & Mediasi diunggah untuk tiket #0815357d-13df-4900-a1b6-763d3e98e987. Status: Menunggu Konfirmasi Siswa.",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-09-15T14:05:22.371Z"
+    },
+    {
+      "id": "bdf4c9c8-31bd-4130-ae57-c3075bd9ec0f",
+      "school_id": "default-school",
+      "action": "Laporan Baru Dibuat",
+      "actor_role": "Siswa (Anonim)",
+      "actor_name": "Sistem",
+      "details": "Laporan baru #TMG-2026-T2870 kategori Perundungan / Bullying (Terverifikasi: token)",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-09-15T14:05:41.854Z"
+    },
+    {
+      "id": "646f0864-a751-4e22-8fdc-a3daaf665298",
+      "school_id": "default-school",
+      "action": "Bukti Tindak Lanjut Diunggah",
+      "actor_role": "Guru BK",
+      "actor_name": "Guru BK / Satgas PPKSP",
+      "details": "Bukti Surat Permintaan Maaf Pelaku & Mediasi diunggah untuk tiket #5e3fa12a-591e-4139-a3b4-55a37053bd08. Status: Menunggu Konfirmasi Siswa.",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-09-15T14:05:41.918Z"
+    },
+    {
+      "id": "1e831f33-a172-41e9-951d-bfeade5f7806",
+      "school_id": "default-school",
+      "action": "Laporan Baru Dibuat",
+      "actor_role": "Siswa (Anonim)",
+      "actor_name": "Sistem",
+      "details": "Laporan baru #TMG-2026-S6DL kategori Perundungan / Bullying (Terverifikasi: token)",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-09-15T14:05:50.624Z"
+    },
+    {
+      "id": "ce6609d1-7821-4c55-bd14-ed118a91d524",
+      "school_id": "default-school",
+      "action": "Laporan Baru Dibuat",
+      "actor_role": "Siswa (Anonim)",
+      "actor_name": "Sistem",
+      "details": "Laporan baru #TMG-2026-T3068 kategori Perundungan / Bullying (Terverifikasi: token)",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-09-15T14:06:23.896Z"
+    },
+    {
+      "id": "995d5e6d-006e-49ad-9685-cbd6f341474e",
+      "school_id": "default-school",
+      "action": "Bukti Tindak Lanjut Diunggah",
+      "actor_role": "Guru BK",
+      "actor_name": "Guru BK / Satgas PPKSP",
+      "details": "Bukti Surat Permintaan Maaf Pelaku & Mediasi diunggah untuk tiket #856bdb0f-8f0c-43aa-9cc1-938565d27df8. Status: Menunggu Konfirmasi Siswa.",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-09-15T14:06:23.963Z"
+    },
+    {
+      "id": "cbba7465-0efa-43ab-94a3-ddbd0d6fe3c6",
+      "school_id": "default-school",
+      "action": "Laporan Baru Dibuat",
+      "actor_role": "Siswa (Anonim)",
+      "actor_name": "Sistem",
+      "details": "Laporan baru #TMG-2026-3997 kategori Perundungan / Bullying (Terverifikasi: token)",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-09-15T14:06:33.090Z"
     }
   ],
   "interventions": [
@@ -5302,6 +6573,62 @@
       "created_at": "2026-09-11T11:12:46.824Z",
       "updated_at": "2026-09-11T11:12:46.830Z",
       "assignedPsychologist": "Dra. Anita Kartika, M.Psi"
+    },
+    {
+      "id": "PPA-9625",
+      "ticketId": "028b3084-4751-4c4c-909d-13225bc34ce5",
+      "victimAlias": "Ananda Bunga (Samaran)",
+      "schoolOrigin": "SMA Negeri 1 Jakarta",
+      "category": "Perundungan Berat",
+      "urgency": "Tinggi",
+      "stage": "Pemulihan Psikologis",
+      "shelterRequired": false,
+      "notes": [],
+      "created_at": "2026-09-15T13:42:39.625Z",
+      "updated_at": "2026-09-15T13:42:39.635Z",
+      "assignedPsychologist": "Dra. Anita Kartika, M.Psi"
+    },
+    {
+      "id": "PPA-2394",
+      "ticketId": "0815357d-13df-4900-a1b6-763d3e98e987",
+      "victimAlias": "Ananda Bunga (Samaran)",
+      "schoolOrigin": "SMA Negeri 1 Jakarta",
+      "category": "Perundungan Berat",
+      "urgency": "Tinggi",
+      "stage": "Pemulihan Psikologis",
+      "shelterRequired": false,
+      "notes": [],
+      "created_at": "2026-09-15T14:05:22.394Z",
+      "updated_at": "2026-09-15T14:05:22.403Z",
+      "assignedPsychologist": "Dra. Anita Kartika, M.Psi"
+    },
+    {
+      "id": "PPA-1948",
+      "ticketId": "5e3fa12a-591e-4139-a3b4-55a37053bd08",
+      "victimAlias": "Ananda Bunga (Samaran)",
+      "schoolOrigin": "SMA Negeri 1 Jakarta",
+      "category": "Perundungan Berat",
+      "urgency": "Tinggi",
+      "stage": "Pemulihan Psikologis",
+      "shelterRequired": false,
+      "notes": [],
+      "created_at": "2026-09-15T14:05:41.948Z",
+      "updated_at": "2026-09-15T14:05:41.958Z",
+      "assignedPsychologist": "Dra. Anita Kartika, M.Psi"
+    },
+    {
+      "id": "PPA-3993",
+      "ticketId": "856bdb0f-8f0c-43aa-9cc1-938565d27df8",
+      "victimAlias": "Ananda Bunga (Samaran)",
+      "schoolOrigin": "SMA Negeri 1 Jakarta",
+      "category": "Perundungan Berat",
+      "urgency": "Tinggi",
+      "stage": "Pemulihan Psikologis",
+      "shelterRequired": false,
+      "notes": [],
+      "created_at": "2026-09-15T14:06:23.993Z",
+      "updated_at": "2026-09-15T14:06:24.003Z",
+      "assignedPsychologist": "Dra. Anita Kartika, M.Psi"
     }
   ],
   "news_articles": [
@@ -5701,6 +7028,46 @@
       "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
       "status": "Baru",
       "created_at": "2026-09-11T11:12:46.838Z"
+    },
+    {
+      "id": "687557a7-9440-4f13-8ed5-53c9ed992b42",
+      "name": "Ibu Ratna",
+      "email": "ratna@gmail.com",
+      "subject": "Konsultasi PPKSP",
+      "category": "Pertanyaan Satgas",
+      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "status": "Baru",
+      "created_at": "2026-09-15T13:42:39.646Z"
+    },
+    {
+      "id": "3467b8f9-a23d-4473-b806-0d5148bffb8e",
+      "name": "Ibu Ratna",
+      "email": "ratna@gmail.com",
+      "subject": "Konsultasi PPKSP",
+      "category": "Pertanyaan Satgas",
+      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "status": "Baru",
+      "created_at": "2026-09-15T14:05:22.410Z"
+    },
+    {
+      "id": "027232fa-eba4-41d1-8026-b8dec38fd5b3",
+      "name": "Ibu Ratna",
+      "email": "ratna@gmail.com",
+      "subject": "Konsultasi PPKSP",
+      "category": "Pertanyaan Satgas",
+      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "status": "Baru",
+      "created_at": "2026-09-15T14:05:41.969Z"
+    },
+    {
+      "id": "480716c8-e8b2-4b7e-bd26-86efcf0849f3",
+      "name": "Ibu Ratna",
+      "email": "ratna@gmail.com",
+      "subject": "Konsultasi PPKSP",
+      "category": "Pertanyaan Satgas",
+      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "status": "Baru",
+      "created_at": "2026-09-15T14:06:24.013Z"
     }
   ]
 }

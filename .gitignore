@@ -13,3 +13,7 @@ dist/
 .claude-flow/
 .vercel
 .env*
+.agents/
+.claude/
+ruvector.db
+*.db

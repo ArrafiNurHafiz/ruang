@@ -73,6 +73,40 @@ async function run() {
     authToken = data.token;
   });
 
+  await test("POST /users rejects creating duplicate admin sistem with 400", async () => {
+    const res = await fetch(`${BASE_URL}/users`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Admin Kedua",
+        email: "admin2@ruang.com",
+        role: "admin",
+        roleTitle: "Administrator Kedua",
+        organization: "Pusat Kendali TAMENG",
+      }),
+    });
+    assert.equal(res.status, 400);
+    const data = await res.json();
+    assert.ok(data.error.includes("Admin Sistem bersifat tunggal"));
+  });
+
+  await test("POST /users allows creating Admin Sekolah (Guru BK / Satgas)", async () => {
+    const res = await fetch(`${BASE_URL}/users`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name: "Drs. H. Mulyadi, M.Pd",
+        email: `admin.sekolah.${Date.now()}@sekolah.sch.id`,
+        role: "guru",
+        roleTitle: "Admin Sekolah (Guru BK)",
+        organization: "SMA Negeri 2 Bandung",
+      }),
+    });
+    assert.equal(res.status, 201);
+    const user = await res.json();
+    assert.equal(user.role, "guru");
+  });
+
   await test("POST /login with wrong password is rejected with 401", async () => {
     const res = await fetch(`${BASE_URL}/login`, {
       method: "POST",

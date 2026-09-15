@@ -91,13 +91,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [newNip, setNewNip] = useState("");
   const [newSchool, setNewSchool] = useState("");
   const [newRole, setNewRole] = useState<
+    | "Admin Sekolah (Guru BK / Satgas)"
     | "Guru Bimbingan Konseling (BK)"
     | "Satgas PPKSP"
     | "Kepala Sekolah"
     | "Pengawas Dinas Pendidikan Wilayah"
     | "Petugas UPTD PPA (Dinas Perlindungan)"
-    | "Admin Sistem"
-  >("Guru Bimbingan Konseling (BK)");
+  >("Admin Sekolah (Guru BK / Satgas)");
   const [userSuccessMsg, setUserSuccessMsg] = useState("");
 
   // Audit Log Search & Filter
@@ -124,14 +124,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     if (!newName.trim() || !newEmail.trim() || !newSchool.trim()) return;
 
     let mappedRole: AppUserRole = "guru";
-    if (newRole === "Admin Sistem") {
-      mappedRole = "admin";
-    } else if (newRole === "Pengawas Dinas Pendidikan Wilayah") {
+    if (newRole === "Pengawas Dinas Pendidikan Wilayah") {
       mappedRole = "dinas-pendidikan";
     } else if (newRole === "Petugas UPTD PPA (Dinas Perlindungan)") {
       mappedRole = "dinas-perlindungan";
     } else {
-      mappedRole = "guru";
+      mappedRole = "guru"; // Admin Sekolah, Guru BK, Satgas, Kepala Sekolah
     }
 
     if (onCreateUser) {
@@ -387,7 +385,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   className="px-2 py-1 bg-slate-50 border border-slate-200 rounded-lg text-xs cursor-pointer"
                 >
                   <option value="all">Semua Peran</option>
-                  <option value="guru">Guru BK</option>
+                  <option value="guru">Admin Sekolah / Guru BK</option>
                   <option value="satgas">Satgas PPKSP</option>
                   <option value="disdik">Dinas Pendidikan</option>
                   <option value="dinas-pppa">UPTD PPA (Perlindungan)</option>
@@ -750,15 +748,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 <select
                   value={newRole}
                   onChange={(e) => setNewRole(e.target.value as any)}
-                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl"
+                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl cursor-pointer"
                 >
+                  <option value="Admin Sekolah (Guru BK / Satgas)">Admin Sekolah (Guru BK / Satgas)</option>
                   <option value="Guru Bimbingan Konseling (BK)">Guru Bimbingan Konseling (BK)</option>
                   <option value="Satgas PPKSP">Satgas PPKSP</option>
                   <option value="Kepala Sekolah">Kepala Sekolah</option>
                   <option value="Pengawas Dinas Pendidikan Wilayah">Pengawas Dinas Pendidikan Wilayah</option>
                   <option value="Petugas UPTD PPA (Dinas Perlindungan)">Petugas UPTD PPA (Dinas Perlindungan)</option>
-                  <option value="Admin Sistem">Admin Sistem</option>
                 </select>
+                <p className="text-[11px] text-slate-500 mt-1">
+                  💡 <strong>Catatan:</strong> Admin Sistem bersifat tunggal (1 akun). Anda dapat menambah akun <strong>Admin Sekolah</strong> untuk mengelola penanganan kasus dan token di tingkat satuan pendidikan masing-masing.
+                </p>
               </div>
 
               <div className="pt-2 flex justify-end gap-2">

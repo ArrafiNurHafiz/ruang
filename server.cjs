@@ -687,6 +687,18 @@ app.get("/api/users", (req, res) => {
 
 app.post("/api/users", (req, res) => {
   const db = getDB();
+  const role = req.body.role;
+
+  // Strict rule: Admin Sistem bersifat tunggal (maksimal 1)
+  if (role === "admin") {
+    const existingSysAdmin = db.users.find((u) => u.role === "admin");
+    if (existingSysAdmin) {
+      return res.status(400).json({
+        error: "Admin Sistem bersifat tunggal (hanya 1 akun) dan tidak dapat ditambah. Silakan tambahkan Admin Sekolah atau Petugas BK.",
+      });
+    }
+  }
+
   const newUser = {
     id: crypto.randomUUID(),
     ...req.body,
