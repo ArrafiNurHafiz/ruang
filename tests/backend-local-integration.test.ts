@@ -19,11 +19,11 @@ async function test(name: string, fn: () => Promise<void>) {
 
 async function run() {
   console.log("=================================================");
-  console.log("🧪 TAMENG LOCAL BACKEND INTEGRATION TEST SUITE");
+  console.log("🧪 RUANG AMAN LOCAL BACKEND INTEGRATION TEST SUITE");
   console.log("=================================================\n");
 
   let createdTicket: any = null;
-  let sampleRecoveryCode = `aman-tameng-test-${Date.now()}`;
+  let sampleRecoveryCode = `aman-ruang-test-${Date.now()}`;
   let samplePin = String(Math.floor(1000 + Math.random() * 9000));
   let sampleTokenCode = "";
   let authToken = "";
@@ -82,7 +82,7 @@ async function run() {
         email: "admin2@ruang.com",
         role: "admin",
         roleTitle: "Administrator Kedua",
-        organization: "Pusat Kendali TAMENG",
+        organization: "Pusat Kendali Ruang Aman",
       }),
     });
     assert.equal(res.status, 400);
@@ -437,7 +437,7 @@ async function run() {
         email: "ratna@gmail.com",
         subject: "Konsultasi PPKSP",
         category: "Pertanyaan Satgas",
-        message: "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+        message: "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       }),
     });
     assert.equal(res.status, 201);

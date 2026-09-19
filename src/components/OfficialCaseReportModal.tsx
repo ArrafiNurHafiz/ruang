@@ -403,9 +403,9 @@ Konselor BK: ${schoolProfile.counselorCoordinatorName} (NIP: ${schoolProfile.cou
 
           {/* FOOTER */}
           <div className="mt-8 pt-4 border-t border-slate-200 text-center text-[10px] text-slate-400 font-sans">
-            Dokumen ini dicetak secara otomatis melalui Platform TAMENG (Tata
-            Aman &amp; Mediasi Edukasi Nir-Gelisah) • {currentDateFormatted} •
-            Verifikasi Digital: {ticket.hashZKP || "ZKP-VALID"}
+            Dokumen ini dicetak secara otomatis melalui Platform Ruang Aman
+            (PPKSP) • {currentDateFormatted} • Verifikasi Digital:{" "}
+            {ticket.hashZKP || "ZKP-VALID"}
           </div>
         </div>
       </div>

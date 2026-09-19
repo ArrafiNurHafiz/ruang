@@ -97,7 +97,7 @@ export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({
             <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/20">
               <ShieldCheck className="w-8 h-8 text-emerald-400" />
             </div>
-            <h1 className="text-xl font-extrabold">Masuk ke TAMENG</h1>
+            <h1 className="text-xl font-extrabold">Masuk ke Ruang Aman</h1>
             <p className="text-xs text-slate-400 mt-1">
               Satu akun untuk semua peran — Guru BK, Admin, Dinas
             </p>

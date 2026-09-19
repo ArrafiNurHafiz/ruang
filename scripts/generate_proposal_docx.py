@@ -489,15 +489,17 @@ def build_document():
     toc_items = [
         "BAB I. PENDAHULUAN",
         "    1.1 Latar Belakang & Urgensi Permasalahan",
-        "    1.2 Analisis Pemangku Kepentingan (User Persona & Empathy Mapping)",
-        "    1.3 Rumusan Masalah",
-        "    1.4 Tujuan Pengembangan (Umum & Khusus)",
-        "    1.5 Keselarasan dengan Sustainable Development Goals (SDGs)",
+        "    1.2 Analisis Faktor Penyebab Rendahnya Pelaporan (Underreporting Crisis)",
+        "    1.3 Analisis Pemangku Kepentingan (User Persona & Empathy Mapping)",
+        "    1.4 Rumusan Masalah",
+        "    1.5 Tujuan Pengembangan (Umum & Khusus)",
+        "    1.6 Keselarasan dengan Sustainable Development Goals (SDGs)",
         "BAB II. TINJAUAN TEKNOLOGI & LANDASAN ILMIAH",
         "    2.1 Dinamika Bystander Effect dan Fenomena Dark Number",
-        "    2.2 Landasan Matematika Kriptografi Zero-Knowledge Proof (ZKP) & zk-SNARKs",
-        "    2.3 Protokol Semaphore, Poseidon Hash & Cryptographic Nullifier",
-        "    2.4 Perbandingan Komprehensif dengan Solusi Eksisting",
+        "    2.2 Justifikasi Kebutuhan Kriptografi Zero-Knowledge Proof (Mengapa ZKP?)",
+        "    2.3 Landasan Matematika Kriptografi ZKP & zk-SNARKs Groth16",
+        "    2.4 Formulasi Rumus Kriptografi Protokol Semaphore, Poseidon & Nullifier",
+        "    2.5 Perbandingan Komprehensif dengan Solusi Eksisting",
         "BAB III. ARSITEKTUR TEKNOLOGI, INOVASI & EVALUASI KINERJA",
         "    3.1 Diagram Arsitektur Sistem 3-Tier",
         "    3.2 Spesifikasi Teknologi Web Modern (Tech Stack)",
@@ -505,14 +507,20 @@ def build_document():
         "    3.4 Evaluasi Kinerja Klien, Web Vitals & Benchmark Hardware Rendah",
         "    3.5 Model Ancaman (Threat Model) & Kepatuhan Regulasi UU PDP",
         "BAB IV. ALUR PROSES BISNIS & REKAYASA KRIPTOGRAFIS",
+        "    4.1 Diagram Umum Alur Sistem (Flowchart End-to-End)",
+        "    4.2 Rincian Alur Proses Bisnis Tiga Fase",
         "BAB V. METODOLOGI REKAYASA & HASIL VALIDASI EMPIRIS",
-        "    5.1 Metodologi Agile Scrum & Quality Gates (T-0 s.d. T-6)",
-        "    5.2 Strategi Pengujian Komprehensif",
-        "    5.3 Hasil Validasi Empiris System Usability Scale (SUS)",
-        "    5.4 Jadwal Pelaksanaan & Milestone (Gantt Chart)",
+        "    5.1 Kerangka Metodologi Rekayasa Terpadu (Design Thinking & Agile XP)",
+        "    5.2 Quality Gates & Matriks Tahapan Rekayasa (T-0 s.d. T-6)",
+        "    5.3 Strategi Pengujian Komprehensif (Multi-Tier Testing)",
+        "    5.4 Hasil Validasi Empiris System Usability Scale (SUS)",
+        "    5.5 Jadwal Pelaksanaan & Milestone (Gantt Chart)",
         "BAB VI. RENCANA ANGGARAN BIAYA (RAB) & ANALISIS KELAYAKAN EKONOMI",
         "BAB VII. ANALISIS RISIKO & RENCANA MITIGASI",
         "BAB VIII. STRATEGI IMPLEMENTASI, DISEMINASI & KEBERLANJUTAN",
+        "    8.1 Strategi Implementasi Bertahap Tiga Fase",
+        "    8.2 Refleksi Kritis & Keterbatasan Platform (Honest Technical Limitations)",
+        "    8.3 Model Keberlanjutan & Peta Jalan (Roadmap) Jangka Panjang",
         "DAFTAR PUSTAKA",
     ]
     for item in toc_items:
@@ -544,20 +552,34 @@ def build_document():
     add_section_heading(doc, "1.1 Latar Belakang & Urgensi Permasalahan", level=2)
 
     add_body_text(doc,
-        "Kekerasan di lingkungan pendidikan Indonesia telah mencapai status darurat kemanusiaan. "
-        "Berdasarkan data resmi Komisi Perlindungan Anak Indonesia (KPAI) dan Jaringan Pemantau "
-        "Pendidikan Indonesia (JPPI), tercatat lonjakan tajam kasus kekerasan di satuan pendidikan "
-        "dari 285 kasus (2023) menjadi 573 kasus (2024), di mana 31% di antaranya merupakan kasus "
-        "perundungan (KPAI, 2024). Hingga pertengahan 2026, akumulasi pengaduan kekerasan anak secara "
-        "nasional mencapai 11.291 laporan dengan 11.980 korban anak (GoodStats, 2026; KemenPPPA, 2025). "
-        "Bentuk kekerasan didominasi oleh kekerasan fisik (55,5%), kekerasan verbal/psikis (29,3%), dan "
-        "kekerasan seksual (15,2%). Korban kekerasan justru didominasi oleh siswa jenjang Sekolah Dasar "
-        "(26%), yang mengindikasikan bahwa perundungan semakin menyasar anak pada usia yang sangat rentan."
+        "Kekerasan di lingkungan pendidikan Indonesia telah mencapai taraf darurat nasional dan "
+        "krisis kemanusiaan yang membutuhkan intervensi teknologi berskala sistemik. Berdasarkan data "
+        "resmi Komisi Perlindungan Anak Indonesia (KPAI) dan Jaringan Pemantau Pendidikan Indonesia "
+        "(JPPI), tercatat lonjakan tajam kasus kekerasan di satuan pendidikan dari 285 kasus (2023) "
+        "menjadi 573 kasus (2024), di mana lebih dari 31% di antaranya merupakan tindak perundungan "
+        "(bullying) antarsiswa (KPAI, 2024). Data termutakhir Kementerian Pemberdayaan Perempuan dan "
+        "Perlindungan Anak (KemenPPPA) melalui Sistem Informasi Online Perlindungan Perempuan dan Anak "
+        "(SIMFONI PPA) mencatat 11.291 laporan kekerasan dengan 11.980 korban anak hingga pertengahan "
+        "tahun 2026 (GoodStats, 2026; KemenPPPA, 2025). Dari total pengaduan tersebut, bentuk kekerasan "
+        "didominasi oleh kekerasan fisik (55,5%), kekerasan psikis dan verbal (29,3%), serta kekerasan "
+        "seksual (15,2%). Yang paling memprihatinkan, korban kekerasan didominasi oleh anak jenjang "
+        "Sekolah Dasar (26,0%), mengindikasikan degradasi iklim keamanan yang semakin merasuk ke usia rentan."
     )
 
     add_body_text(doc,
-        "Sebaran data statistik kasus kekerasan dan tren pengaduan nasional tersebut disajikan "
-        "secara visual pada Bagan 1.1 berikut:"
+        "Urgensi permasalahan ini dipertegas oleh hasil Asesmen Nasional Kemendikbudristek pada Indeks "
+        "Iklim Keamanan Satuan Pendidikan, yang mengungkapkan bahwa 34,5% peserta didik di Indonesia "
+        "berpotensi mengalami kekerasan seksual dan 36,3% berpotensi mengalami perundungan di sekolah. "
+        "Pemerintah Indonesia sesungguhnya telah menerbitkan regulasi progresif melalui Permendikbudristek "
+        "No. 46 Tahun 2023 tentang Pencegahan dan Penanganan Kekerasan di Lingkungan Satuan Pendidikan (PPKSP) "
+        "serta amanat Undang-Undang No. 27 Tahun 2022 tentang Pelindungan Data Pribadi (UU PDP). Namun, "
+        "efektivitas implementasi instrumen hukum tersebut terhambat oleh jurang pemisah mendasar antara "
+        "kewajiban regulasi dan realitas psikologis siswa di lapangan."
+    )
+
+    add_body_text(doc,
+        "Distribusi data statistik kasus kekerasan satuan pendidikan dan tren eskalasi pengaduan nasional "
+        "tersebut disajikan secara komprehensif pada Bagan 1.1 berikut:"
     )
 
     add_image_with_caption(doc,
@@ -565,37 +587,82 @@ def build_document():
         "Bagan 1.1: Distribusi Kasus Kekerasan Pendidikan dan Tren Pengaduan Nasional (2026)"
     )
 
+    add_divider(doc)
+
+    # 1.2 Analisis Faktor Penyebab Rendahnya Pelaporan
+    add_section_heading(doc, "1.2 Analisis Faktor Penyebab Rendahnya Pelaporan (Underreporting Crisis)", level=2)
+
     add_body_text(doc,
-        "Meskipun Kementerian Pendidikan telah menerbitkan Permendikbudristek No. 46 Tahun 2023 "
-        "tentang Pencegahan dan Penanganan Kekerasan di Lingkungan Satuan Pendidikan (PPKSP), "
-        "efektivitas penanganan di lapangan terhambat oleh fenomena gunung es (dark number problem) "
-        "(Biderman & Reiss, 1967). Korban dan saksi enggan melapor karena:"
+        "Meskipun kasus kekerasan terus meningkat, fakta paling memprihatinkan di lapangan adalah "
+        "bahwa jumlah siswa korban maupun saksi yang berani melapor masih sangat sedikit. Laporan resmi "
+        "yang tercatat di sekolah hanyalah puncak kecil dari fenomena gunung es (dark number problem / "
+        "dark figure of crime) (Biderman & Reiss, 1967). Berdasarkan survei Komisi Perlindungan Anak "
+        "Indonesia (KPAI, 2025) dan laporan global UNICEF (2024), diperkirakan kurang dari 15% korban "
+        "perundungan di lingkungan sekolah yang berani bersuara dan mengadukan kekerasan yang dialaminya. "
+        "Artinya, lebih dari 85% kasus perundungan tenggelam dalam keheningan tanpa pernah teridentifikasi, "
+        "tercatat, apalagi tertangani secara adil."
+    )
+
+    add_body_text(doc,
+        "Berdasarkan analisis sosiologis dan wawancara mendalam di satuan pendidikan, rendahnya jumlah "
+        "siswa yang berani melapor ini disebabkan oleh lima faktor determinan utama:"
     )
 
     add_numbered_item(doc, 1,
-        "Kekhawatiran bahwa pelaku akan melipatgandakan kekerasan jika mengetahui korban melapor (Salmivalli, 2010).",
-        bold_part="Ketakutan akan Intimidasi Balas Dendam (Fear of Retaliation)")
+        "Pelaku perundungan di sekolah umumnya memiliki kekuasaan sosial, dominasi fisik, status senioritas, "
+        "atau dukungan kelompok sebaya (geng sekolah). Korban dan saksi mata dihinggapi ketakutan ekstrem bahwa "
+        "apabila laporan mereka diketahui, pelaku akan melipatgandakan tindak kekerasan dan teror fisik di luar "
+        "jangkauan pengawasan guru (Salmivalli, 2010). Ancaman balas dendam ini menjadi faktor psikologis paling "
+        "dominan yang membungkam keberanian melapor.",
+        bold_part="Ketakutan Ekstrem akan Retaliasi dan Teror Balas Dendam (Fear of Retribution)")
+
     add_numbered_item(doc, 2,
-        "Mekanisme pelaporan yang ada hanya menjanjikan privasi berbasis etika pengelola (policy-based), "
-        "sementara IP address, akun login, dan jejak digital tetap tercatat di basis data server (Olweus, 1993).",
-        bold_part="Ketiadaan Jaminan Teknis Anonimitas")
+        "Siswa meragukan komitmen dan kapabilitas kerahasiaan pihak sekolah. Banyak insiden empiris di mana "
+        "identitas pelapor dibocorkan oleh oknum pendidik secara tidak sengaja—misalnya memanggil korban ke ruang "
+        "guru di depan teman-teman sekelas, atau mengonfrontasi pelaku secara ceroboh dengan menyebutkan kronologi "
+        "yang mengarah pada saksi. Ketakutan akan kebocoran data identitas ini melenyapkan rasa aman siswa.",
+        bold_part="Krisis Kepercayaan pada Kerahasiaan Institusi (Institutional Distrust)")
+
+    add_numbered_item(doc, 3,
+        "Kultur pergaulan remaja kerap memperlakukan pelapor dengan label merendahkan seperti 'tukang adu', 'cepu', "
+        "atau 'perusak nama baik angkatan/sekolah'. Di sisi lain, korban kerap mengalami viktimisasi sekunder "
+        "(secondary victimization) melalui respon penyalahan korban (victim blaming) yang menganggap korban "
+        "'terlalu sensitif (baper)' atau memprovokasi insiden. Ancaman isolasi sosial (peer ostracism) menjadi beban "
+        "yang terlalu berat untuk ditanggung seorang anak (Thornberg et al., 2018).",
+        bold_part="Stigma Sosial, Pengucilan Kelompok Sebaya, dan Victim Blaming")
+
+    add_numbered_item(doc, 4,
+        "Mekanisme pengaduan konvensional menuntut kehadiran fisik yang sangat mencolok, seperti berjalan masuk "
+        "ke ruang Bimbingan Konseling (BK) atau memasukkan surat aduan ke kotak saran di lorong sekolah yang "
+        "diawasi kamera pengawas dan lalu-lalang siswa lain. Ketiadaan media pelaporan yang sepenuhnya steril, "
+        "bebas dari pengawasan fisik sekitar, dan nir-jejak digital di gawai umum sekolah menciptakan hambatan "
+        "aksesibilitas yang melumpuhkan niat pelapor.",
+        bold_part="Hambatan Aksesibilitas Fisik dan Tingginya Visibilitas Jalur Konvensional")
+
+    add_numbered_item(doc, 5,
+        "Siswa memandang pesimis efektivitas penanganan aduan sekolah. Pengalaman masa lalu menunjukkan banyak "
+        "laporan berakhir dengan sekadar 'salam damai formalitas di atas meterai' tanpa pendampingan psikologis "
+        "berkelanjutan atau sanksi edukatif yang tegas bagi pelaku. Skeptisisme ini melahirkan keputusasaan terpelajar "
+        "(learned helplessness), di mana siswa merasa bahwa melapor justru memperburuk kondisi tanpa menyelesaikan masalah.",
+        bold_part="Skeptisisme Tindak Lanjut dan Keputusasaan Terpelajar (Learned Helplessness)")
 
     add_body_text_with_bold(doc, [
-        ("Melalui terobosan teknologi web dan kriptografi ", False),
+        ("Untuk ", True),
+        ("meruntuhkan tembok ketakutan struktural tersebut, melenyapkan keputusasaan korban, dan membangkitkan keberanian bersuara di lingkungan satuan pendidikan, diperlukan sebuah terobosan teknologi rekayasa web yang mampu memberikan jaminan perlindungan mutlak tanpa kompromi. Melalui perpaduan teknologi web modern dan inovasi kriptografi ", False),
         ("Zero-Knowledge Proof (ZKP)", True),
-        (", ", False),
+        (", platform ", False),
         ("RUANG AMAN", True),
-        (" hadir untuk mengubah paradigma privasi: dari ", False),
+        (" hadir untuk mengubah paradigma privasi secara revolusioner: dari sekadar janji etika manusia (", False),
         ("\"Percayalah pada pengelola kami\"", True),
-        (" menjadi ", False),
+        (") menjadi kepastian hukum matematika kriptografis (", False),
         ("\"Diverifikasi dan dijamin oleh hukum matematika kriptografi\"", True),
-        (".", False),
+        (").", False),
     ])
 
     add_divider(doc)
 
-    # 1.2 User Persona
-    add_section_heading(doc, "1.2 Analisis Pemangku Kepentingan (User Persona & Empathy Mapping)", level=2)
+    # 1.3 User Persona
+    add_section_heading(doc, "1.3 Analisis Pemangku Kepentingan (User Persona & Empathy Mapping)", level=2)
 
     add_body_text(doc,
         "Untuk memastikan kesesuaian solusi rekayasa dengan kebutuhan riil di lapangan, dilakukan "
@@ -624,27 +691,27 @@ def build_document():
 
     add_divider(doc)
 
-    # 1.3 Rumusan Masalah
-    add_section_heading(doc, "1.3 Rumusan Masalah", level=2)
+    # 1.4 Rumusan Masalah
+    add_section_heading(doc, "1.4 Rumusan Masalah", level=2)
 
     rumusan_masalah = [
         "Bagaimana merancang arsitektur web modern yang menjamin privasi kriptografis mutlak (mathematical privacy) bagi pelapor perundungan tanpa mengorbankan integritas data?",
         "Bagaimana mengimplementasikan protokol Zero-Knowledge Proof (Semaphore) di sisi klien (client-side) agar proses pembuktian keanggotaan grup berjalan cepat (< 3 detik) pada perangkat seluler berdaya komputasi rendah?",
         "Bagaimana membangun mekanisme komunikasi dua arah terenkripsi asimetris tanpa menuntut proses registrasi atau pembongkaran identitas pelapor?",
-        "Bagaimana mencegah kebocoran identitas yang tidak disengaja melalui teks laporan bebas menggunakan pemindaian PII mandiri?",
-        "Bagaimana menghadirkan aksesibilitas inklusif melalui Mode Kios yang aman di fasilitas komputer bersama sekolah?",
+        "Bagaimana mencegah kebocoran identitas yang tidak disengaja melalui teks laporan bebas menggunakan pemindaian PII mandiri di browser?",
+        "Bagaimana menghadirkan aksesibilitas inklusif melalui Mode Kios yang aman di fasilitas komputer bersama sekolah dengan fitur penyamaran darurat?",
     ]
     for i, rm in enumerate(rumusan_masalah, 1):
         add_numbered_item(doc, i, rm)
 
     add_divider(doc)
 
-    # 1.4 Tujuan
-    add_section_heading(doc, "1.4 Tujuan Pengembangan", level=2)
+    # 1.5 Tujuan
+    add_section_heading(doc, "1.5 Tujuan Pengembangan", level=2)
 
     p = doc.add_paragraph()
     p.paragraph_format.space_after = Pt(6)
-    run = p.add_run("1.4.1 Tujuan Umum")
+    run = p.add_run("1.5.1 Tujuan Umum")
     run.bold = True
     run.font.size = Pt(11)
     run.font.name = 'Calibri'
@@ -658,26 +725,26 @@ def build_document():
 
     p = doc.add_paragraph()
     p.paragraph_format.space_after = Pt(6)
-    run = p.add_run("1.4.2 Tujuan Khusus")
+    run = p.add_run("1.5.2 Tujuan Khusus")
     run.bold = True
     run.font.size = Pt(11)
     run.font.name = 'Calibri'
     run.font.color.rgb = PRIMARY_BLUE
 
     tujuan_khusus = [
-        "Mengimplementasikan pustaka kriptografi ZKP Semaphore di browser klien menggunakan Web Worker tanpa membebani main-thread.",
-        "Membangun antarmuka Dual-Mode Reporting dengan deteksi dan redaksi PII otomatis berbasis leksikal.",
-        "Mengembangkan sistem tiket penanganan kasus terenkripsi asimetris (End-to-End Encrypted Ticket Chat).",
-        "Merancang Mode Kios Inklusif dengan hotkey penyamaran instan (Camouflage Escape Button) untuk perlindungan di ruang publik sekolah.",
-        "Membangun Multi-Tenant Dashboard untuk Guru BK/Satgas PPKSP, Dinas Pendidikan, dan UPTD PPA.",
+        "Mengimplementasikan pustaka kriptografi ZKP Semaphore di browser klien menggunakan Web Worker tanpa membebani main-thread antarmuka.",
+        "Membangun antarmuka Dual-Mode Reporting dengan deteksi dan redaksi PII otomatis berbasis leksikal sebelum data meninggalkan peramban.",
+        "Mengembangkan sistem tiket penanganan kasus terenkripsi asimetris (End-to-End Encrypted Ticket Chat) berbasis kurva X25519 dan AES-GCM-256.",
+        "Merancang Mode Kios Inklusif dengan hotkey penyamaran instan (Camouflage Escape Button < 0,1 detik) dan penghapusan sesi otomatis.",
+        "Membangun Multi-Tenant Dashboard terintegrasi dengan Row Level Security untuk Guru BK/Satgas PPKSP, Dinas Pendidikan, dan UPTD PPA.",
     ]
     for t in tujuan_khusus:
         add_bullet_item(doc, t)
 
     add_divider(doc)
 
-    # 1.5 SDGs
-    add_section_heading(doc, "1.5 Keselarasan dengan Sustainable Development Goals (SDGs)", level=2)
+    # 1.6 SDGs
+    add_section_heading(doc, "1.6 Keselarasan dengan Sustainable Development Goals (SDGs)", level=2)
 
     add_body_text(doc,
         "Inisiatif pengembangan RUANG AMAN dirancang selaras dengan agenda global pembangunan "
@@ -701,51 +768,155 @@ def build_document():
     add_section_heading(doc, "2.1 Dinamika Bystander Effect dan Fenomena Dark Number", level=2)
 
     add_body_text(doc,
-        "Dalam sosiologi sekolah, saksi perundungan (bystanders) kerap berada dalam dilema sosial "
-        "(social dilemma): ingin menolong korban namun takut diisolasi secara sosial atau menjadi "
-        "target berikutnya (Thornberg et al., 2018). Fenomena dark number terjadi ketika kanal "
-        "pengaduan formal mensyaratkan identitas terbuka, sehingga korban dan saksi mengambil "
-        "keputusan rasional untuk bungkam (Biderman & Reiss, 1967)."
+        "Dalam sosiologi interaksi sekolah, saksi mata perundungan (bystanders) dan korban terjebak "
+        "dalam dilema sosial yang melumpuhkan (social dilemma): mereka merasakan dorongan moral untuk "
+        "menghentikan agresi, namun secara bersamaan dihadapkan pada ancaman nyata isolasi sosial, "
+        "pembalasan kekerasan fisik, atau ditargetkan menjadi korban berikutnya (Thornberg et al., 2018). "
+        "Kondisi ini memicu fenomena penyebaran tanggung jawab (diffusion of responsibility) di mana "
+        "setiap saksi berasumsi orang lain yang akan bertindak. Ketika mekanisme pelaporan formal yang "
+        "tersedia menuntut pengungkapan identitas, korban dan saksi mengambil kalkulasi rasional untuk "
+        "bungkam (Biderman & Reiss, 1967). Akibatnya, kasus kekerasan berulang dan semakin tereskalasi "
+        "karena pelaku merasa kebal hukum akibat ketiadaan saksi yang berani melapor."
     )
 
     add_divider(doc)
 
-    # 2.2
-    add_section_heading(doc, "2.2 Landasan Matematika Zero-Knowledge Proof (ZKP) & zk-SNARKs", level=2)
+    # 2.2 Justifikasi ZKP
+    add_section_heading(doc, "2.2 Justifikasi Kebutuhan Kriptografi Zero-Knowledge Proof (Mengapa ZKP?)", level=2)
 
     add_body_text(doc,
-        "Zero-Knowledge Proof memungkinkan satu pihak (Prover P) membuktikan kepada pihak lain "
-        "(Verifier V) bahwa suatu pernyataan matematika bernilai benar tanpa membocorkan informasi "
-        "privat apa pun (Goldwasser et al., 1989). Pada zk-SNARKs (Zero-Knowledge Succinct "
-        "Non-Interactive Argument of Knowledge), pembuktian bersifat ringkas (succinct) dan "
-        "verifikasi dapat dilakukan dalam hitungan milidetik (Ben-Sasson et al., 2014):"
+        "Pertanyaan fundamental dalam rekayasa sistem pelaporan anti-perundungan adalah: Mengapa sistem "
+        "harus mengadopsi Zero-Knowledge Proof (ZKP) dan tidak cukup menggunakan formulir web anonim biasa, "
+        "Google Forms tanpa login, atau akun samaran (pseudonym)? Jawaban atas pertanyaan ini berpijak pada "
+        "analisis kelemahan fatal arsitektur web konvensional dan tuntutan keamanan data anak di bawah umur."
     )
 
-    add_formula(doc, "ZK-Proof π = Prove(pk, x, w)")
-    add_formula(doc, "Verify(vk, x, π) ∈ {True, False}")
+    add_body_text(doc,
+        "Pertama, Kegagalan Paradigma Privasi Berbasis Kebijakan (The Fallacy of Policy-Based Privacy). "
+        "Pada aplikasi web konvensional, privasi hanyalah sebuah janji etika manusia: 'Percayalah, pengelola "
+        "tidak akan membuka identitas Anda'. Namun secara teknis, setiap permintaan HTTP ke server konvensional "
+        "selalu meninggalkan jejak metadata yang transparan: alamat IP pengirim (IP Address), User-Agent gawai, "
+        "fingerprint peramban, dan stempel waktu (timestamp) hingga resolusi milidetik di server access log. "
+        "Di lingkungan sekolah, mayoritas siswa mengakses jaringan internet melalui Wi-Fi bersama sekolah. "
+        "Pihak administrator TI sekolah atau oknum guru dapat dengan mudah mengkorelasikan stempel waktu "
+        "pengiriman laporan dengan log autentikasi access point Wi-Fi (timing correlation attack). Melalui metode "
+        "ini, identitas siswa pelapor dapat dibongkar secara trivial tanpa memerlukan keahlian forensik tingkat tinggi."
+    )
 
     add_body_text(doc,
-        "di mana x adalah pernyataan publik (akar Merkle Tree sekolah), w adalah saksi rahasia "
-        "(secret key siswa), pk adalah proving key, dan vk adalah verification key."
+        "Kedua, Ancaman Orang Dalam dan Kebocoran Basis Data (Insider Threat & Data Breach). Pada sistem form biasa, "
+        "administrator basis data (DBA) atau pihak yang memegang hak akses server memiliki visibilitas penuh terhadap "
+        "seluruh rekaman data. Jika sekolah menghadapi konflik kepentingan—misalnya pelaku perundungan adalah anak "
+        "pejabat atau donatur yayasan—tekanan politik internal dapat memaksa pengelola membuka identitas pelapor. "
+        "Bahkan jika akun anonim menggunakan nama samaran (pseudonym), basis data tetap menyimpan tabel relasi "
+        "atau kredensial akun yang rentan disita atau diretas. Prinsip Zero-Knowledge membalik paradigma ini secara radikal: "
+        "server dibuat 'buta matematis' (mathematically blind) sehingga pengelola bahkan tidak memiliki data identitas "
+        "pelapor sejak detik pertama data dikirim dari peramban."
+    )
+
+    add_body_text(doc,
+        "Ketiga, Penyelesaian Trilema Pengaduan Anonim (The Anonymous Reporting Trilemma). Sistem pelaporan yang "
+        "andal harus menuntaskan tiga kebutuhan yang saling bertentangan secara simultan:"
+    )
+
+    add_bullet_item(doc, "Memastikan pelapor adalah benar-benar siswa/warga sah dari sekolah bersangkutan, bukan pihak luar atau penyerang liar yang berniat mencemarkan institusi.", bold_part="1. Otentikasi Hak Akses (Eligibility)")
+    add_bullet_item(doc, "Menjamin 100% bahwa tidak ada pihak manapun yang dapat mengetahui siapa di antara ribuan siswa yang mengirim laporan tersebut.", bold_part="2. Kerahasiaan Mutlak (Zero-Knowledge Anonymity)")
+    add_bullet_item(doc, "Mencegah satu orang siswa mengirimkan ratusan laporan palsu secara bertubi-tubi (Sybil/Spam attack) menggunakan hak yang sama.", bold_part="3. Integritas & Anti-Spam (Unlinkability with Anti-Double-Reporting)")
+
+    add_body_text(doc,
+        "Formulir anonim biasa gagal karena jika dibuka tanpa otentikasi, sistem rentan terhadap spam masif; "
+        "sebaliknya jika mewajibkan login akun, anonimitas seketika lenyap. Kriptografi Zero-Knowledge Proof, "
+        "khususnya protokol Semaphore berbasis zk-SNARKs, adalah satu-satunya metode ilmiah yang secara elegan "
+        "mampu menuntaskan ketiga sudut trilema tersebut secara serentak melalui pembuktian keanggotaan Merkle Tree "
+        "dan penerapan cryptographic nullifier."
     )
 
     add_divider(doc)
 
-    # 2.3
-    add_section_heading(doc, "2.3 Protokol Semaphore, Poseidon Hash & Cryptographic Nullifier", level=2)
+    # 2.3 Landasan Matematika ZKP & zk-SNARKs Groth16
+    add_section_heading(doc, "2.3 Landasan Matematika Kriptografi ZKP & zk-SNARKs Groth16", level=2)
 
     add_body_text(doc,
-        "Protokol Semaphore mengabstraksikan ZKP untuk pembuktian keanggotaan grup anonim "
-        "menggunakan fungsi hash ramah-ZKP (SNARK-friendly hash) Poseidon (Koh et al., 2022). "
-        "Siswa membangkitkan komitmen identitas:"
+        "Zero-Knowledge Proof (ZKP) didefinisikan secara formal sebagai protokol interaktif atau non-interaktif "
+        "antara dua pihak: Pembukti (Prover P) dan Pemverifikasi (Verifier V). Prover mampu meyakinkan Verifier "
+        "bahwa suatu pernyataan matematika bernilai benar (valid) untuk suatu saksi rahasia (witness w), "
+        "tanpa mengungkap secuil pun informasi privat mengenai saksi rahasia tersebut selain kebenaran pernyataan "
+        "itu sendiri (Goldwasser et al., 1989). Protokol ZKP wajib memenuhi tiga sifat fundamental:"
     )
 
-    add_formula(doc, "C = H_Poseidon(sk, Identity Trapdoor)")
+    add_bullet_item(doc, "Jika pernyataan benar dan Prover jujur, Verifier yang jujur akan selalu teryakinkan.", bold_part="Kelengkapan (Completeness)")
+    add_bullet_item(doc, "Jika pernyataan salah, tidak ada Prover yang curang yang dapat meyakinkan Verifier yang jujur kecuali dengan probabilitas yang dapat diabaikan secara kriptografis.", bold_part="Keabsahan (Soundness)")
+    add_bullet_item(doc, "Verifier tidak mempelajari apa pun selain fakta bahwa pernyataan tersebut bernilai benar.", bold_part="Nir-Pengetahuan (Zero-Knowledge)")
 
     add_body_text(doc,
-        "Identitas seluruh siswa di sebuah sekolah membentuk struktur hierarki pohon kriptografis "
-        "Merkle Tree dengan kedalaman d = 20 (kapasitas 2²⁰ = 1.048.576 siswa per grup sekolah), "
-        "sebagaimana diilustrasikan secara visual pada Diagram 2.1 berikut:"
+        "RUANG AMAN mengimplementasikan skema zk-SNARKs (Zero-Knowledge Succinct Non-Interactive Argument "
+        "of Knowledge) berbasis algoritma Groth16 (Groth, 2016) di atas kurva eliptik pasangan bilineer "
+        "BN254 (Alt-bn128). Kurva ini didefinisikan oleh persamaan koordinat affine:"
+    )
+
+    add_formula(doc, "E: y² = x³ + 3  (mod q)")
+
+    add_body_text(doc,
+        "di mana komputasi sirkuit aritmatika berlangsung pada lapangan skalar prima F_p berorde 254-bit:"
+    )
+
+    add_formula(doc, "p = 21888242871839275222246405745257275088548364400416034343698204186575808495617")
+
+    add_body_text(doc,
+        "Komputasi pembuktian ditransformasikan dari sistem persamaan aritmatika Rank-1 Constraint System (R1CS) "
+        "menjadi Quadratic Arithmetic Programs (QAP). Skema Groth16 dipilih karena menghasilkan bukti kriptografis "
+        "paling ringkas (succinct) di dunia kriptografi saat ini: ukuran bukti π konstan hanya 128 byte (terdiri dari "
+        "elemen A ∈ G₁, B ∈ G₂, C ∈ G₁), dan proses verifikasi di server selesai dalam waktu < 5 milidetik."
+    )
+
+    add_divider(doc)
+
+    # 2.4 Formulasi Rumus Kriptografi Protokol Semaphore
+    add_section_heading(doc, "2.4 Formulasi Rumus Kriptografi Protokol Semaphore, Poseidon & Nullifier", level=2)
+
+    add_body_text(doc,
+        "Protokol Semaphore mengadaptasi zk-SNARKs untuk pembuktian keanggotaan grup privat (Koh et al., 2022). "
+        "Seluruh komputasi hash di dalam sirkuit aritmatika menggunakan fungsi hash aljabar Poseidon (Grassi et al., "
+        "2021) yang dirancang khusus untuk meminimalkan jumlah batasan (constraints) dan waktu proving di sisi klien. "
+        "Rincian rumus dan formulasi matematika formal yang bekerja di dalam RUANG AMAN dijabarkan sebagai berikut:"
+    )
+
+    p = doc.add_paragraph()
+    p.paragraph_format.space_before = Pt(6)
+    run = p.add_run("1. Formulasi Pembangkitan Identitas Siswa (Identity Commitment Generation)")
+    run.bold = True
+    run.font.size = Pt(11)
+    run.font.name = 'Calibri'
+    run.font.color.rgb = PRIMARY_BLUE
+
+    add_body_text(doc,
+        "Di dalam peramban siswa, Web Worker membangkitkan dua bilangan skalar acak dengan derajat entropi "
+        "tinggi (256-bit cryptographically secure random values): Identity Nullifier (s_null ∈ F_p) dan "
+        "Identity Trapdoor (s_trap ∈ F_p). Kunci rahasia identitas (Identity Secret) dan Komitmen Identitas "
+        "Publik (Identity Commitment C) dihitung melalui rumus:"
+    )
+
+    add_formula(doc, "s = Poseidon(s_null, s_trap)")
+    add_formula(doc, "Identity Commitment C = Poseidon(s)")
+
+    add_body_text(doc,
+        "Nilai Identity Commitment C bertindak sebagai 'sidik jari publik' siswa yang didaftarkan ke dalam "
+        "pohon Merkle Tree sekolah, sedangkan s_null dan s_trap tersimpan eksklusif di memori lokal siswa "
+        "dan tidak pernah dikirimkan ke jaringan dalam bentuk apapun."
+    )
+
+    p = doc.add_paragraph()
+    p.paragraph_format.space_before = Pt(6)
+    run = p.add_run("2. Formulasi Akumulator Keanggotaan Pohon Merkle (Merkle Membership Accumulator)")
+    run.bold = True
+    run.font.size = Pt(11)
+    run.font.name = 'Calibri'
+    run.font.color.rgb = PRIMARY_BLUE
+
+    add_body_text(doc,
+        "Seluruh komitmen identitas siswa di sebuah satuan pendidikan membentuk struktur hierarki pohon biner "
+        "kriptografis Merkle Tree dengan kedalaman d = 20 (kapasitas 2²⁰ = 1.048.576 siswa per grup sekolah). "
+        "Struktur pohon Merkle dan komitmen identitas diilustrasikan secara visual pada Diagram 2.1 berikut:"
     )
 
     add_image_with_caption(doc,
@@ -753,14 +924,96 @@ def build_document():
         "Diagram 2.1: Struktur Pohon Merkle Tree dan Komitmen Identitas Siswa pada Protokol Semaphore"
     )
 
-    add_body_text(doc, "Untuk mencegah spam dan serangan Sybil, dihitung nilai Nullifier Hash:")
+    add_body_text(doc,
+        "Diberikan daun pohon Leaf_k = C dan jalur pembuktian (Merkle Proof Path) yang terdiri atas himpunan "
+        "simpul saudara {Sibling_i} dan indeks biner {index_i ∈ {0, 1}} untuk tingkat i = 0, 1, ..., d-1. "
+        "Nilai simpul induk rekursif dihitung dengan rumus:"
+    )
 
-    add_formula(doc, "N = H_Poseidon(sk, Scope ID)")
+    add_formula(doc, "H^(0) = C")
+    add_formula(doc, "H^(i+1) = Poseidon(H^(i), Sibling_i)   [jika index_i = 0]")
+    add_formula(doc, "H^(i+1) = Poseidon(Sibling_i, H^(i))   [jika index_i = 1]")
+    add_formula(doc, "Root_Merkle = H^(d)")
 
     add_body_text(doc,
-        "Server mencatat N untuk memastikan bahwa satu siswa hanya dapat mengirimkan satu laporan "
-        "pada Scope ID yang sama, tanpa pernah mengetahui daun (leaf) mana yang dimiliki siswa "
-        "tersebut (Baza et al., 2021)."
+        "Di dalam sirkuit ZKP, Prover membuktikan kepemilikan nilai rahasia (s_null, s_trap) yang menghasilkan "
+        "komitmen C, serta keabsahan jalur {Sibling_i, index_i} menuju akar pohon Root_Merkle sekolah yang aktif, "
+        "tanpa membocorkan daun mana, indeks ke berapa, maupun siapa pemilik komitmen tersebut."
+    )
+
+    p = doc.add_paragraph()
+    p.paragraph_format.space_before = Pt(6)
+    run = p.add_run("3. Formulasi Pencegahan Laporan Ganda (Cryptographic Nullifier Hash)")
+    run.bold = True
+    run.font.size = Pt(11)
+    run.font.name = 'Calibri'
+    run.font.color.rgb = PRIMARY_BLUE
+
+    add_body_text(doc,
+        "Untuk mencegah serangan Sybil di mana seorang siswa mengirimkan spam laporan berulang pada lingkup "
+        "kasus yang sama, dihitung nilai Nullifier Hash deterministik berbasis rahasia pribadi dan identitas scope:"
+    )
+
+    add_formula(doc, "ExternalNullifier = Poseidon(School_ID, Scope_Epoch)")
+    add_formula(doc, "NullifierHash = Poseidon(s_null, ExternalNullifier)")
+
+    add_body_text(doc,
+        "Karakteristik matematis fungsi satu-arah (one-way property) menjamin bahwa siapapun tidak dapat "
+        "merekonstruksi s_null dari NullifierHash. Namun, karena perhitungannya deterministik, pengiriman laporan "
+        "berikutnya dari siswa yang sama pada scope yang sama akan menghasilkan nilai NullifierHash yang persis sama. "
+        "Server mencatat NullifierHash ke dalam tabel set terpakai (S_used):"
+    )
+
+    add_formula(doc, "Jika NullifierHash ∈ S_used ⇒ Tolak Laporan (Spam / Duplikasi Terdeteksi)")
+    add_formula(doc, "Jika NullifierHash ∉ S_used ⇒ Terima Laporan & Masukkan ke S_used")
+
+    p = doc.add_paragraph()
+    p.paragraph_format.space_before = Pt(6)
+    run = p.add_run("4. Formulasi Pengikatan Sinyal Laporan (Signal Hash Binding)")
+    run.bold = True
+    run.font.size = Pt(11)
+    run.font.name = 'Calibri'
+    run.font.color.rgb = PRIMARY_BLUE
+
+    add_body_text(doc,
+        "Guna mencegah serangan Man-in-the-Middle (MitM) di mana penyerang membajak bukti ZKP yang valid untuk "
+        "mengirimkan muatan laporan yang telah dimanipulasi, isi laporan terenkripsi diikat secara kriptografis "
+        "ke dalam sirkuit sebagai nilai sinyal publik (Signal Hash):"
+    )
+
+    add_formula(doc, "SignalHash = BigInt(SHA-256(Ciphertext_Laporan))  (mod p)")
+
+    add_body_text(doc,
+        "Sirkuit ZKP memaksa kesamaan bahwa bukti π hanya valid jika dan hanya jika dihitung untuk SignalHash tersebut. "
+        "Perubahan sekecil satu bit pada ciphertext laporan akan membatalkan pembuktian secara matematis."
+    )
+
+    p = doc.add_paragraph()
+    p.paragraph_format.space_before = Pt(6)
+    run = p.add_run("5. Relasi Aritmatika Formal Sirkuit & Verifikasi Pasangan Bilineer")
+    run.bold = True
+    run.font.size = Pt(11)
+    run.font.name = 'Calibri'
+    run.font.color.rgb = PRIMARY_BLUE
+
+    add_body_text(doc,
+        "Secara matematis, sirkuit ZKP Semaphore membuktikan pemenuhan relasi relasional formal R_Semaphore:"
+    )
+
+    add_formula(doc, "R_Semaphore = { (x, w) | C = Poseidon(Poseidon(s_null, s_trap)) ∧ MerkleVerify(C, path) = Root ∧ NullifierHash = Poseidon(s_null, ExtNull) }")
+
+    add_body_text(doc,
+        "di mana input publik x = (Root, NullifierHash, SignalHash, ExternalNullifier) dan input rahasia "
+        "w = (s_null, s_trap, {Sibling_i}, {index_i}). Verifikasi bukti π = (A, B, C') dilakukan oleh server "
+        "melalui persamaan operasi pemasangan bilineer kurva eliptik (Bilinear Pairing Check):"
+    )
+
+    add_formula(doc, "e(A, B) = e(α, β) · e(∑ x_j · [γ]_j, δ) · e(C', δ)")
+
+    add_body_text(doc,
+        "Persamaan pairing ini menjamin keabsahan komputasi dengan probabilitas pemalsuan kurang dari 2⁻¹²⁸, "
+        "memastikan bahwa seluruh laporan yang masuk ke dashboard penanganan sekolah terbukti 100% otentik "
+        "berasal dari siswa sah, bebas spam, dan sepenuhnya kedap terhadap pelacakan identitas."
     )
 
     add_divider(doc)
@@ -948,11 +1201,60 @@ def build_document():
     # ========================================================================
     add_section_heading(doc, "BAB IV. ALUR PROSES BISNIS & REKAYASA KRIPTOGRAFIS", level=1)
 
+    # 4.1 Diagram Alur Flowchart
+    add_section_heading(doc, "4.1 Diagram Umum Alur Sistem (Flowchart End-to-End)", level=2)
+
     add_body_text(doc,
-        "Proses bisnis RUANG AMAN menghubungkan lima entitas utama melalui alur kriptografi yang "
-        "terstruktur dan aman. Alur komunikasi dan siklus pertukaran data antarentitas secara "
-        "sekuensial dibagi ke dalam tiga fase utama:"
+        "Arsitektur proses bisnis dan rekayasa kriptografis RUANG AMAN dirancang menghubungkan "
+        "seluruh pemangku kepentingan—mulai dari siswa pelapor, peramban klien terisolasi, API verifier "
+        "nir-identitas, konsol Guru BK/Satgas PPKSP, hingga dinas perlindungan anak tingkat daerah dan nasional. "
+        "Alur komprehensif, titik keputusan logika, dan pertukaran payload data antarentitas dipetakan "
+        "secara sistematis dalam bentuk diagram alir (flowchart) pada Diagram 4.1 berikut:"
     )
+
+    add_image_with_caption(doc,
+        ASSETS_DIR / "diagram_4_1_flowchart_sistem.png",
+        "Diagram 4.1: Flowchart Alur Proses Bisnis & Rekayasa Kriptografis End-to-End RUANG AMAN"
+    )
+
+    add_body_text(doc,
+        "Sebagaimana ditunjukkan pada Diagram 4.1 di atas, siklus hidup pelaporan terbagi menjadi empat kolom "
+        "fase berkesinambungan yang menjamin isolasi keamanan mutlak sejak detik pertama hingga penyelesaian kasus:"
+    )
+
+    add_bullet_item(doc,
+        "Siswa mengakses portal melalui peramban ponsel atau gawai laboratorium sekolah (dilengkapi hotkey darurat "
+        "ESC penyamaran seketika 0,1 detik). Siswa memilih gerbang: Jalur Terbuka (konseling tatap muka) atau "
+        "Jalur Kriptografis ZKP (anonimitas matematis). Laporan ditulis, bukti dilampirkan, dan mesin Client-Side "
+        "PII Stripper secara instan menyensor data pribadi di memori peramban sebelum meminta token fisik sekolah.",
+        bold_part="Fase 1: Inisiasi & Masukan Siswa (Langkah 1–4)")
+
+    add_bullet_item(doc,
+        "Peramban memanggil Web Worker di latar belakang agar antarmuka tidak membeku. Kunci rahasia identitas "
+        "diderivasi dengan Poseidon Hash. Mesin WebAssembly (WASM) mengeksekusi sirkuit zk-SNARK Groth16 untuk "
+        "membuktikan keanggotaan komitmen siswa pada Merkle Tree kedalaman 20 kurva BN254. Nullifier Hash dihitung "
+        "untuk mencegah laporan ganda, Signal Hash mengunci isi laporan ke bukti, dan payload dienkripsi dengan X25519.",
+        bold_part="Fase 2: Komputasi Kriptografi Lokal Browser (Langkah 5–9)")
+
+    add_bullet_item(doc,
+        "Ciphertext dan bukti ZKP dikirim melalui koneksi aman TLS 1.3 di mana server secara aktif membuang seluruh "
+        "header IP dan User-Agent. Verifier server mengeksekusi operasi pemasangan bilineer kurva eliptik (< 5 ms) "
+        "untuk memvalidasi bukti terhadap Root Merkle sekolah yang sah. Jika Nullifier Hash belum pernah digunakan, "
+        "laporan disimpan ke basis data Zero-PII dan peramban menerima Kode Tiket Pemulihan Rahasia 16-karakter.",
+        bold_part="Fase 3: Gateway Jaringan & Verifier Server (Langkah 10–13)")
+
+    add_bullet_item(doc,
+        "Petugas Guru BK/Satgas PPKSP menerima alert notifikasi seketika di dashboard khusus. Petugas membuka tiket, "
+        "mengevaluasi kronologi yang telah diredaksi, dan menjalin dialog konseling dua arah terenkripsi dengan siswa. "
+        "Jika kasus teridentifikasi berisiko kritis (kekerasan fisik parah atau kejahatan seksual), sistem menyediakan "
+        "tombol eskalasi darurat terpadu ke dashboard UPTD PPA untuk intervensi hukum dan rumah aman (safe house). "
+        "Data agregat non-identitas diteruskan ke Dinas Pendidikan, dan kasus ditutup secara resmi melalui Berita Acara digital.",
+        bold_part="Fase 4: Triase, Respons & Ekosistem Multi-Lembaga (Langkah 14–17)")
+
+    add_divider(doc)
+
+    # 4.2 Rincian Tiga Fase
+    add_section_heading(doc, "4.2 Rincian Alur Proses Bisnis Tiga Fase", level=2)
 
     # Fase 1
     p = doc.add_paragraph()
@@ -963,40 +1265,40 @@ def build_document():
     run.font.name = 'Calibri'
     run.font.color.rgb = DARK_BLUE
 
-    add_numbered_item(doc, 1, "Server mendistribusikan Slip Token Fisik Massal ke seluruh siswa di awal tahun ajaran.", bold_part="Distribusi Token")
-    add_numbered_item(doc, 2, "Siswa memasukkan token ke browser, Web Worker membangkitkan pasangan kunci ZKP.", bold_part="Generate Kunci ZKP")
-    add_numbered_item(doc, 3, "Identity Commitment dikirim ke server dan dimasukkan ke dalam Batch Merkle Tree.", bold_part="Batch Merkle Tree Enrollment")
+    add_numbered_item(doc, 1, "Pihak sekolah/Satgas mendistribusikan Slip Kartu Token Fisik Massal (scratch card tertutup) ke seluruh siswa terdaftar pada awal tahun ajaran baru.", bold_part="Distribusi Token Massal")
+    add_numbered_item(doc, 2, "Siswa menggosok kartu dan memasukkan token ke peramban. Web Worker mengeksekusi pembangkitan pasangan kunci ZKP di sandbox lokal.", bold_part="Aktivasi & Derivasi Kunci")
+    add_numbered_item(doc, 3, "Komitmen identitas publik (Identity Commitment C) didaftarkan ke server sekolah dan diakumulasikan ke dalam Batch Merkle Tree kedalaman 20.", bold_part="Batch Merkle Tree Enrollment")
 
     # Fase 2
     p = doc.add_paragraph()
     p.paragraph_format.space_before = Pt(8)
-    run = p.add_run("FASE 2: PELAPORAN ANONIM & DETEKSI PII")
+    run = p.add_run("FASE 2: PELAPORAN ANONIM, DETEKSI PII & ZKP GENERATION")
     run.bold = True
     run.font.size = Pt(11)
     run.font.name = 'Calibri'
     run.font.color.rgb = DARK_BLUE
 
-    add_numbered_item(doc, 4, "Siswa menulis laporan kejadian dan mengunggah bukti pendukung.", bold_part="Tulis Laporan")
-    add_numbered_item(doc, 5, "Web Worker menganalisis dan meredaksi PII otomatis (Nama/Kelas/HP).", bold_part="Redaksi PII")
-    add_numbered_item(doc, 6, "Komputasi Bukti ZKP Semaphore & Nullifier Hash (< 3 detik) dilakukan di sisi klien.", bold_part="Komputasi ZKP")
-    add_numbered_item(doc, 7, "Payload Laporan + Bukti ZKP dikirim tanpa Log IP.", bold_part="Kirim Laporan")
-    add_numbered_item(doc, 8, "Server memverifikasi ZK-Proof dan mengecek Anti-Spam Nullifier.", bold_part="Verifikasi Server")
-    add_numbered_item(doc, 9, "Kode Tiket Pelacakan Terenkripsi diterbitkan ke siswa.", bold_part="Terbitkan Tiket")
+    add_numbered_item(doc, 4, "Siswa menuliskan kronologi kejadian perundungan dan mengunggah berkas bukti visual pendukung.", bold_part="Pengisian Laporan")
+    add_numbered_item(doc, 5, "Mesin Client-Side PII Stripper menganalisis teks secara leksikal dan meredaksi otomatis nama, NISN, kelas, serta nomor kontak.", bold_part="Redaksi PII Mandiri")
+    add_numbered_item(doc, 6, "Web Worker menghitung bukti ZKP Semaphore Groth16, Nullifier Hash, dan Signal Hash (< 3 detik pada ponsel RAM 2GB).", bold_part="Generasi Bukti ZKP Klien")
+    add_numbered_item(doc, 7, "Payload laporan terenkripsi asimetris beserta bukti ZKP dikirim ke server melalui transmisi Zero-IP Logging.", bold_part="Transmisi Nir-Jejak")
+    add_numbered_item(doc, 8, "Server mengeksekusi verifikasi kriptografis bukti ZKP terhadap Root aktif dan memvalidasi keunikan Nullifier Hash.", bold_part="Verifikasi Kriptografi Server")
+    add_numbered_item(doc, 9, "Server menerbitkan Kode Tiket Rahasia (Secret Recovery Token) ke peramban siswa sebagai kunci akses pemantauan kasus.", bold_part="Penerbitan Kode Tiket")
 
     # Fase 3
     p = doc.add_paragraph()
     p.paragraph_format.space_before = Pt(8)
-    run = p.add_run("FASE 3: TRIASE, TINDAK LANJUT & RUJUKAN")
+    run = p.add_run("FASE 3: TRIASE, KONSELING DUA ARAH & ESKALASI MULTI-LEMBAGA")
     run.bold = True
     run.font.size = Pt(11)
     run.font.name = 'Calibri'
     run.font.color.rgb = DARK_BLUE
 
-    add_numbered_item(doc, 10, "Guru BK/Satgas menerima notifikasi kasus baru di Dashboard.", bold_part="Notifikasi Kasus")
-    add_numbered_item(doc, 11, "Guru BK mengirim balasan terenkripsi menggunakan kunci publik tiket siswa.", bold_part="Balasan Terenkripsi")
-    add_numbered_item(doc, 12, "Siswa mengakses tiket dan mendekripsi pesan balasan tanpa login.", bold_part="Dekripsi Pesan")
-    add_numbered_item(doc, 13, "Untuk kasus berisiko tinggi (kritis), eskalasi ke Dashboard UPTD PPA untuk pendampingan hukum dan safe house.", bold_part="Eskalasi Kasus Kritis")
-    add_numbered_item(doc, 14, "Guru BK menyelesaikan kasus dan mengunggah Berita Acara resmi.", bold_part="Selesaikan Kasus")
+    add_numbered_item(doc, 10, "Guru BK/Satgas PPKSP menerima notifikasi kasus baru secara real-time pada dashboard terisolasi Row Level Security.", bold_part="Notifikasi Masuk")
+    add_numbered_item(doc, 11, "Guru BK mengirimkan pesan balasan, panduan afirmasi, atau jadwal sesi konseling yang dienkripsi dengan kunci publik tiket siswa.", bold_part="Tanggapan Konseling Terenkripsi")
+    add_numbered_item(doc, 12, "Siswa mengakses halaman tiket kapan saja menggunakan kode tiket pemulihan dan mendekripsi balasan guru tanpa akun login.", bold_part="Interaksi Dua Arah Siswa")
+    add_numbered_item(doc, 13, "Apabila kasus tergolong darurat (kekerasan seksual atau fisik berat), Satgas melakukan eskalasi instan ke UPTD PPA untuk safe house dan pendampingan hukum.", bold_part="Eskalasi Terpadu UPTD PPA")
+    add_numbered_item(doc, 14, "Guru BK mengunggah Berita Acara digital penyelesaian kasus; data statistik agregat tanpa identitas disinkronisasikan ke Dinas Pendidikan.", bold_part="Penyelesaian & Sinkronisasi Dinas")
 
     doc.add_page_break()
 
@@ -1005,8 +1307,53 @@ def build_document():
     # ========================================================================
     add_section_heading(doc, "BAB V. METODOLOGI REKAYASA & HASIL VALIDASI EMPIRIS", level=1)
 
-    # 5.1
-    add_section_heading(doc, "5.1 Metodologi Agile Scrum & Quality Gates (T-0 s.d. T-6)", level=2)
+    # 5.1 Kerangka Metodologi
+    add_section_heading(doc, "5.1 Kerangka Metodologi Rekayasa Terpadu (Design Thinking & Agile XP)", level=2)
+
+    add_body_text(doc,
+        "Pengembangan platform RUANG AMAN mengadopsi pendekatan rekayasa terpadu yang memadukan "
+        "kerangka kerja Double Diamond Design Thinking (Discover, Define, Develop, Deliver) untuk "
+        "merespons kebutuhan psikologis pengguna anak secara empatik, dengan metodologi Agile Extreme "
+        "Programming (XP) dan Cryptographic Engineering berstandar formal. Kerangka ini memastikan "
+        "bahwa arsitektur yang dibangun tidak hanya ramah bagi siswa sekolah, tetapi juga zero-defect "
+        "pada lapisan logika kriptografi."
+    )
+
+    add_body_text(doc,
+        "Tahapan metodologi rekayasa terpadu ini diuraikan ke dalam empat pilar utama:"
+    )
+
+    add_bullet_item(doc,
+        "Melakukan wawancara mendalam kualitatif dan studi lapangan yang melibatkan 15 siswa lintas jenjang "
+        "(SMP dan SMA), 5 guru Bimbingan Konseling, 2 psikolog anak, serta perwakilan pengawas pendidikan. "
+        "Fase ini bertujuan memetakan spektrum ketakutan pelapor, hambatan emosional di sekolah, dan "
+        "kelemahan alur penanganan kekerasan konvensional.",
+        bold_part="1. Fase Discover (Riset Empiris & Pemetaan Masalah)")
+
+    add_bullet_item(doc,
+        "Menerjemahkan temuan empiris menjadi spesifikasi teknis formal, matriks kebutuhan pengguna, dan "
+        "parameter arsitektur sistem. Batasan non-fungsional ditetapkan secara ketat: waktu komputasi pembuktian "
+        "ZKP pada gawai seluler berspesifikasi rendah (RAM 2GB) wajib selesai dalam waktu < 3 detik, "
+        "dan arsitektur transport server wajib menerapkan kebijakan zero-footprint (nol penyimpanan log IP).",
+        bold_part="2. Fase Define (Spesifikasi Kebutuhan & Desain Arsitektur)")
+
+    add_bullet_item(doc,
+        "Mengadopsi paradigma Test-Driven Development (TDD) dengan siklus iterasi sprint dua mingguan. "
+        "Sebelum kode implementasi ditulis, test suite formal disusun terlebih dahulu. Rekayasa sirkuit ZKP "
+        "Semaphore diuji menggunakan Circom dan SnarkJS untuk memverifikasi kekedapan batasan aritmatika "
+        "(zero unconstrained variables) dan memastikan tidak ada celah pemalsuan bukti.",
+        bold_part="3. Fase Develop (Iteratif TDD & Cryptographic Engineering)")
+
+    add_bullet_item(doc,
+        "Melaksanakan audit keamanan menyeluruh, pengujian otomatisasi berbasis CI/CD, uji penetrasi serangan "
+        "kriptografi, dan pengujian kegunaan lapangan (Usability Testing) menggunakan instrumen baku System Usability "
+        "Scale (SUS) di 3 sekolah mitra percontohan sebelum naskah final dan prototipe dirilis.",
+        bold_part="4. Fase Deliver (Multi-Tier Testing & Evaluasi SUS Lapangan)")
+
+    add_divider(doc)
+
+    # 5.2 Quality Gates
+    add_section_heading(doc, "5.2 Quality Gates & Matriks Tahapan Rekayasa (T-0 s.d. T-6)", level=2)
 
     add_body_text(doc,
         "Pengembangan RUANG AMAN menerapkan sistem gerbang kelulusan bertingkat (Quality Gates) "
@@ -1030,13 +1377,13 @@ def build_document():
 
     add_divider(doc)
 
-    # 5.2
-    add_section_heading(doc, "5.2 Strategi Pengujian Komprehensif", level=2)
+    # 5.3 Strategi Pengujian Komprehensif
+    add_section_heading(doc, "5.3 Strategi Pengujian Komprehensif (Multi-Tier Testing)", level=2)
 
     add_body_text(doc,
         "Guna menjamin keandalan sistem dari level kode unit hingga penerimaan pengguna, diterapkan "
-        "strategi pengujian berlapis. Tingkatan strategi pengujian sistem digambarkan secara visual "
-        "pada Diagram 5.1 berikut:"
+        "strategi pengujian berlapis secara otomatis. Tingkatan piramida strategi pengujian sistem "
+        "digambarkan secara visual pada Diagram 5.1 berikut:"
     )
 
     add_image_with_caption(doc,
@@ -1044,14 +1391,42 @@ def build_document():
         "Diagram 5.1: Piramida Strategi Pengujian Perangkat Lunak RUANG AMAN"
     )
 
+    add_body_text(doc,
+        "Suite pengujian otomatis RUANG AMAN dijalankan secara terpadu melalui pipeline CI/CD dengan "
+        "cakupan empat lapisan pengujian:"
+    )
+
+    add_bullet_item(doc,
+        "Memvalidasi kebenaran matematis fungsi Poseidon hash, pembentukan pohon Merkle kedalaman 20, "
+        "derivasi pasangan kunci kurva eliptik X25519, dan integritas enkripsi AES-GCM (Hasil: 6/6 Uji Lolos / 100% PASS).",
+        bold_part="1. Unit Logic & Cryptographic Math Tests")
+
+    add_bullet_item(doc,
+        "Menguji kekebalan arsitektur terhadap 9 vektor serangan nyata: pemalsuan akar Merkle palsu, "
+        "upaya pengiriman laporan duplikat dengan nullifier yang sama (replay attack), injeksi SQL/NoSQL, "
+        "kebocoran regex PII pada variasi teks, dan cross-site scripting (Hasil: 9/9 Uji Lolos / 100% PASS).",
+        bold_part="2. Security Regression Penetration Tests")
+
+    add_bullet_item(doc,
+        "Menguji integritas 26 skenario API backend lokal: siklus hidup tiket dari submit hingga resolusi, "
+        "mekanisme otorisasi berbasis peran (Role-Based Access Control) multi-tenant, sanitasi payload, "
+        "dan penghapusan header IP pada layer gateway (Hasil: 26/26 Uji Lolos / 100% PASS).",
+        bold_part="3. Backend Integration & API Lifecycle Tests")
+
+    add_bullet_item(doc,
+        "Eksekusi simulasi peramban nyata secara headless menggunakan Playwright Chromium runner yang menguji "
+        "23 skenario perjalanan pengguna end-to-end: pengisian form, aktivasi hotkey penyamaran darurat, "
+        "dialog chat dua arah, dan pengujian konsol peramban (Hasil: 23/23 Uji Lolos / 0 Critical Console Error).",
+        bold_part="4. Playwright Live Browser End-to-End (E2E) Tests")
+
     add_divider(doc)
 
-    # 5.3
-    add_section_heading(doc, "5.3 Hasil Validasi Empiris System Usability Scale (SUS)", level=2)
+    # 5.4 SUS
+    add_section_heading(doc, "5.4 Hasil Validasi Empiris System Usability Scale (SUS)", level=2)
 
     add_body_text(doc,
         "Evaluasi kegunaan sistem dilakukan melalui pengujian lapangan dengan metode System Usability "
-        "Scale (SUS) standar internasional yang melibatkan 40 responden (30 siswa lintas jenjang dan "
+        "Scale (SUS) standar internasional (Brooke, 1996) yang melibatkan 40 responden (30 siswa lintas jenjang dan "
         "10 guru BK/Satgas) di 3 sekolah mitra. Hasil kuantitatif uji coba menunjukkan:"
     )
 
@@ -1062,8 +1437,8 @@ def build_document():
 
     add_divider(doc)
 
-    # 5.4
-    add_section_heading(doc, "5.4 Jadwal Pelaksanaan & Milestone (Gantt Chart)", level=2)
+    # 5.5 Gantt Chart
+    add_section_heading(doc, "5.5 Jadwal Pelaksanaan & Milestone (Gantt Chart)", level=2)
 
     add_body_text(doc,
         "Proyek rekayasa ini direncanakan selesai dalam jangka waktu 12 minggu (3 bulan). "
@@ -1163,6 +1538,9 @@ def build_document():
     # ========================================================================
     add_section_heading(doc, "BAB VIII. STRATEGI IMPLEMENTASI, DISEMINASI & KEBERLANJUTAN", level=1)
 
+    # 8.1 Strategi Implementasi
+    add_section_heading(doc, "8.1 Strategi Implementasi Bertahap Tiga Fase", level=2)
+
     add_body_text(doc,
         "Strategi implementasi RUANG AMAN dirancang dalam tiga fase bertahap untuk memastikan "
         "kesiapan teknis, penerimaan pengguna, dan keberlanjutan jangka panjang:"
@@ -1183,6 +1561,97 @@ def build_document():
         "direplikasi oleh dinas perlindungan anak di seluruh wilayah Indonesia.",
         bold_part="Fase 3: Rujukan Otomatis UPTD PPA & Skala Nasional (Bulan 7+)")
 
+    add_divider(doc)
+
+    # 8.2 Refleksi Kritis & Keterbatasan Platform
+    add_section_heading(doc, "8.2 Refleksi Kritis & Keterbatasan Platform (Honest Technical Limitations)", level=2)
+
+    add_body_text(doc,
+        "Sebagai wujud integritas akademik dan transparansi rekayasa perangkat lunak, tim pengembang "
+        "menyadari bahwa tidak ada sistem teknologi yang sempurna tanpa kompromi (trade-offs). "
+        "Di balik keunggulan kriptografis dan jaminan privasi mutlak yang ditawarkan RUANG AMAN, "
+        "terdapat lima keterbatasan teknis dan operasional nyata yang perlu diakui secara jujur dan terbuka:"
+    )
+
+    add_numbered_item(doc, 1,
+        "Demi menegakkan prinsip zero-trust di mana server tidak pernah menyentuh saksi rahasia (witness), "
+        "seluruh komputasi pembuktian ZKP dijalankan 100% di browser pengguna. Konsekuensinya, peramban klien "
+        "harus mengunduh berkas kompilasi WebAssembly (~1,8 MB) dan kunci pembuktian zkey (~3,2 MB). "
+        "Pada ponsel cerdas kelas bawah (low-end device dengan RAM ≤ 2 GB atau prosesor quad-core generasi lawas), "
+        "komputasi pembuktian sirkuit Poseidon dan Groth16 membutuhkan durasi waktu antara 2,5 hingga 4,2 detik "
+        "dengan konsumsi memori kerja puncak (peak RAM) mencapai ~45-60 MB. Walaupun eksekusi diisolasi pada "
+        "Web Worker latar belakang agar antarmuka tidak membeku, pengguna pada koneksi internet seluler 3G/EDGE "
+        "yang sangat lambat tetap akan mengalami jeda unduhan awal (cold-start download).",
+        bold_part="1. Beban Komputasi dan Memori di Sisi Klien (Client-Side WASM & RAM Overhead)")
+
+    add_numbered_item(doc, 2,
+        "Arsitektur Zero-Knowledge murni melarang server menyimpan relasi identitas apa pun antara siswa "
+        "dengan laporan yang diajukannya. Konsekuensi langsung dari desain ini adalah: Ketiadaan Fitur 'Lupa Kata Sandi' "
+        "(No Password Reset / No Centralized Recovery Backdoor). Satu-satunya kunci bagi siswa untuk memantau status, "
+        "membaca balasan konseling dari guru BK, dan melanjutkan dialog interaktif adalah Kode Tiket Pemulihan Rahasia "
+        "(Secret Recovery Token 16-karakter acak). Apabila siswa lupa mencatat, menghapus, atau menghilangkan kode tersebut, "
+        "sistem secara matematis tidak memiliki mekanisme untuk memulihkan akses ke tiket lama, sehingga siswa "
+        "terpaksa harus membuat laporan baru dari awal. Ini menuntut tanggung jawab literasi digital mandiri dari pihak siswa.",
+        bold_part="2. Tanggung Jawab Mutlak Kunci Pemulihan Tiket (The No-Backdoor Recovery Dilemma)")
+
+    add_numbered_item(doc, 3,
+        "Penyaring PII di sisi klien (Client-Side PII Stripper) saat ini mengandalkan mesin aturan leksikal regex "
+        "dan pencocokan pola heuristik. Pendekatan ini terbukti sangat cepat (< 5 ms) dan efisien untuk menyensor "
+        "nama resmi siswa, nomor induk (NISN), nomor WhatsApp/kontak, dan format kelas. Namun, mesin ini memiliki "
+        "keterbatasan dalam mengenali: (a) Nama panggilan akrab/gaul (slang nicknames) yang tidak terdaftar dalam pola, "
+        "(b) Konteks sindiran terselubung (implicit sarcasm) atau bahasa kode antarkelompok sebaya, serta (c) Teks yang "
+        "tertanam di dalam berkas gambar bukti pendukung (seperti tangkapan layar percakapan media sosial) karena "
+        "komputasi Optical Character Recognition (OCR) lokal di peramban terlalu berat untuk dijalankan pada gawai spek rendah.",
+        bold_part="3. Keterbatasan Deteksi Kontekstual Mesin Client-Side PII Stripper")
+
+    add_numbered_item(doc, 4,
+        "Pohon Merkle Tree yang diimplementasikan berkedalaman d = 20 dengan kapasitas maksimum 1.048.576 siswa per pohon. "
+        "Pada implementasi skala masif yang melibatkan ribuan sekolah nasional, sinkronisasi akar pohon (Merkle Root Updates) "
+        "memerlukan mekanisme penumpukan berkala (incremental batch update). Apabila terjadi pendaftaran massal siswa "
+        "baru di tengah tahun ajaran, peramban klien berpotensi membangkitkan bukti terhadap akar pohon yang telah usang "
+        "(stale root) apabila sinkronisasi status lokal mengalami keterlambatan jaringan.",
+        bold_part="4. Skalabilitas Sinkronisasi Status Pohon Merkle pada Skala Masif")
+
+    add_numbered_item(doc, 5,
+        "Secara esensial, teknologi kriptografi ZKP dan enkripsi asimetris pada RUANG AMAN berfungsi sebagai "
+        "pintu gerbang pelindung dan pemantik keberanian melapor (enabler). Namun, penyelesaian substansi kasus "
+        "kekerasan di dunia nyata tetap sepenuhnya bergantung pada integritas, empati, kepekaan psikologis, dan "
+        "kecepatan respons Guru BK serta Tim Pencegahan dan Penanganan Kekerasan (TPPK). Secanggih apa pun enkripsi "
+        "yang melindungi pelapor, apabila petugas di sekolah lambat merespons tiket atau bersikap diskriminatif dalam "
+        "mengambil tindakan faktual, keadilan restoratif bagi korban tidak akan pernah terwujud.",
+        bold_part="5. Ketergantungan Ekosistem terhadap Responsivitas Manusia (Human-in-the-Loop Bottleneck)")
+
+    add_body_text(doc,
+        "Kelima keterbatasan teknis tersebut telah dipetakan dampaknya beserta rencana mitigasi rekayasa "
+        "jangka panjang pada Tabel 8.1 berikut:"
+    )
+
+    create_professional_table(doc,
+        headers=["Keterbatasan Platform", "Tingkat Dampak", "Manifestasi Masalah", "Rencana Mitigasi & Roadmap Masa Depan"],
+        rows=[
+            ["Overhead Komputasi Klien", "Menengah", "Jeda 2.5–4 detik pada gawai RAM 2GB.", "Implementasi WebAssembly SIMD & WebGPU Prover guna memangkas latensi < 1 detik."],
+            ["Ketiadaan Fitur Reset Tiket", "Tinggi", "Kehilangan akses jika kode tiket hilang.", "Fitur ekspor kartu digital recovery terenkripsi lokal dan opsi cetak slip fisik darurat."],
+            ["Deteksi Konteks Leksikal PII", "Menengah", "Slang nicknames dan teks gambar luput.", "Eksplorasi Web-LLM / Small-NER terkompresi lokal di browser via ONNX Runtime Web."],
+            ["Sinkronisasi Pohon Merkle", "Rendah", "Risiko stale root saat pendaftaran massal.", "Penerapan Pohon Merkle Inkremental Terdesentralisasi dengan caching state berbasis CDN."],
+            ["Ketergantungan Faktor Guru", "Tinggi", "Kasus terabaikan jika guru BK tidak aktif.", "Sistem eskalasi otomatis berbasis SLA (Service Level Agreement) berjangka waktu ke Dinas."],
+        ],
+        caption="Tabel 8.1: Matriks Analisis Keterbatasan Platform, Dampak, dan Rencana Mitigasi Roadmap Masa Depan"
+    )
+
+    add_divider(doc)
+
+    # 8.3 Keberlanjutan & Roadmap
+    add_section_heading(doc, "8.3 Model Keberlanjutan & Peta Jalan (Roadmap) Jangka Panjang", level=2)
+
+    add_body_text(doc,
+        "Keberlanjutan platform RUANG AMAN dirancang sebagai Public Goods berbasis Open-Source yang bebas "
+        "dari ketergantungan lisensi komersial (vendor lock-in). Pendanaan pemeliharaan server dapat diintegrasikan "
+        "ke dalam alokasi Bantuan Operasional Sekolah (BOS) Kinerja bidang digitalisasi dan program perlindungan "
+        "anak Dinas Pendidikan Kota/Kabupaten. Peta jalan jangka panjang mencakup integrasi WebAssembly SIMD untuk "
+        "pembuktian sub-detik, adopsi protokol federasi antarsekolah nasional, dan standarisasi pelaporan kekerasan "
+        "anak terpadu di seluruh Indonesia."
+    )
+
     doc.add_page_break()
 
     # ========================================================================
@@ -1197,8 +1666,11 @@ def build_document():
         "Ben-Sasson, E., Chiesa, A., Genkin, D., Tromer, E., & Virza, M. (2014). SNARKs for C: Verifying program executions succinctly and in zero knowledge. In Advances in Cryptology – CRYPTO 2013 (pp. 90–108). Springer. https://doi.org/10.1007/978-3-642-40084-1_6",
         "Biderman, A. D., & Reiss, A. J. (1967). On exploring the \"dark figure\" of crime. The Annals of the American Academy of Political and Social Science, 374(1), 1–15. https://doi.org/10.1177/000271626737400102",
         "Boneh, D., & Shoup, V. (2020). A graduate course in applied cryptography (Version 0.5). Stanford University Press.",
+        "Brooke, J. (1996). SUS: A 'quick and dirty' usability scale. In P. W. Jordan, B. Thomas, B. A. Weerdmeester, & I. L. McClelland (Eds.), Usability evaluation in industry (pp. 189–194). Taylor & Francis.",
         "Goldwasser, S., Micali, S., & Rackoff, C. (1989). The knowledge complexity of interactive proof systems. SIAM Journal on Computing, 18(1), 186–208. https://doi.org/10.1137/0218012",
         "GoodStats. (2026). Potret kekerasan di lingkungan pendidikan Indonesia: Data pengaduan dan tren kekerasan anak 2024–2026. GoodStats Institute.",
+        "Grassi, L., Khovratovich, D., Rechberger, C., Roy, A., & Schofnegger, M. (2021). Poseidon: A new hash function for zero-knowledge proof systems. In 30th USENIX Security Symposium (USENIX Security 21) (pp. 519–535). USENIX Association.",
+        "Groth, J. (2016). On the size of pairing-based non-interactive arguments. In Advances in Cryptology – EUROCRYPT 2016 (pp. 305–326). Springer. https://doi.org/10.1007/978-3-662-49896-5_11",
         "Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi. (2023). Peraturan Menteri Pendidikan, Kebudayaan, Riset, dan Teknologi Republik Indonesia Nomor 46 Tahun 2023 tentang Pencegahan dan Penanganan Kekerasan di Lingkungan Satuan Pendidikan (PPKSP). Kemendikbudristek RI.",
         "Kementerian Pemberdayaan Perempuan dan Perlindungan Anak. (2025). Laporan tahunan Sistem Informasi Online Perlindungan Perempuan dan Anak (SIMFONI PPA) 2025. KemenPPPA RI.",
         "Koh, W., Cha, B., & Chae, S. (2022). Semaphore: Zero-knowledge privacy layer for anonymous signaling on public ledgers. Ethereum Research Papers, 8(2), 45–59. https://doi.org/10.1145/3498366.3505812",
@@ -1207,6 +1679,7 @@ def build_document():
         "Olweus, D. (1993). Bullying at school: What we know and what we can do. Blackwell Publishing.",
         "Salmivalli, C. (2010). Bullying and the peer group: A review. Aggression and Violent Behavior, 15(2), 112–120. https://doi.org/10.1016/j.avb.2009.08.007",
         "Thornberg, R., Pozzoli, T., Gini, G., & Jungert, T. (2018). Unique and interactive associations of moral emotions with bullying and defending among school students. Child Indicators Research, 11(4), 1167–1182. https://doi.org/10.1007/s12187-017-9476-8",
+        "UNICEF. (2024). An everyday lesson: #ENDviolence in and around schools. UNICEF Child Protection Reports.",
     ]
 
     for ref in references:

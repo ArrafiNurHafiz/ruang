@@ -38,22 +38,27 @@ export const DEFAULT_SCHOOL_PROFILE: SchoolProfile = {
 };
 
 const STORAGE_KEYS = {
-  PROFILE: "tameng_school_profile",
-  TICKETS: "tameng_tickets",
-  TOKENS: "tameng_tokens",
-  USERS: "tameng_users",
-  AUDIT_LOGS: "tameng_audit_logs",
-  INTERVENTIONS: "tameng_interventions",
+  PROFILE: "ruangaman_school_profile",
+  TICKETS: "ruangaman_tickets",
+  TOKENS: "ruangaman_tokens",
+  USERS: "ruangaman_users",
+  AUDIT_LOGS: "ruangaman_audit_logs",
+  INTERVENTIONS: "ruangaman_interventions",
 };
 
-// Safe JSON parse helper
+// Safe JSON parse helper with backwards compatibility fallback
 function safeGet<T>(key: string, fallback: T): T {
   try {
-    const item = localStorage.getItem(key);
+    let item = localStorage.getItem(key);
+    if (!item && key.startsWith("ruangaman_")) {
+      // Fallback to legacy tameng_ key if present
+      const legacyKey = key.replace("ruangaman_", "tameng_");
+      item = localStorage.getItem(legacyKey);
+    }
     if (!item) return fallback;
     return JSON.parse(item) as T;
   } catch (err) {
-    console.warn(`[TAMENG Storage] Error parsing key ${key}:`, err);
+    console.warn(`[Ruang Aman Storage] Error parsing key ${key}:`, err);
     return fallback;
   }
 }
@@ -63,7 +68,7 @@ function safeSet<T>(key: string, value: T): void {
   try {
     localStorage.setItem(key, JSON.stringify(value));
   } catch (err) {
-    console.error(`[TAMENG Storage] Error saving key ${key}:`, err);
+    console.error(`[Ruang Aman Storage] Error saving key ${key}:`, err);
   }
 }
 
@@ -124,7 +129,7 @@ export const StorageEngine = {
     interventions: ProtectionIntervention[],
   ): void {
     const payload: DatabaseBackupPayload = {
-      version: "TAMENG-v2.5-PROD",
+      version: "RUANG-AMAN-v2.5-PROD",
       exportedAt: new Date().toISOString(),
       schoolProfile: profile,
       tickets,
@@ -159,7 +164,7 @@ export const StorageEngine = {
       );
     }
     return {
-      version: parsed.version || "TAMENG-v2.5-PROD",
+      version: parsed.version || "RUANG-AMAN-v2.5-PROD",
       exportedAt: parsed.exportedAt || new Date().toISOString(),
       schoolProfile: { ...DEFAULT_SCHOOL_PROFILE, ...parsed.schoolProfile },
       tickets: Array.isArray(parsed.tickets) ? parsed.tickets : [],
@@ -253,7 +258,7 @@ export const StorageEngine = {
         action: "Inisialisasi Sistem Baru (Go-Live Hibah Sekolah)",
         actorRole: "Admin Satgas",
         actorName: customProfile.principalName,
-        details: `Sistem TAMENG resmi diinisialisasi untuk satuan pendidikan ${customProfile.schoolName} (NPSN: ${customProfile.npsn}).`,
+        details: `Sistem Ruang Aman resmi diinisialisasi untuk satuan pendidikan ${customProfile.schoolName} (NPSN: ${customProfile.npsn}).`,
         zkpProofStatus: "Tervalidasi",
       },
     ];

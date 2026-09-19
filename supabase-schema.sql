@@ -1,4 +1,4 @@
--- TAMENG Database Schema for Supabase
+-- Ruang Aman Database Schema for Supabase
 -- Run this in Supabase SQL Editor
 
 -- Enable UUID extension

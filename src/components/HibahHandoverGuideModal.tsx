@@ -186,7 +186,7 @@ PEDOMAN PERMENDIKBUDRISTEK NO. 46 TAHUN 2023
                     Tahun 2023
                   </h4>
                   <p className="text-xs text-slate-600 mt-1">
-                    Semua laporan yang masuk melalui platform TAMENG harus
+                    Semua laporan yang masuk melalui platform Ruang Aman harus
                     ditangani dengan prinsip{" "}
                     <strong>Kepentingan Terbaik bagi Anak</strong>,{" "}
                     <strong>Kerahasiaan Mutlak</strong>, dan{" "}
@@ -345,7 +345,7 @@ PEDOMAN PERMENDIKBUDRISTEK NO. 46 TAHUN 2023
                   <Award className="w-8 h-8 text-blue-700" />
                   <div>
                     <h4 className="font-black text-slate-900 text-base">
-                      Naskah Serah Terima Hibah Perangkat Lunak (TAMENG)
+                      Naskah Serah Terima Hibah Perangkat Lunak (Ruang Aman)
                     </h4>
                     <p className="text-xs text-slate-500">
                       Platform Pelaporan Anonim &amp; Ruang Konseling Ramah Anak
@@ -357,7 +357,7 @@ PEDOMAN PERMENDIKBUDRISTEK NO. 46 TAHUN 2023
                   <p>
                     Dengan ini dinyatakan bahwa platform{" "}
                     <strong>
-                      TAMENG (Tata Aman &amp; Mediasi Edukasi Nir-Gelisah)
+                      Ruang Aman (Platform Pelaporan Anonim &amp; Konseling Ramah Anak)
                     </strong>{" "}
                     dihibahkan secara penuh tanpa biaya royalti untuk
                     kepentingan operasional Satgas PPKSP di satuan pendidikan:
@@ -526,7 +526,7 @@ PEDOMAN PERMENDIKBUDRISTEK NO. 46 TAHUN 2023
         {/* Footer */}
         <div className="p-4 bg-slate-50 border-t border-slate-200 flex items-center justify-between text-xs">
           <span className="text-slate-500 font-mono text-[11px]">
-            Dokumen Implementasi Hibah TAMENG • Permendikbudristek 46/2023
+            Dokumen Implementasi Hibah Ruang Aman • Permendikbudristek 46/2023
           </span>
           <button
             type="button"

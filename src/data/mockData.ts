@@ -319,7 +319,7 @@ export const MOCK_USERS: Record<
     email: "admin@ruang.com",
     role: "admin",
     roleTitle: "Administrator Sistem PPKSP",
-    organization: "Pusat Kendali TAMENG",
+    organization: "Pusat Kendali Ruang Aman",
     identifier: "ID ADMIN: ADM-SYS-001",
     avatar:
       "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
@@ -632,7 +632,7 @@ export const MOCK_PROTECTION_INTERVENTIONS: ProtectionIntervention[] = [
 export const HELP_ARTICLES: HelpArticle[] = [
   {
     id: "art-1",
-    title: "Bagaimana Cara Melapor Secara Anonim di TAMENG?",
+    title: "Bagaimana Cara Melapor Secara Anonim di Ruang Aman?",
     category: "Cara Melapor",
     readTime: "3 menit",
     iconName: "ShieldAlert",
@@ -641,7 +641,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     content: [
       "1. Masuk ke halaman Lapor Anonim (Ruang Aman).",
       "2. Pilih kategori kejadian dan status keterlibatan Anda (sebagai korban atau saksi).",
-      "3. Tuliskan kronologi dengan jelas. Fitur deteksi cerdas TAMENG akan otomatis mendeteksi nama atau kelas yang tidak sengaja tertulis untuk disamarkan.",
+      "3. Tuliskan kronologi dengan jelas. Fitur deteksi cerdas Ruang Aman akan otomatis mendeteksi nama atau kelas yang tidak sengaja tertulis untuk disamarkan.",
       "4. Unggah bukti jika ada (foto/rekaman suara). Sistem kami otomatis membersihkan data lokasi GPS (EXIF) dari file.",
       "5. Simpan Nomor Tiket dan Kode Pemulihan unik Anda untuk memantau status dan berkomunikasi 2-arah dengan Guru BK.",
     ],
@@ -655,7 +655,7 @@ export const HELP_ARTICLES: HelpArticle[] = [
     excerpt:
       "Penjelasan teknis bagaimana sistem memastikan server kami tidak pernah menyimpan IP, MAC Address, atau identitas Anda.",
     content: [
-      "TAMENG dibangun dengan prinsip Zero-Knowledge Architecture.",
+      "Ruang Aman dibangun dengan prinsip Zero-Knowledge Architecture.",
       "Server tidak mencatat alamat IP (IP anonymization), tidak merekam User-Agent perangkat, dan membulatkan timestamp waktu untuk mencegah korelasi log jaringan.",
       "Isi laporan dienkripsi secara end-to-end sehingga hanya Konselor BK yang berwenang yang dapat membaca deskripsi setelah diverifikasi di lingkungan sekolah.",
       "PIN keamanan Anda hanya tersimpan secara lokal di browser dan tidak pernah dikirim ke jaringan internet.",
@@ -715,7 +715,7 @@ export const FAQ_ITEMS: FAQItem[] = [
     question:
       "Apakah Guru BK atau Wali Kelas bisa mengetahui siapa yang mengirim laporan?",
     answer:
-      "Tidak. Sistem TAMENG tidak menyimpan identitas pelapor, email, nomor ponsel, nama perangkat, maupun alamat IP. Laporan hanya berisi nomor acak (Tiket). Guru BK hanya menerima informasi mengenai kejadian yang Anda ceritakan tanpa mengetahui siapa Anda.",
+      "Tidak. Sistem Ruang Aman tidak menyimpan identitas pelapor, email, nomor ponsel, nama perangkat, maupun alamat IP. Laporan hanya berisi nomor acak (Tiket). Guru BK hanya menerima informasi mengenai kejadian yang Anda ceritakan tanpa mengetahui siapa Anda.",
   },
   {
     id: "faq-2",
@@ -723,7 +723,7 @@ export const FAQ_ITEMS: FAQItem[] = [
     question:
       "Bagaimana jika saya tidak sengaja menulis nama saya atau kelas saya di dalam cerita?",
     answer:
-      "TAMENG dilengkapi fitur Deteksi Otomatis PII (Personally Identifiable Information). Ketika Anda mengetik, sistem langsung mendeteksi nama, rombongan belajar/kelas, NISN, atau nomor kontak, dan memberikan tombol 1-klik untuk menyamarkan (sensor) secara otomatis sebelum dikirim.",
+      "Ruang Aman dilengkapi fitur Deteksi Otomatis PII (Personally Identifiable Information). Ketika Anda mengetik, sistem langsung mendeteksi nama, rombongan belajar/kelas, NISN, atau nomor kontak, dan memberikan tombol 1-klik untuk menyamarkan (sensor) secara otomatis sebelum dikirim.",
   },
   {
     id: "faq-3",
@@ -737,7 +737,7 @@ export const FAQ_ITEMS: FAQItem[] = [
     category: "Keamanan & Tombol Darurat",
     question: 'Apa fungsi tombol "Keluar Cepat" (Quick Exit)?',
     answer:
-      'Jika ada orang yang tiba-tiba mendekat saat Anda sedang membuka TAMENG, tekan tombol "Keluar Cepat" (atau tekan tombol ESC dua kali). Layar akan seketika menutup aplikasi, menghapus data tampilan di memori, dan mengarahkan peramban Anda ke halaman pencarian Google.',
+      'Jika ada orang yang tiba-tiba mendekat saat Anda sedang membuka Ruang Aman, tekan tombol "Keluar Cepat" (atau tekan tombol ESC dua kali). Layar akan seketika menutup aplikasi, menghapus data tampilan di memori, dan mengarahkan peramban Anda ke halaman pencarian Google.',
   },
   {
     id: "faq-5",
@@ -750,9 +750,9 @@ export const FAQ_ITEMS: FAQItem[] = [
     id: "faq-6",
     category: "Kedaruratan",
     question:
-      "Apakah TAMENG bisa digunakan saat kondisi bahaya fisik mendesak?",
+      "Apakah Ruang Aman bisa digunakan saat kondisi bahaya fisik mendesak?",
     answer:
-      "TAMENG adalah platform pelaporan dan konseling tindak lanjut. Jika Anda berada dalam bahaya fisik maut atau ancaman kekerasan langsung detik ini, segera hubungi Layanan Darurat Nasional SAPA 129, Polisi 110, atau tekan menu Kontak Darurat di bagian atas layar.",
+      "Ruang Aman adalah platform pelaporan dan konseling tindak lanjut. Jika Anda berada dalam bahaya fisik maut atau ancaman kekerasan langsung detik ini, segera hubungi Layanan Darurat Nasional SAPA 129, Polisi 110, atau tekan menu Kontak Darurat di bagian atas layar.",
   },
 ];
 

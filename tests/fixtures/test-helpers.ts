@@ -46,7 +46,8 @@ export function createMockResponse(): MockResponse {
 }
 
 export const TEST_JWT_SECRET =
-  process.env.JWT_SECRET || "TAMENG_PPKSP_SECURE_AUTH_SIGNING_KEY_2026";
+  process.env.JWT_SECRET ||
+  "RUANG_AMAN_PPKSP_SECURE_AUTH_SIGNING_KEY_2026";
 
 export function generateTestJWT(
   payload: Record<string, any>,

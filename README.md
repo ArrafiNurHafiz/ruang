@@ -1,4 +1,4 @@
-# RUANG AMAN (TAMENG)
+# RUANG AMAN
 > **Sistem Pelaporan Anti-Perundungan & Kekerasan Berbasis Zero-Knowledge Proof (ZKP) untuk Menjamin Keamanan dan Anonimitas Kriptografis di Lingkungan Satuan Pendidikan**
 > 
 > *Diajukan untuk International Web Technology Competition 2026*
@@ -14,7 +14,7 @@
 
 ## 📌 Gambaran Umum Proyek
 
-**RUANG AMAN (TAMENG)** adalah platform *Progressive Web Application (PWA)* berkinerja tinggi yang dirancang untuk mengatasi krisis perundungan dan kekerasan anak di sekolah sesuai mandat **Permendikbudristek No. 46 Tahun 2023** dan **UU Pelindungan Data Pribadi (UU No. 27/2022)**.
+**RUANG AMAN** adalah platform *Progressive Web Application (PWA)* berkinerja tinggi yang dirancang untuk mengatasi krisis perundungan dan kekerasan anak di sekolah sesuai mandat **Permendikbudristek No. 46 Tahun 2023** dan **UU Pelindungan Data Pribadi (UU No. 27/2022)**.
 
 Aplikasi ini mengubah paradigma privasi konvensional dari sekadar *policy-based privacy* (janji etika pengelola) menjadi **mathematical privacy** berbasis kriptografi **Zero-Knowledge Proof (Semaphore ZKP)**. Siswa dapat membuktikan keabsahan hak lapor dan keanggotaan sekolah secara matematis (*cryptographic membership proof*) tanpa pernah mengungkap identitas, nama, NISN, atau alamat IP ke server.
 

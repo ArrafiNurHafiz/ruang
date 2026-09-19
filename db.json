@@ -16,7 +16,7 @@
       "password_hash": "4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4",
       "role": "admin",
       "roleTitle": "Administrator Sistem PPKSP",
-      "organization": "Pusat Kendali TAMENG",
+      "organization": "Pusat Kendali Ruang Aman",
       "identifier": "ID ADMIN: ADM-SYS-001",
       "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80",
       "permissions": [
@@ -115,7 +115,7 @@
       "email": "admin2@ruang.com",
       "role": "admin",
       "roleTitle": "Administrator Kedua",
-      "organization": "Pusat Kendali TAMENG",
+      "organization": "Pusat Kendali Ruang Aman",
       "created_at": "2026-09-15T14:05:22.198Z"
     },
     {
@@ -133,7 +133,7 @@
       "email": "admin2@ruang.com",
       "role": "admin",
       "roleTitle": "Administrator Kedua",
-      "organization": "Pusat Kendali TAMENG",
+      "organization": "Pusat Kendali Ruang Aman",
       "created_at": "2026-09-15T14:05:41.710Z"
     },
     {
@@ -153,6 +153,15 @@
       "roleTitle": "Admin Sekolah (Guru BK)",
       "organization": "SMA Negeri 2 Bandung",
       "created_at": "2026-09-15T14:06:23.766Z"
+    },
+    {
+      "id": "fdaf52e0-573a-4355-be8f-9fccbbe0c249",
+      "name": "Drs. H. Mulyadi, M.Pd",
+      "email": "admin.sekolah.1789791973491@sekolah.sch.id",
+      "role": "guru",
+      "roleTitle": "Admin Sekolah (Guru BK)",
+      "organization": "SMA Negeri 2 Bandung",
+      "created_at": "2026-09-19T04:26:13.496Z"
     }
   ],
   "tokens": [
@@ -1824,6 +1833,67 @@
       "status": "Tersedia",
       "notes": "Dibuat oleh Admin",
       "created_at": "2026-09-15T14:06:39.961Z"
+    },
+    {
+      "id": "52b6d99f-8395-4d3b-be07-1ce333c38ffe",
+      "token_code": "TEST-SMAN1-JHUY-7967",
+      "school_id": "default-school",
+      "student_level": "Kelas 10",
+      "batch_id": "BATCH-1789791973514",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "notes": "Automated Integration Test",
+      "created_at": "2026-09-19T04:26:13.514Z",
+      "password_hash": "880e3906b6a41060251e6cd8749e3ac59e1222f40082a0b3a227f54516ddb5c4",
+      "pin_hash": "880e3906b6a41060251e6cd8749e3ac59e1222f40082a0b3a227f54516ddb5c4",
+      "recovery_key": "kunci-tg7i-8437",
+      "activated_at": "2026-09-19T04:26:13.535Z",
+      "usage_count": 1
+    },
+    {
+      "id": "db35fff6-6232-4975-9a62-724535adee21",
+      "token_code": "TEST-SMAN1-AMCC-7737",
+      "school_id": "default-school",
+      "student_level": "Kelas 10",
+      "batch_id": "BATCH-1789791973514",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Automated Integration Test",
+      "created_at": "2026-09-19T04:26:13.514Z"
+    },
+    {
+      "id": "84536f65-304b-427f-ab8b-9716fd2b76ce",
+      "token_code": "COLLISION-TEST-GARP-3594",
+      "school_id": "default-school",
+      "student_level": "Kelas 11",
+      "batch_id": "BATCH-1789791973560",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "created_at": "2026-09-19T04:26:13.560Z",
+      "password_hash": "dd0f84c6389a353d4ec594e142ebf6d8db3bac9837d1cb04f8bcca23111f63cf",
+      "pin_hash": "dd0f84c6389a353d4ec594e142ebf6d8db3bac9837d1cb04f8bcca23111f63cf",
+      "recovery_key": "kunci-8qrg-9938",
+      "activated_at": "2026-09-19T04:26:13.568Z",
+      "usage_count": 1
+    },
+    {
+      "id": "c6c3e1af-87be-4201-8034-8f2658288118",
+      "token_code": "COLLISION-TEST-NSMP-5035",
+      "school_id": "default-school",
+      "student_level": "Kelas 11",
+      "batch_id": "BATCH-1789791973560",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "created_at": "2026-09-19T04:26:13.560Z",
+      "password_hash": "dd0f84c6389a353d4ec594e142ebf6d8db3bac9837d1cb04f8bcca23111f63cf",
+      "pin_hash": "dd0f84c6389a353d4ec594e142ebf6d8db3bac9837d1cb04f8bcca23111f63cf",
+      "recovery_key": "kunci-0q2o-5095",
+      "activated_at": "2026-09-19T04:26:13.577Z",
+      "usage_count": 1
     }
   ],
   "tickets": [
@@ -1839,7 +1909,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789060189438",
+      "recovery_code": "aman-ruang-test-1789060189438",
       "school_id": "default-school",
       "is_kiosk": false,
       "id": "702a828f-3428-4c95-8951-53f4d477b6ad",
@@ -2025,7 +2095,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789060965877",
+      "recovery_code": "aman-ruang-test-1789060965877",
       "school_id": "default-school",
       "is_kiosk": false,
       "id": "22876516-5e88-46d7-a497-d43d07c64654",
@@ -2072,7 +2142,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789061940780",
+      "recovery_code": "aman-ruang-test-1789061940780",
       "school_id": "default-school",
       "is_kiosk": false,
       "id": "05a7e909-c8ec-4bab-a272-ac0a3d1fdbea",
@@ -2119,7 +2189,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789061983584",
+      "recovery_code": "aman-ruang-test-1789061983584",
       "secret_pin": "8899",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -2167,7 +2237,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789062000342",
+      "recovery_code": "aman-ruang-test-1789062000342",
       "secret_pin": "8899",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -2254,7 +2324,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789062039908",
+      "recovery_code": "aman-ruang-test-1789062039908",
       "secret_pin": "1293",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -2341,7 +2411,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789062312868",
+      "recovery_code": "aman-ruang-test-1789062312868",
       "secret_pin": "2252",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -2428,7 +2498,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789062369191",
+      "recovery_code": "aman-ruang-test-1789062369191",
       "secret_pin": "7834",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -2517,7 +2587,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789063001145",
+      "recovery_code": "aman-ruang-test-1789063001145",
       "secret_pin": "2393",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -2606,7 +2676,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789063043198",
+      "recovery_code": "aman-ruang-test-1789063043198",
       "secret_pin": "4432",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -2695,7 +2765,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789063461557",
+      "recovery_code": "aman-ruang-test-1789063461557",
       "secret_pin": "1409",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -2784,7 +2854,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789063585062",
+      "recovery_code": "aman-ruang-test-1789063585062",
       "secret_pin": "4688",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -2873,7 +2943,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789063595283",
+      "recovery_code": "aman-ruang-test-1789063595283",
       "secret_pin": "2425",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -2962,7 +3032,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789063642158",
+      "recovery_code": "aman-ruang-test-1789063642158",
       "secret_pin": "5453",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -3051,7 +3121,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789086838217",
+      "recovery_code": "aman-ruang-test-1789086838217",
       "secret_pin": "4317",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -3140,7 +3210,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789087230595",
+      "recovery_code": "aman-ruang-test-1789087230595",
       "secret_pin": "5787",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -3229,7 +3299,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789087501067",
+      "recovery_code": "aman-ruang-test-1789087501067",
       "secret_pin": "4016",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -3318,7 +3388,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789087907768",
+      "recovery_code": "aman-ruang-test-1789087907768",
       "secret_pin": "9866",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -3407,7 +3477,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789088057358",
+      "recovery_code": "aman-ruang-test-1789088057358",
       "secret_pin": "7888",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -3496,7 +3566,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789088137830",
+      "recovery_code": "aman-ruang-test-1789088137830",
       "secret_pin": "1817",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -3585,7 +3655,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789088517135",
+      "recovery_code": "aman-ruang-test-1789088517135",
       "secret_pin": "3772",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -3674,7 +3744,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789088572605",
+      "recovery_code": "aman-ruang-test-1789088572605",
       "secret_pin": "6342",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -3763,7 +3833,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789089015529",
+      "recovery_code": "aman-ruang-test-1789089015529",
       "secret_pin": "7210",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -3852,7 +3922,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789089448997",
+      "recovery_code": "aman-ruang-test-1789089448997",
       "secret_pin": "3283",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -3941,7 +4011,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789098464266",
+      "recovery_code": "aman-ruang-test-1789098464266",
       "secret_pin": "3510",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -4030,7 +4100,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789120688738",
+      "recovery_code": "aman-ruang-test-1789120688738",
       "secret_pin": "3877",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -4119,7 +4189,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789120797950",
+      "recovery_code": "aman-ruang-test-1789120797950",
       "secret_pin": "5555",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -4208,7 +4278,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789120894629",
+      "recovery_code": "aman-ruang-test-1789120894629",
       "secret_pin": "3809",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -4297,7 +4367,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789121667028",
+      "recovery_code": "aman-ruang-test-1789121667028",
       "secret_pin": "2382",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -4386,7 +4456,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789121692717",
+      "recovery_code": "aman-ruang-test-1789121692717",
       "secret_pin": "8374",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -4475,7 +4545,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789122888092",
+      "recovery_code": "aman-ruang-test-1789122888092",
       "secret_pin": "5565",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -4564,7 +4634,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789123841039",
+      "recovery_code": "aman-ruang-test-1789123841039",
       "secret_pin": "8644",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -4653,7 +4723,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789123885839",
+      "recovery_code": "aman-ruang-test-1789123885839",
       "secret_pin": "8512",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -4742,7 +4812,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789125166630",
+      "recovery_code": "aman-ruang-test-1789125166630",
       "secret_pin": "7867",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -4831,7 +4901,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789479759306",
+      "recovery_code": "aman-ruang-test-1789479759306",
       "secret_pin": "5836",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -4955,7 +5025,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789481122076",
+      "recovery_code": "aman-ruang-test-1789481122076",
       "secret_pin": "9323",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -5044,7 +5114,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789481141563",
+      "recovery_code": "aman-ruang-test-1789481141563",
       "secret_pin": "6299",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -5168,7 +5238,7 @@
       "story": "Ada siswa mengejek dan memalak uang di kantin",
       "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
       "detectedPII": [],
-      "recovery_code": "aman-tameng-test-1789481183567",
+      "recovery_code": "aman-ruang-test-1789481183567",
       "secret_pin": "3160",
       "school_id": "default-school",
       "is_kiosk": false,
@@ -5277,6 +5347,95 @@
           "is_encrypted": true
         }
       ]
+    },
+    {
+      "status": "ditutup",
+      "hash_zkp": "integrity-sha256:0xacee07730a2944a7f0669457084e955be003c5870a441334831a5c48c1969183",
+      "is_student_verified": true,
+      "verification_method": "token",
+      "ticket_number": "TMG-2026-T4121",
+      "category": "Perundungan / Bullying",
+      "reporterRole": "Siswa (Korban)",
+      "location": "Kantin Sekolah",
+      "incidentDate": "2026-09-10",
+      "urgency": "Tinggi",
+      "story": "Ada siswa mengejek dan memalak uang di kantin",
+      "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
+      "detectedPII": [],
+      "recovery_code": "aman-ruang-test-1789791973332",
+      "secret_pin": "7766",
+      "school_id": "default-school",
+      "is_kiosk": false,
+      "id": "2773928f-2b25-497b-a85c-01aecd6e21b4",
+      "created_at": "2026-09-19T04:26:13.601Z",
+      "updated_at": "2026-09-19T04:26:13.666Z",
+      "messages": [
+        {
+          "id": "f5bd5b7a-a0e8-4ad2-be0c-87940d6e68c9",
+          "sender_type": "system",
+          "message_text": "Laporan Anda berhasil dienkripsi dan diterima oleh Tim Bimbingan Konseling (BK) & Satgas PPKSP Sekolah.",
+          "created_at": "2026-09-19T04:26:13.601Z",
+          "is_encrypted": true
+        },
+        {
+          "id": "385ddda5-872d-4651-8938-129bfba906c0",
+          "sender_type": "pelapor",
+          "message_text": "Halo Bu Guru BK, saya sangat takut datang ke kantin.",
+          "is_encrypted": true,
+          "created_at": "2026-09-19T04:26:13.617Z"
+        },
+        {
+          "id": "b36ecf4c-f91a-4635-9448-d86513f15c4d",
+          "sender_type": "counselor",
+          "sender_title": "Guru BK",
+          "message_text": "Jangan khawatir Nak, laporanmu aman bersama kami. Kami akan dampingi.",
+          "is_encrypted": true,
+          "created_at": "2026-09-19T04:26:13.625Z"
+        },
+        {
+          "id": "7b3392b1-66b0-4c16-9d8f-a3a45424b714",
+          "sender_type": "system",
+          "message_text": "[BUKTI TINDAK LANJUT SEKOLAH]: Pihak sekolah telah mengunggah bukti penanganan (Surat Permintaan Maaf Pelaku & Mediasi): \"Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai\". Menunggu konfirmasi penyelesaian dari siswa pelapor.",
+          "created_at": "2026-09-19T04:26:13.657Z",
+          "is_encrypted": true
+        },
+        {
+          "id": "60e9707c-c942-48b2-b80f-773fa0556c24",
+          "sender_type": "system",
+          "message_text": "[KASUS RESMI SELESAI]: Siswa pelapor telah mengonfirmasi bahwa masalah telah diselesaikan dengan baik. Kasus resmi ditutup. Terima kasih telah berani bersuara.",
+          "created_at": "2026-09-19T04:26:13.666Z",
+          "is_encrypted": true
+        }
+      ],
+      "counselorNotes": [
+        "Koordinasi dengan satpam pengawas area kantin saat jam istirahat."
+      ],
+      "actionSummary": "Sekolah mengirimkan bukti tindak lanjut: Surat Permintaan Maaf Pelaku & Mediasi",
+      "resolution_evidence": {
+        "type": "Surat Permintaan Maaf Pelaku & Mediasi",
+        "description": "Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai",
+        "fileUrl": "",
+        "submittedAt": "2026-09-19T04:26:13.657Z",
+        "submittedBy": "Guru BK / Satgas PPKSP"
+      },
+      "resolutionEvidence": {
+        "type": "Surat Permintaan Maaf Pelaku & Mediasi",
+        "description": "Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai",
+        "fileUrl": "",
+        "submittedAt": "2026-09-19T04:26:13.657Z",
+        "submittedBy": "Guru BK / Satgas PPKSP"
+      },
+      "action_summary": "Sekolah mengirimkan bukti tindak lanjut: Surat Permintaan Maaf Pelaku & Mediasi",
+      "student_confirmation": {
+        "confirmedAt": "2026-09-19T04:26:13.666Z",
+        "isSatisfied": true,
+        "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
+      },
+      "studentConfirmation": {
+        "confirmedAt": "2026-09-19T04:26:13.666Z",
+        "isSatisfied": true,
+        "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
+      }
     }
   ],
   "audit_logs": [
@@ -6069,6 +6228,26 @@
       "details": "Laporan baru #TMG-2026-3997 kategori Perundungan / Bullying (Terverifikasi: token)",
       "zkp_proof_status": "Tervalidasi",
       "created_at": "2026-09-15T14:06:33.090Z"
+    },
+    {
+      "id": "e157f734-71e4-47fe-a26c-5d68722449f8",
+      "school_id": "default-school",
+      "action": "Laporan Baru Dibuat",
+      "actor_role": "Siswa (Anonim)",
+      "actor_name": "Sistem",
+      "details": "Laporan baru #TMG-2026-T4121 kategori Perundungan / Bullying (Terverifikasi: token)",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-09-19T04:26:13.601Z"
+    },
+    {
+      "id": "b4432d4c-f0ae-4111-8d7c-cbc6ea8e69cc",
+      "school_id": "default-school",
+      "action": "Bukti Tindak Lanjut Diunggah",
+      "actor_role": "Guru BK",
+      "actor_name": "Guru BK / Satgas PPKSP",
+      "details": "Bukti Surat Permintaan Maaf Pelaku & Mediasi diunggah untuk tiket #2773928f-2b25-497b-a85c-01aecd6e21b4. Status: Menunggu Konfirmasi Siswa.",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-09-19T04:26:13.657Z"
     }
   ],
   "interventions": [
@@ -6629,6 +6808,20 @@
       "created_at": "2026-09-15T14:06:23.993Z",
       "updated_at": "2026-09-15T14:06:24.003Z",
       "assignedPsychologist": "Dra. Anita Kartika, M.Psi"
+    },
+    {
+      "id": "PPA-3680",
+      "ticketId": "2773928f-2b25-497b-a85c-01aecd6e21b4",
+      "victimAlias": "Ananda Bunga (Samaran)",
+      "schoolOrigin": "SMA Negeri 1 Jakarta",
+      "category": "Perundungan Berat",
+      "urgency": "Tinggi",
+      "stage": "Pemulihan Psikologis",
+      "shelterRequired": false,
+      "notes": [],
+      "created_at": "2026-09-19T04:26:13.680Z",
+      "updated_at": "2026-09-19T04:26:13.688Z",
+      "assignedPsychologist": "Dra. Anita Kartika, M.Psi"
     }
   ],
   "news_articles": [
@@ -6666,7 +6859,7 @@
   "help_articles": [
     {
       "id": "art-1",
-      "title": "Bagaimana Cara Melapor Secara Anonim di TAMENG?",
+      "title": "Bagaimana Cara Melapor Secara Anonim di Ruang Aman?",
       "category": "Cara Melapor",
       "readTime": "3 menit",
       "iconName": "ShieldAlert",
@@ -6674,7 +6867,7 @@
       "content": [
         "1. Masuk ke halaman Lapor Anonim (Ruang Aman).",
         "2. Pilih kategori kejadian dan status keterlibatan Anda (sebagai korban atau saksi).",
-        "3. Tuliskan kronologi dengan jelas. Fitur deteksi cerdas TAMENG akan otomatis mendeteksi nama atau kelas yang tidak sengaja tertulis untuk disamarkan.",
+        "3. Tuliskan kronologi dengan jelas. Fitur deteksi cerdas Ruang Aman akan otomatis mendeteksi nama atau kelas yang tidak sengaja tertulis untuk disamarkan.",
         "4. Unggah bukti jika ada (foto/rekaman suara). Sistem kami otomatis membersihkan data lokasi GPS (EXIF) dari file.",
         "5. Simpan Nomor Tiket dan Kode Pemulihan unik Anda untuk memantau status dan berkomunikasi 2-arah dengan Guru BK."
       ]
@@ -6684,7 +6877,7 @@
     {
       "id": "faq-1",
       "question": "Apakah Guru BK atau Wali Kelas bisa mengetahui siapa yang mengirim laporan?",
-      "answer": "Tidak. Sistem TAMENG tidak menyimpan identitas pelapor, email, nomor ponsel, nama perangkat, maupun alamat IP. Laporan hanya berisi nomor acak (Tiket). Guru BK hanya menerima informasi mengenai kejadian yang Anda ceritakan tanpa mengetahui siapa Anda.",
+      "answer": "Tidak. Sistem Ruang Aman tidak menyimpan identitas pelapor, email, nomor ponsel, nama perangkat, maupun alamat IP. Laporan hanya berisi nomor acak (Tiket). Guru BK hanya menerima informasi mengenai kejadian yang Anda ceritakan tanpa mengetahui siapa Anda.",
       "category": "Privasi & Kerahasiaan"
     }
   ],
@@ -6695,7 +6888,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-10T17:09:49.526Z"
     },
@@ -6705,7 +6898,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-10T17:22:45.959Z"
     },
@@ -6715,7 +6908,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-10T17:39:00.862Z"
     },
@@ -6725,7 +6918,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-10T17:39:43.672Z"
     },
@@ -6735,7 +6928,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-10T17:40:00.452Z"
     },
@@ -6745,7 +6938,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-10T17:40:40.013Z"
     },
@@ -6755,7 +6948,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-10T17:45:12.962Z"
     },
@@ -6765,7 +6958,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-10T17:46:09.281Z"
     },
@@ -6775,7 +6968,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-10T17:56:41.250Z"
     },
@@ -6785,7 +6978,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-10T17:57:23.300Z"
     },
@@ -6795,7 +6988,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-10T18:04:21.664Z"
     },
@@ -6805,7 +6998,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-10T18:06:25.166Z"
     },
@@ -6815,7 +7008,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-10T18:06:35.385Z"
     },
@@ -6825,7 +7018,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-10T18:07:22.324Z"
     },
@@ -6835,7 +7028,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T00:33:58.441Z"
     },
@@ -6845,7 +7038,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T00:40:30.783Z"
     },
@@ -6855,7 +7048,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T00:45:01.221Z"
     },
@@ -6865,7 +7058,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T00:51:47.954Z"
     },
@@ -6875,7 +7068,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T00:54:17.510Z"
     },
@@ -6885,7 +7078,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T00:55:37.967Z"
     },
@@ -6895,7 +7088,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T01:01:57.304Z"
     },
@@ -6905,7 +7098,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T01:02:52.758Z"
     },
@@ -6915,7 +7108,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T01:10:15.757Z"
     },
@@ -6925,7 +7118,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T01:17:29.183Z"
     },
@@ -6935,7 +7128,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T03:47:44.401Z"
     },
@@ -6945,7 +7138,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T09:58:08.897Z"
     },
@@ -6955,7 +7148,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T09:59:58.103Z"
     },
@@ -6965,7 +7158,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T10:01:34.778Z"
     },
@@ -6975,7 +7168,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T10:14:27.280Z"
     },
@@ -6985,7 +7178,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T10:14:52.978Z"
     },
@@ -6995,7 +7188,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T10:34:48.322Z"
     },
@@ -7005,7 +7198,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T10:50:41.212Z"
     },
@@ -7015,7 +7208,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T10:51:26.015Z"
     },
@@ -7025,7 +7218,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-11T11:12:46.838Z"
     },
@@ -7035,7 +7228,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-15T13:42:39.646Z"
     },
@@ -7045,7 +7238,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-15T14:05:22.410Z"
     },
@@ -7055,7 +7248,7 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-15T14:05:41.969Z"
     },
@@ -7065,9 +7258,19 @@
       "email": "ratna@gmail.com",
       "subject": "Konsultasi PPKSP",
       "category": "Pertanyaan Satgas",
-      "message": "Bagaimana cara sekolah kami bermitra dengan TAMENG?",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-09-15T14:06:24.013Z"
+    },
+    {
+      "id": "6b731d37-8cb0-4601-b577-06c81367d1e3",
+      "name": "Ibu Ratna",
+      "email": "ratna@gmail.com",
+      "subject": "Konsultasi PPKSP",
+      "category": "Pertanyaan Satgas",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
+      "status": "Baru",
+      "created_at": "2026-09-19T04:26:13.698Z"
     }
   ]
 }

@@ -1,5 +1,5 @@
 {
-  "name": "tameng-ruang-aman",
+  "name": "ruang-aman",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "framework": "vite",

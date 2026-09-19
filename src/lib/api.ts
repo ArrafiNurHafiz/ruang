@@ -20,15 +20,18 @@ let authToken: string | null = null;
 export function setAuthToken(token: string | null) {
   authToken = token;
   if (token) {
-    sessionStorage.setItem("tameng_auth_token", token);
+    sessionStorage.setItem("ruangaman_auth_token", token);
   } else {
+    sessionStorage.removeItem("ruangaman_auth_token");
     sessionStorage.removeItem("tameng_auth_token");
   }
 }
 
 export function getAuthToken(): string | null {
   if (!authToken) {
-    authToken = sessionStorage.getItem("tameng_auth_token");
+    authToken =
+      sessionStorage.getItem("ruangaman_auth_token") ||
+      sessionStorage.getItem("tameng_auth_token");
   }
   return authToken;
 }
@@ -96,7 +99,7 @@ const generateRecoveryCode = () => {
 const generateZKPHash = async (content?: string) => {
   if (typeof crypto !== "undefined" && crypto.subtle && crypto.subtle.digest) {
     const encoder = new TextEncoder();
-    const data = encoder.encode((content || "TAMENG_REPORT") + Date.now());
+    const data = encoder.encode((content || "RUANG_AMAN_REPORT") + Date.now());
     const hashBuffer = await crypto.subtle.digest("SHA-256", data);
     const hashArray = Array.from(new Uint8Array(hashBuffer));
     const hex = hashArray.map((b) => b.toString(16).padStart(2, "0")).join("");

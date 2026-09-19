@@ -143,7 +143,7 @@ const INITIAL_DATA = {
   help_articles: [
     {
       id: "art-1",
-      title: "Bagaimana Cara Melapor Secara Anonim di TAMENG?",
+      title: "Bagaimana Cara Melapor Secara Anonim di Ruang Aman?",
       category: "Cara Melapor",
       readTime: "3 menit",
       iconName: "ShieldAlert",
@@ -152,7 +152,7 @@ const INITIAL_DATA = {
       content: [
         "1. Masuk ke halaman Lapor Anonim (Ruang Aman).",
         "2. Pilih kategori kejadian dan status keterlibatan Anda (sebagai korban atau saksi).",
-        "3. Tuliskan kronologi dengan jelas. Fitur deteksi cerdas TAMENG akan otomatis mendeteksi nama atau kelas yang tidak sengaja tertulis untuk disamarkan.",
+        "3. Tuliskan kronologi dengan jelas. Fitur deteksi cerdas Ruang Aman akan otomatis mendeteksi nama atau kelas yang tidak sengaja tertulis untuk disamarkan.",
         "4. Unggah bukti jika ada (foto/rekaman suara). Sistem kami otomatis membersihkan data lokasi GPS (EXIF) dari file.",
         "5. Simpan Nomor Tiket dan Kode Pemulihan unik Anda untuk memantau status dan berkomunikasi 2-arah dengan Guru BK.",
       ],
@@ -164,7 +164,7 @@ const INITIAL_DATA = {
       question:
         "Apakah Guru BK atau Wali Kelas bisa mengetahui siapa yang mengirim laporan?",
       answer:
-        "Tidak. Sistem TAMENG tidak menyimpan identitas pelapor, email, nomor ponsel, nama perangkat, maupun alamat IP. Laporan hanya berisi nomor acak (Tiket). Guru BK hanya menerima informasi mengenai kejadian yang Anda ceritakan tanpa mengetahui siapa Anda.",
+        "Tidak. Sistem Ruang Aman tidak menyimpan identitas pelapor, email, nomor ponsel, nama perangkat, maupun alamat IP. Laporan hanya berisi nomor acak (Tiket). Guru BK hanya menerima informasi mengenai kejadian yang Anda ceritakan tanpa mengetahui siapa Anda.",
       category: "Privasi & Kerahasiaan",
     },
   ],

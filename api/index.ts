@@ -3,7 +3,7 @@ import { neon } from "@neondatabase/serverless";
 import crypto from "crypto";
 
 // ==============================================================================
-// TAMENG - RUANG AMAN KELUARGA & SEKOLAH
+// RUANG AMAN KELUARGA & SEKOLAH
 // Vercel Serverless Function Backend powered by Neon PostgreSQL (100% Free Forever)
 // ==============================================================================
 
@@ -18,7 +18,7 @@ const sql = databaseUrl ? neon(databaseUrl) : null;
 
 // Secret for HMAC token signing
 const JWT_SECRET =
-  process.env.JWT_SECRET || "TAMENG_PPKSP_SECURE_AUTH_SIGNING_KEY_2026";
+  process.env.JWT_SECRET || "RUANG_AMAN_PPKSP_SECURE_AUTH_SIGNING_KEY_2026";
 
 function signToken(payload: any): string {
   const header = Buffer.from(
@@ -424,7 +424,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       await sql`
         insert into users (id, name, email, role, role_title, organization, identifier, avatar_url, permissions, status, password_hash)
         values
-        ('usr-admin-sys-01', 'Admin Sistem', 'admin@ruang.com', 'admin', 'Administrator Sistem PPKSP', 'Pusat Kendali TAMENG', 'ID ADMIN: ADM-SYS-001', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80', '{"Manajemen Token","Kelola Petugas BK","Audit Log","Konfigurasi Sistem"}', 'Aktif', '4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4'),
+        ('usr-admin-sys-01', 'Admin Sistem', 'admin@ruang.com', 'admin', 'Administrator Sistem PPKSP', 'Pusat Kendali Ruang Aman', 'ID ADMIN: ADM-SYS-001', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80', '{"Manajemen Token","Kelola Petugas BK","Audit Log","Konfigurasi Sistem"}', 'Aktif', '4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4'),
         ('usr-guru-01', 'Dra. Hj. Nurjanah, M.Pd', 'guru.bk@sekolah.sch.id', 'guru', 'Koordinator Guru BK & Satgas PPKSP', 'SMA Negeri 1 Jakarta', 'NIP: 19780412 200501 2 003', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80', '{"Triage Laporan","Chat Siswa","Catatan Rahasia","Eskalasi Kasus"}', 'Aktif', '4813494d137e1631bba301d5acab6e7bb7aa74ce1185d456565ef51d737677b2'),
         ('usr-admin-01', 'Bambang Prasetyo, S.Kom', 'admin.ppksp@sekolah.sch.id', 'admin', 'Administrator Sistem & Satgas IT Sekolah', 'SMA Negeri 1 Jakarta', 'ID ADMIN: ADM-SMAN1-091', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=200&q=80', '{"Manajemen Token","Kelola Petugas BK","Audit Log","Konfigurasi Sistem"}', 'Aktif', '4813494d137e1631bba301d5acab6e7bb7aa74ce1185d456565ef51d737677b2'),
         ('usr-disdik-01', 'Dr. H. Hendro Wicaksono, M.Pd', 'h.hendro@disdik.prov.go.id', 'dinas-pendidikan', 'Kabid Pembinaan SMA & Pengawas PPKSP Wilayah', 'Dinas Pendidikan Provinsi DKI Jakarta', 'NIP: 19710815 199603 1 002', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80', '{"Pengawasan Wilayah","Monitoring Respon Sekolah","Indeks Kerawanan","Pemberian Supervisi"}', 'Aktif', '4813494d137e1631bba301d5acab6e7bb7aa74ce1185d456565ef51d737677b2'),

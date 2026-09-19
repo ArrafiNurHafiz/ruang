@@ -1,5 +1,5 @@
 /**
- * TAMENG Cryptographic & Privacy Utilities
+ * Ruang Aman Cryptographic & Privacy Utilities
  * Cryptographic Integrity Hash, PII detector, and token hash algorithms
  */
 
@@ -24,7 +24,7 @@ export function generateTicketId(): string {
 export function generateRecoveryKey(): string {
   const words = [
     "aman",
-    "tameng",
+    "teduh",
     "ruang",
     "lindung",
     "berani",
@@ -38,24 +38,19 @@ export function generateRecoveryKey(): string {
     "tegak",
     "rahasia",
     "harmoni",
-    "fajar",
-    "pandu",
-    "satria",
+    "sahabat",
+    "damai",
+    "terang",
+    "jujur",
+    "harapan",
   ];
   const selected: string[] = [];
-  const randomIndices = new Uint32Array(4);
-  if (typeof crypto !== "undefined" && crypto.getRandomValues) {
-    crypto.getRandomValues(randomIndices);
-    for (let i = 0; i < 4; i++) {
-      selected.push(words[randomIndices[i] % words.length]);
-    }
-  } else {
-    for (let i = 0; i < 4; i++) {
-      selected.push(words[Math.floor(Math.random() * words.length)]);
-    }
+  for (let i = 0; i < 4; i++) {
+    const idx = Math.floor(Math.random() * words.length);
+    selected.push(words[idx]);
   }
-  const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-  return `${selected.join("-")}-${randomSuffix}`;
+  const randomPin = Math.floor(1000 + Math.random() * 9000);
+  return `${selected.join("-")}-${randomPin}`;
 }
 
 /**
@@ -67,7 +62,7 @@ export async function generateZKPHash(
 ): Promise<string> {
   const encoder = new TextEncoder();
   const data = encoder.encode(
-    `${content}_${timestamp}_TAMENG_INTEGRITY_SALT_2026`,
+    `${content}_${timestamp}_RUANG_AMAN_INTEGRITY_SALT_2026`,
   );
 
   if (typeof crypto !== "undefined" && crypto.subtle && crypto.subtle.digest) {
@@ -81,7 +76,7 @@ export async function generateZKPHash(
 
   // Fallback FNV-1a if subtle crypto is unavailable
   let hash = 0x811c9dc5;
-  const str = `${content}_${timestamp}_TAMENG_INTEGRITY_SALT_2026`;
+  const str = `${content}_${timestamp}_RUANG_AMAN_INTEGRITY_SALT_2026`;
   for (let i = 0; i < str.length; i++) {
     hash ^= str.charCodeAt(i);
     hash +=

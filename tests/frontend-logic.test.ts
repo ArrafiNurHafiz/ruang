@@ -37,7 +37,7 @@ function test(name: string, fn: () => void | Promise<void>) {
 
 async function run() {
   console.log("=================================================");
-  console.log("🧪 TAMENG FRONTEND LOGIC & CRYPTO UNIT TESTS");
+  console.log("🧪 RUANG AMAN FRONTEND LOGIC & CRYPTO UNIT TESTS");
   console.log("=================================================\n");
 
   console.log("📦 [SUITE 1] Ticket & Key Generation");

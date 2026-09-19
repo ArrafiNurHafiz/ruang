@@ -57,7 +57,7 @@ async function verifyTokenMock(
 
 async function main() {
   console.log("=================================================");
-  console.log("🛡️ TAMENG AUTOMATED SECURITY REGRESSION TEST SUITE");
+  console.log("🛡️ RUANG AMAN AUTOMATED SECURITY REGRESSION TEST SUITE");
   console.log("=================================================\n");
 
   // SUITE 1: JWT SECURITY & SIGNATURE VERIFICATION
@@ -140,7 +140,7 @@ async function main() {
       id: "ticket-123",
       ticket_number: "TMG-2026-TEST",
       story: "Test story",
-      recovery_code: "aman-tameng-suara-1234",
+      recovery_code: "aman-ruang-suara-1234",
       status: "diterima",
     };
     const { recovery_code, ...staffView } = rawTicket;

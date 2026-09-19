@@ -1,4 +1,4 @@
--- TAMENG Supabase Schema
+-- Ruang Aman Supabase Schema
 -- Jalankan di Supabase SQL Editor (Dashboard → SQL Editor → New Query)
 
 -- Enable UUID

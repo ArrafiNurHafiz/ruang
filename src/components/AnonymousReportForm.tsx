@@ -536,7 +536,7 @@ export const AnonymousReportForm: React.FC<AnonymousReportFormProps> = ({
   const handleDownloadReceipt = () => {
     if (!submittedTicket) return;
     const content = `=================================================
-BUKTI LAPORAN TAMENG (RUANG AMAN PPKSP)
+BUKTI LAPORAN RUANG AMAN (PPKSP)
 100% Rahasia, Aman & Terenkripsi E2EE
 =================================================
 
@@ -548,7 +548,7 @@ URGENSI          : ${submittedTicket.urgency}
 TANGGAL LAPOR    : ${new Date(submittedTicket.createdAt).toLocaleString("id-ID")}
 
 CARA CEK BALASAN GURU BK:
-1. Buka situs TAMENG di browser.
+1. Buka situs Ruang Aman di browser.
 2. Klik menu 'Pantau Tiket'.
 3. Masukkan Nomor Tiket atau gunakan menu 'Pulihkan dengan Verifikasi Kedua' menggunakan PIN Rahasia Anda.
 4. Anda dapat membaca tanggapan sekolah dan mengonfirmasi penyelesaian.
@@ -559,7 +559,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `bukti-tiket-tameng-${submittedTicket.id.slice(0, 8)}.txt`;
+    a.download = `bukti-tiket-ruang-aman-${submittedTicket.id.slice(0, 8)}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

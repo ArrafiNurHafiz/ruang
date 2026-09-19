@@ -62,7 +62,7 @@ export const DesktopLandingHero: React.FC<DesktopLandingHeroProps> = ({
   const faqs = [
     {
       q: "Apakah identitas saya benar-benar tidak diketahui siapapun?",
-      a: "Ya, 100% aman. Sistem TAMENG tidak mencatat nama, NISN, alamat IP, ataupun perangkat Anda. Data yang diterima Guru BK hanya kronologi kejadian dan bukti yang Anda lampirkan.",
+      a: "Ya, 100% aman. Sistem Ruang Aman tidak mencatat nama, NISN, alamat IP, ataupun perangkat Anda. Data yang diterima Guru BK hanya kronologi kejadian dan bukti yang Anda lampirkan.",
     },
     {
       q: "Bagaimana cara saya membaca tanggapan dari Guru BK?",

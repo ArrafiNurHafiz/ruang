@@ -21,7 +21,7 @@ function logFail(msg, err) {
 
 async function runFullE2ESuite() {
   console.log("================================================================================");
-  console.log("🛡️ TAMENG - PENGUJIAN END-TO-END (E2E) LIVE CHROMIUM BROWSER & BACKEND API");
+  console.log("🛡️ RUANG AMAN - PENGUJIAN END-TO-END (E2E) LIVE CHROMIUM BROWSER & BACKEND API");
   console.log("================================================================================\n");
 
   const browser = await chromium.launch({
@@ -423,7 +423,7 @@ async function runFullE2ESuite() {
     if (contactNameInput) {
       await page.fill("input[placeholder*='Nama']", "Alumni Peduli");
       await page.fill("input[type='email']", "alumni@sekolah.sch.id");
-      await page.fill("textarea", "Apresiasi sistem pelaporan aman TAMENG untuk sekolah kita.");
+      await page.fill("textarea", "Apresiasi sistem pelaporan aman Ruang Aman untuk sekolah kita.");
       await page.evaluate(() => {
         const sendBtn = Array.from(document.querySelectorAll("button")).find(b => b.textContent?.includes("Kirim Pesan"));
         if (sendBtn) sendBtn.click();

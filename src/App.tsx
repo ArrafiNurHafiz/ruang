@@ -850,7 +850,7 @@ export default function App() {
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `tameng-backup-${Date.now()}.json`;
+      link.download = `ruangaman-backup-${Date.now()}.json`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -1157,8 +1157,8 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
           <div className="flex items-center gap-1.5">
             <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-            <span className="font-medium text-slate-500">TAMENG</span>
-            <span>— Ruang Aman Pelaporan & Konseling Siswa</span>
+            <span className="font-medium text-slate-500">Ruang Aman</span>
+            <span>— Platform Pelaporan & Konseling Siswa</span>
           </div>
           <div>
             <span>

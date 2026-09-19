@@ -122,10 +122,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="text-lg font-bold tracking-tight text-slate-900 leading-none">
-                  TAMENG
+                  Ruang Aman
                 </span>
                 <span className="text-[10px] font-semibold uppercase px-1.5 py-0.5 rounded bg-sky-100 text-sky-700 tracking-wider">
-                  Ruang Aman
+                  PPKSP
                 </span>
               </div>
               <p className="text-[10px] text-slate-500 font-medium">

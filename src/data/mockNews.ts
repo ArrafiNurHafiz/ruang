@@ -16,7 +16,7 @@ export const MOCK_NEWS_ARTICLES: NewsArticle[] = [
     content: [
       "Pemerintah melalui Kementerian Pendidikan, Kebudayaan, Riset, dan Teknologi resmi mengesahkan Permendikbudristek No. 46 Tahun 2023 tentang Pencegahan dan Penanganan Kekerasan di Lingkungan Satuan Pendidikan (PPKSP).",
       "Regulasi ini mengamanatkan setiap satuan pendidikan untuk membentuk Tim Pencegahan dan Penanganan Kekerasan (TPPK) serta menyediakan kanal pelaporan yang terpercaya, anonim, dan bebas dari intimidasi.",
-      "Melalui platform Rangkul (TAMENG), seluruh siswa dapat melaporkan tindakan perundungan tanpa khawatir identitas bocor, karena identitas dilindungi enkripsi mutlak dan tidak dicatat dalam server.",
+      "Melalui platform Ruang Aman, seluruh siswa dapat melaporkan tindakan perundungan tanpa khawatir identitas bocor, karena identitas dilindungi enkripsi mutlak dan tidak dicatat dalam server.",
       "Satgas di sekolah bertugas melakukan investigasi secara proporsional dan mengutamakan pemulihan fisik serta psikologis bagi korban.",
     ],
     tags: ["PPKSP", "Permendikbud", "Sekolah Ramah Anak", "Satgas"],

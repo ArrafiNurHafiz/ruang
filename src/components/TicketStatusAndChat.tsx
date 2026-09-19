@@ -673,7 +673,7 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
             <span>Bagaimana Cara Kerja Pantau Tiket?</span>
           </div>
           <p className="leading-relaxed">
-            Setiap kali Anda membuat laporan, TAMENG menghasilkan Nomor Tiket unik serta PIN Rahasia pemulihan. Anda dapat menggunakan nomor tiket tersebut atau fitur <strong>Verifikasi Kedua (PIN Rahasia)</strong> di atas untuk membaca tanggapan sekolah dan mengonfirmasi bahwa masalah telah selesai.
+            Setiap kali Anda membuat laporan, Ruang Aman menghasilkan Nomor Tiket unik serta PIN Rahasia pemulihan. Anda dapat menggunakan nomor tiket tersebut atau fitur <strong>Verifikasi Kedua (PIN Rahasia)</strong> di atas untuk membaca tanggapan sekolah dan mengonfirmasi bahwa masalah telah selesai.
           </p>
         </div>
       )}
