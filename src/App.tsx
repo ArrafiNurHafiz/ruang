@@ -363,6 +363,7 @@ export default function App() {
 
   useEffect(() => {
     (window as any).__switchRole = handleSelectRole;
+    (window as any).__toggleDisguise = (active: boolean) => setIsDisguiseActive(active);
   }, [handleSelectRole]);
 
   // Handlers for Ticket Actions
