@@ -166,6 +166,23 @@
   ],
   "tokens": [
     {
+      "id": "tok-sch-x1-8831-default",
+      "token_code": "SCH-X1-8831",
+      "school_id": "default-school",
+      "student_level": "Kelas X - MIPA 1 (Angkatan 2026)",
+      "batch_id": "BATCH-2026-X1",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "notes": "Slip Kode MPLS Kelas X-1",
+      "created_at": "2026-09-19T00:00:00.000Z",
+      "password_hash": "7502d3964bca47faef03fa2744b6a4170cbbcdb536a40c8a5f40e30f5662b5e0",
+      "pin_hash": "7502d3964bca47faef03fa2744b6a4170cbbcdb536a40c8a5f40e30f5662b5e0",
+      "recovery_key": "kunci-hxl5-3508",
+      "activated_at": "2026-09-19T05:48:21.710Z",
+      "usage_count": 1
+    },
+    {
       "id": "c0585043-900f-49bd-8295-d04e35034e26",
       "token_code": "TEST-SMAN1-0S8B-5295",
       "school_id": "default-school",
@@ -5436,6 +5453,42 @@
         "isSatisfied": true,
         "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
       }
+    },
+    {
+      "status": "diterima",
+      "hash_zkp": {},
+      "is_student_verified": true,
+      "verification_method": "token",
+      "category": "Perundungan / Bullying",
+      "reporterRole": "Siswa (Korban)",
+      "location": "Lingkungan Sekolah",
+      "incidentDate": "Hari ini / Baru saja",
+      "urgency": "Sedang",
+      "story": "Saya atas nama Budi Santoso dari kelas X-1 mengalami pemalakan dan ancaman fisik oleh sekelompok siswa senior di area kantin belakang dekat koperasi. Hubungi saya di 081234567890 jika ada tindak lanjut.",
+      "redactedStory": "Saya atas nama [NAMA-SISWA-DIRAHASIAKAN] dari [KELAS-DIRAHAASIAKAN]-1 mengalami pemalakan dan ancaman fisik oleh sekelompok siswa senior di area kantin belakang dekat koperasi. Hubungi saya di [NOMOR-KONTAK-DIRAHASIAKAN] jika ada tindak lanjut.",
+      "detectedPII": [
+        "Nomor Kontak",
+        "Kelas / Rombel",
+        "Nama / Identitas"
+      ],
+      "schoolId": "default-school",
+      "isKiosk": false,
+      "ticket_number": "TMG-2026-V7CL",
+      "recovery_code": "merdeka-cahaya-aman-3001",
+      "school_id": "default-school",
+      "is_kiosk_submission": false,
+      "id": "2137a63d-f7a8-4ae2-91c0-69c48cdfa870",
+      "created_at": "2026-09-19T05:48:46.019Z",
+      "updated_at": "2026-09-19T05:48:46.019Z",
+      "messages": [
+        {
+          "id": "b4634324-8946-4d38-84bc-c9c295b1f16f",
+          "sender_type": "system",
+          "message_text": "Laporan Anda berhasil dienkripsi dan diterima oleh Tim Bimbingan Konseling (BK) & Satgas PPKSP Sekolah.",
+          "created_at": "2026-09-19T05:48:46.019Z",
+          "is_encrypted": true
+        }
+      ]
     }
   ],
   "audit_logs": [
@@ -6248,6 +6301,16 @@
       "details": "Bukti Surat Permintaan Maaf Pelaku & Mediasi diunggah untuk tiket #2773928f-2b25-497b-a85c-01aecd6e21b4. Status: Menunggu Konfirmasi Siswa.",
       "zkp_proof_status": "Tervalidasi",
       "created_at": "2026-09-19T04:26:13.657Z"
+    },
+    {
+      "id": "f58f78ba-985a-44d7-83fa-1e8b0219af28",
+      "school_id": "default-school",
+      "action": "Laporan Baru Dibuat",
+      "actor_role": "Siswa (Anonim)",
+      "actor_name": "Sistem",
+      "details": "Laporan baru #TMG-2026-V7CL kategori Perundungan / Bullying (Terverifikasi: token)",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-09-19T05:48:46.020Z"
     }
   ],
   "interventions": [
