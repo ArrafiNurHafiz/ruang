@@ -6,7 +6,7 @@ import {
   HelpCircle,
   LogOut,
   EyeOff,
-  UserCheck,
+  LogIn,
   Info,
   FileCheck2,
 } from "lucide-react";
@@ -238,7 +238,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             title={t("nav.staffLogin")}
             aria-label={t("nav.staffLogin")}
           >
-            <UserCheck size={18} className="text-muted-foreground" />
+            <LogIn size={18} />
           </button>
         )}
 
