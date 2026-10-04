@@ -262,8 +262,8 @@ async function runFullE2ESuite() {
     await page.waitForTimeout(600);
 
     // Login sebagai Guru BK
-    await page.fill("input[type='email']", "guru.bk@sekolah.sch.id");
-    await page.fill("input[type='password']", "password123");
+    await page.fill("input[type='email']", "arrafinur2@gmail.com");
+    await page.fill("input[type='password']", "11223344");
     await page.click("button[type='submit']");
     await page.waitForTimeout(1200);
 
@@ -304,8 +304,8 @@ async function runFullE2ESuite() {
     await page.waitForTimeout(500);
 
     // Login sebagai Admin Sistem
-    await page.fill("input[type='email']", "admin.ppksp@sekolah.sch.id");
-    await page.fill("input[type='password']", "password123");
+    await page.fill("input[type='email']", "arrafinur1@gmail.com");
+    await page.fill("input[type='password']", "11223344");
     await page.click("button[type='submit']");
     await page.waitForTimeout(1200);
 
@@ -361,8 +361,8 @@ async function runFullE2ESuite() {
     });
     await page.waitForTimeout(500);
 
-    await page.fill("input[type='email']", "h.hendro@disdik.prov.go.id");
-    await page.fill("input[type='password']", "password123");
+    await page.fill("input[type='email']", "arrafinur3@gmail.com");
+    await page.fill("input[type='password']", "11223344");
     await page.click("button[type='submit']");
     await page.waitForTimeout(1200);
 
@@ -381,8 +381,8 @@ async function runFullE2ESuite() {
     });
     await page.waitForTimeout(500);
 
-    await page.fill("input[type='email']", "sri.rahayu@uptd-ppa.go.id");
-    await page.fill("input[type='password']", "password123");
+    await page.fill("input[type='email']", "arrafinur4@gmail.com");
+    await page.fill("input[type='password']", "11223344");
     await page.click("button[type='submit']");
     await page.waitForTimeout(1200);
 

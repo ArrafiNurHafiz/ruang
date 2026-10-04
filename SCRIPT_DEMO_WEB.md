@@ -19,12 +19,12 @@ Gunakan akun berikut saat demonstrasi langsung di hadapan dewan juri atau saat p
 
 | Peran | Kredensial Masuk | Kata Sandi | Aksi Kunci yang Ditampilkan |
 | :--- | :--- | :--- | :--- |
-| **Guru BK / Satgas (Hulu)** | `guru.bk@sekolah.sch.id` | `password123` *(atau `11223344`)* | **LANGKAH 1**: Men-generate batch token sekolah (misal: rombel Kelas X), salin token `SCH-X1-8831` atau cetak slip token acak. |
+| **Guru BK / Satgas (Hulu)** | `arrafinur2@gmail.com` | `11223344` | **LANGKAH 1**: Men-generate batch token sekolah (misal: rombel Kelas X), salin token `SCH-X1-8831` atau cetak slip token acak. |
 | **Siswa (Pelapor)** | *Tanpa registrasi akun*<br>Token: `SCH-X1-8831`<br>Sandi: `siswa2026`<br>PIN: `7890` | *(Kunci Kriptografi Lokal)* | **LANGKAH 2**: Input token hasil generate sekolah, pasang sandi pribadi, sensor AI PII, komputasi ZKP, dan Camouflage Escape (`ESC 2x`). |
-| **Guru BK / Satgas (Hilir)** | `guru.bk@sekolah.sch.id` | `password123` *(atau `11223344`)* | **LANGKAH 3**: Triase keparahan kasus baru, chat terenkripsi dua arah, bukti penanganan, dan unduh draft **BAP Digital** resmi. |
-| **Dinas Pendidikan (Provinsi)** | `h.hendro@disdik.prov.go.id` | `password123` | Monitoring heatmap kerawanan wilayah, kecepatan respon sekolah (SLA 4,2 jam), dan penerbitan Nota Supervisi. |
-| **UPTD PPA (Dinas PPPA)** | `sri.rahayu@uptd-ppa.go.id` | `password123` | Intervensi kasus kritis, disposisi psikolog klinis, pendampingan hukum, dan rujukan rumah aman (*safehouse*). |
-| **Admin Sistem (IT)** | `admin@ruang.com` | `admin123` | Log audit kriptografi tak terhapus (*immutable audit trail*), manajemen akun pengguna, dan cadangan data. |
+| **Guru BK / Satgas (Hilir)** | `arrafinur2@gmail.com` | `11223344` | **LANGKAH 3**: Triase keparahan kasus baru, chat terenkripsi dua arah, bukti penanganan, dan unduh draft **BAP Digital** resmi. |
+| **Dinas Pendidikan (Provinsi)** | `arrafinur3@gmail.com` | `11223344` | Monitoring heatmap kerawanan wilayah, kecepatan respon sekolah (SLA 4,2 jam), dan penerbitan Nota Supervisi. |
+| **UPTD PPA (Dinas PPPA)** | `arrafinur4@gmail.com` | `11223344` | Intervensi kasus kritis, disposisi psikolog klinis, pendampingan hukum, dan rujukan rumah aman (*safehouse*). |
+| **Admin Sistem (IT)** | `arrafinur1@gmail.com` | `11223344` | Log audit kriptografi tak terhapus (*immutable audit trail*), manajemen akun pengguna, dan cadangan data. |
 
 > **Trik Cepat Operator (Console Shortcut)**:
 > Presenter dapat membuka Developer Console (`F12`) lalu mengetikkan perintah berikut untuk berganti peran seketika tanpa perlu logout-login manual:
@@ -75,7 +75,7 @@ Gunakan akun berikut saat demonstrasi langsung di hadapan dewan juri atau saat p
 ### BAB 2: Inovasi ZKP & Persiapan Sekolah: Generate Token Anonim (00:25 - 01:00)
 
 - **Visual Cue Layar**:
-  1. Beralih ke konsol **Guru BK / Satgas PPKSP** (`guru.bk@sekolah.sch.id`).
+  1. Beralih ke konsol **Guru BK / Satgas PPKSP** (`arrafinur2@gmail.com` / `11223344`).
   2. Buka tab **Kelola Token Anonim**.
   3. Masukkan jumlah token: `25`, pilih rombel: `Kelas X`, dan custom prefix: `SCH-X1-`.
   4. Klik tombol **Generate Token** (Tunjukkan notifikasi sukses *"Berhasil membuat 25 token untuk Kelas X"* dan token baru muncul di tabel).
@@ -138,11 +138,11 @@ Gunakan akun berikut saat demonstrasi langsung di hadapan dewan juri atau saat p
 ### BAB 5: Dashboard Multi-Peran & Kolaborasi Lintas Lembaga (02:10 - 02:45)
 
 - **Visual Cue Layar**:
-  1. Beralih kembali ke peran **Guru BK** (`guru.bk@sekolah.sch.id`).
+  1. Beralih kembali ke peran **Guru BK** (`arrafinur2@gmail.com`).
   2. Tunjukkan tabel triase kasus dengan indikator urgensi (Rendah, Sedang, Tinggi, Darurat).
   3. Buka tiket laporan, tunjukkan ringkasan tindakan dan klik tombol **Cetak BAP Digital** (Tampilkan pratinjau format BAP resmi Permendikbudristek 46/2023).
-  4. Beralih ke portal **Dinas Pendidikan** (`h.hendro@disdik.prov.go.id`). Tunjukkan visualisasi heatmap wilayah, rata-rata respon sekolah (SLA 4,2 jam), dan tombol kirim Nota Supervisi.
-  5. Beralih ke portal **UPTD PPA** (`sri.rahayu@uptd-ppa.go.id`). Tunjukkan tab intervensi rujukan psikolog klinis, bantuan hukum, dan safehouse.
+  4. Beralih ke portal **Dinas Pendidikan** (`arrafinur3@gmail.com`). Tunjukkan visualisasi heatmap wilayah, rata-rata respon sekolah (SLA 4,2 jam), dan tombol kirim Nota Supervisi.
+  5. Beralih ke portal **UPTD PPA** (`arrafinur4@gmail.com`). Tunjukkan tab intervensi rujukan psikolog klinis, bantuan hukum, dan safehouse.
 
 - **Skrip Narasi Lisan**:
   > *"RUANG AMAN bukan sekadar kotak pengaduan, melainkan ekosistem penanganan terpadu.*

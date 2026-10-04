@@ -61,8 +61,8 @@ async function run() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: "guru.bk@sekolah.sch.id",
-        password: "password123",
+        email: "arrafinur2@gmail.com",
+        password: "11223344",
         role: "guru",
       }),
     });
@@ -112,7 +112,7 @@ async function run() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email: "guru.bk@sekolah.sch.id",
+        email: "arrafinur2@gmail.com",
         password: "wrong-password",
         role: "guru",
       }),

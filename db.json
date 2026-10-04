@@ -390,6 +390,95 @@
         "isSatisfied": true,
         "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
       }
+    },
+    {
+      "status": "ditutup",
+      "hash_zkp": "integrity-sha256:0xa3bce37cb9b5d96076bee5384663fe12b08433176726dd6b32fd6b6ac92f135b",
+      "is_student_verified": true,
+      "verification_method": "token",
+      "ticket_number": "TMG-2026-T2145",
+      "category": "Perundungan / Bullying",
+      "reporterRole": "Siswa (Korban)",
+      "location": "Kantin Sekolah",
+      "incidentDate": "2026-09-10",
+      "urgency": "Tinggi",
+      "story": "Ada siswa mengejek dan memalak uang di kantin",
+      "redactedStory": "Ada siswa mengejek dan memalak uang di kantin",
+      "detectedPII": [],
+      "recovery_code": "aman-ruang-test-1791106684881",
+      "secret_pin": "2603",
+      "school_id": "default-school",
+      "is_kiosk": false,
+      "id": "79c643ce-13ba-40ac-8d32-c4049d5ec4da",
+      "created_at": "2026-10-04T09:38:04.983Z",
+      "updated_at": "2026-10-04T09:38:05.008Z",
+      "messages": [
+        {
+          "id": "c9db148e-b56c-4b6a-a0c4-b172243aa0d2",
+          "sender_type": "system",
+          "message_text": "Laporan Anda berhasil dienkripsi dan diterima oleh Tim Bimbingan Konseling (BK) & Satgas PPKSP Sekolah.",
+          "created_at": "2026-10-04T09:38:04.983Z",
+          "is_encrypted": true
+        },
+        {
+          "id": "9b0f4171-2b80-4296-9ea1-0cd05ff792a3",
+          "sender_type": "pelapor",
+          "message_text": "Halo Bu Guru BK, saya sangat takut datang ke kantin.",
+          "is_encrypted": true,
+          "created_at": "2026-10-04T09:38:04.989Z"
+        },
+        {
+          "id": "60eb11ed-5b5b-4005-b31f-83ad5ea8917e",
+          "sender_type": "counselor",
+          "sender_title": "Guru BK",
+          "message_text": "Jangan khawatir Nak, laporanmu aman bersama kami. Kami akan dampingi.",
+          "is_encrypted": true,
+          "created_at": "2026-10-04T09:38:04.992Z"
+        },
+        {
+          "id": "9c3c7298-676a-4713-96aa-99fc37ee63aa",
+          "sender_type": "system",
+          "message_text": "[BUKTI TINDAK LANJUT SEKOLAH]: Pihak sekolah telah mengunggah bukti penanganan (Surat Permintaan Maaf Pelaku & Mediasi): \"Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai\". Menunggu konfirmasi penyelesaian dari siswa pelapor.",
+          "created_at": "2026-10-04T09:38:05.005Z",
+          "is_encrypted": true
+        },
+        {
+          "id": "547e3f8f-5ccd-4f12-a04a-6a64b283d613",
+          "sender_type": "system",
+          "message_text": "[KASUS RESMI SELESAI]: Siswa pelapor telah mengonfirmasi bahwa masalah telah diselesaikan dengan baik. Kasus resmi ditutup. Terima kasih telah berani bersuara.",
+          "created_at": "2026-10-04T09:38:05.008Z",
+          "is_encrypted": true
+        }
+      ],
+      "counselorNotes": [
+        "Koordinasi dengan satpam pengawas area kantin saat jam istirahat."
+      ],
+      "actionSummary": "Sekolah mengirimkan bukti tindak lanjut: Surat Permintaan Maaf Pelaku & Mediasi",
+      "resolution_evidence": {
+        "type": "Surat Permintaan Maaf Pelaku & Mediasi",
+        "description": "Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai",
+        "fileUrl": "",
+        "submittedAt": "2026-10-04T09:38:05.005Z",
+        "submittedBy": "Guru BK / Satgas PPKSP"
+      },
+      "resolutionEvidence": {
+        "type": "Surat Permintaan Maaf Pelaku & Mediasi",
+        "description": "Pelaku dan orang tua telah menandatangani surat mediasi damai bermaterai",
+        "fileUrl": "",
+        "submittedAt": "2026-10-04T09:38:05.005Z",
+        "submittedBy": "Guru BK / Satgas PPKSP"
+      },
+      "action_summary": "Sekolah mengirimkan bukti tindak lanjut: Surat Permintaan Maaf Pelaku & Mediasi",
+      "student_confirmation": {
+        "confirmedAt": "2026-10-04T09:38:05.008Z",
+        "isSatisfied": true,
+        "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
+      },
+      "studentConfirmation": {
+        "confirmedAt": "2026-10-04T09:38:05.008Z",
+        "isSatisfied": true,
+        "studentFeedback": "Masalah sudah terselesaikan dengan baik, terima kasih."
+      }
     }
   ],
   "tokens": [
@@ -773,14 +862,75 @@
       "recovery_key": "kunci-twc3-8949",
       "activated_at": "2026-10-04T06:51:25.279Z",
       "usage_count": 1
+    },
+    {
+      "id": "5fb259b4-76d9-4762-86fe-861ff5afe68d",
+      "token_code": "TEST-SMAN1-O6VN-9220",
+      "school_id": "default-school",
+      "student_level": "Kelas 10",
+      "batch_id": "BATCH-1791106684950",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "notes": "Automated Integration Test",
+      "created_at": "2026-10-04T09:38:04.950Z",
+      "password_hash": "1d1de01c90f016c94abb95f0f53c094f4fd6ab76ea08091e0be7acdf8ce2214f",
+      "pin_hash": "1d1de01c90f016c94abb95f0f53c094f4fd6ab76ea08091e0be7acdf8ce2214f",
+      "recovery_key": "kunci-gkvb-2536",
+      "activated_at": "2026-10-04T09:38:04.957Z",
+      "usage_count": 1
+    },
+    {
+      "id": "eb0a1904-85df-4e5b-8854-e8bafd26f22f",
+      "token_code": "TEST-SMAN1-3940-4537",
+      "school_id": "default-school",
+      "student_level": "Kelas 10",
+      "batch_id": "BATCH-1791106684950",
+      "is_activated": false,
+      "is_used_for_report": false,
+      "status": "Tersedia",
+      "notes": "Automated Integration Test",
+      "created_at": "2026-10-04T09:38:04.950Z"
+    },
+    {
+      "id": "aa9beb31-6f73-4abf-8d55-bfdeef7049ba",
+      "token_code": "COLLISION-TEST-3RG5-5998",
+      "school_id": "default-school",
+      "student_level": "Kelas 11",
+      "batch_id": "BATCH-1791106684967",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "created_at": "2026-10-04T09:38:04.967Z",
+      "password_hash": "76139e7e598619d6b393b30ab76a5a5ba07bbeaaa932d320f212475268f2f1d3",
+      "pin_hash": "76139e7e598619d6b393b30ab76a5a5ba07bbeaaa932d320f212475268f2f1d3",
+      "recovery_key": "kunci-0z6k-4346",
+      "activated_at": "2026-10-04T09:38:04.970Z",
+      "usage_count": 1
+    },
+    {
+      "id": "ba5c3aa7-e1a4-484b-a85a-307ff9eb9a10",
+      "token_code": "COLLISION-TEST-YE0R-9945",
+      "school_id": "default-school",
+      "student_level": "Kelas 11",
+      "batch_id": "BATCH-1791106684967",
+      "is_activated": true,
+      "is_used_for_report": false,
+      "status": "Aktif",
+      "created_at": "2026-10-04T09:38:04.967Z",
+      "password_hash": "76139e7e598619d6b393b30ab76a5a5ba07bbeaaa932d320f212475268f2f1d3",
+      "pin_hash": "76139e7e598619d6b393b30ab76a5a5ba07bbeaaa932d320f212475268f2f1d3",
+      "recovery_key": "kunci-ofhg-2631",
+      "activated_at": "2026-10-04T09:38:04.973Z",
+      "usage_count": 1
     }
   ],
   "users": [
     {
       "id": "usr-guru-01",
       "name": "Dra. Hj. Nurjanah, M.Pd",
-      "email": "guru.bk@sekolah.sch.id",
-      "password_hash": "JTI0MmElMTAkcmU3YVl2WkV3VlphcWRSNmFhRldIeS5Nai8ueHVsVzh3LlEuWjYuNHZ2Lnp5dnZ2dnZ2dg==",
+      "email": "arrafinur2@gmail.com",
+      "password_hash": "4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4",
       "role": "guru",
       "roleTitle": "Koordinator Guru BK & Satgas PPKSP",
       "organization": "SMA Negeri 1 Jakarta",
@@ -792,14 +942,14 @@
         "Catatan Rahasia",
         "Eskalasi Kasus"
       ],
-      "status": "Non-Aktif",
-      "updated_at": "2026-10-03T15:56:14.733Z"
+      "status": "Aktif",
+      "updated_at": "2026-10-04T16:30:00.000Z"
     },
     {
       "id": "usr-admin-01",
       "name": "Bambang Prasetyo, S.Kom",
-      "email": "admin.ppksp@sekolah.sch.id",
-      "password_hash": "JTI0MmElMTAkcmU3YVl2WkV3VlphcWRSNmFhRldIeS5Nai8ueHVsVzh3LlEuWjYuNHZ2Lnp5dnZ2dnZ2dg==",
+      "email": "arrafinur1@gmail.com",
+      "password_hash": "4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4",
       "role": "admin",
       "roleTitle": "Administrator Sistem & Satgas IT Sekolah",
       "organization": "SMA Negeri 1 Jakarta",
@@ -810,13 +960,14 @@
         "Kelola Petugas BK",
         "Audit Log",
         "Konfigurasi Sistem"
-      ]
+      ],
+      "status": "Aktif"
     },
     {
       "id": "usr-disdik-01",
       "name": "Dr. H. Hendro Wicaksono, M.Pd",
-      "email": "h.hendro@disdik.prov.go.id",
-      "password_hash": "JTI0MmElMTAkcmU3YVl2WkV3VlphcWRSNmFhRldIeS5Nai8ueHVsVzh3LlEuWjYuNHZ2Lnp5dnZ2dnZ2dg==",
+      "email": "arrafinur3@gmail.com",
+      "password_hash": "4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4",
       "role": "dinas-pendidikan",
       "roleTitle": "Kabid Pembinaan SMA & Pengawas PPKSP Wilayah",
       "organization": "Dinas Pendidikan Provinsi DKI Jakarta",
@@ -827,13 +978,14 @@
         "Monitoring Respon Sekolah",
         "Indeks Kerawanan",
         "Pemberian Supervisi"
-      ]
+      ],
+      "status": "Aktif"
     },
     {
       "id": "usr-dinas-pppa-01",
       "name": "Sri Rahayu, S.Psi., M.Si",
-      "email": "sri.rahayu@uptd-ppa.go.id",
-      "password_hash": "JTI0MmElMTAkcmU3YVl2WkV3VlphcWRSNmFhRldIeS5Nai8ueHVsVzh3LlEuWjYuNHZ2Lnp5dnZ2dnZ2dg==",
+      "email": "arrafinur4@gmail.com",
+      "password_hash": "4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4",
       "role": "dinas-perlindungan",
       "roleTitle": "Kepala Satuan Pelaksana Penanganan Kasus UPTD PPA",
       "organization": "Dinas PPPA / UPTD Perlindungan Perempuan & Anak",
@@ -844,7 +996,8 @@
         "Disposisi Psikolog",
         "Layanan Rumah Aman",
         "Pendampingan Hukum"
-      ]
+      ],
+      "status": "Aktif"
     },
     {
       "id": "f634ef7f-c773-42c3-997b-cc021ba001a3",
@@ -881,6 +1034,15 @@
       "roleTitle": "Admin Sekolah (Guru BK)",
       "organization": "SMA Negeri 2 Bandung",
       "created_at": "2026-10-04T06:51:25.250Z"
+    },
+    {
+      "id": "5e62ebeb-7314-47d5-bc48-1ceb32ea46d3",
+      "name": "Drs. H. Mulyadi, M.Pd",
+      "email": "admin.sekolah.1791106684940@sekolah.sch.id",
+      "role": "guru",
+      "roleTitle": "Admin Sekolah (Guru BK)",
+      "organization": "SMA Negeri 2 Bandung",
+      "created_at": "2026-10-04T09:38:04.942Z"
     }
   ],
   "audit_logs": [
@@ -1043,6 +1205,46 @@
       "details": "Profil Satgas & Sekolah diperbarui: SMA Negeri 1 Jakarta (NPSN: 20100192)",
       "zkp_proof_status": "Tervalidasi",
       "created_at": "2026-10-04T06:51:25.330Z"
+    },
+    {
+      "id": "a993aaca-25f5-484f-a5c6-a1c99792c180",
+      "school_id": "default-school",
+      "action": "Laporan Baru Dibuat",
+      "actor_role": "Siswa (Anonim)",
+      "actor_name": "Sistem",
+      "details": "Laporan baru #TMG-2026-T2145 kategori Perundungan / Bullying (Terverifikasi: token)",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-10-04T09:38:04.983Z"
+    },
+    {
+      "id": "613e270f-866c-49a6-8434-a496ae4bcb56",
+      "school_id": "default-school",
+      "action": "Status Tiket: tindakan",
+      "actor_role": "Guru BK",
+      "actor_name": "Konselor Sekolah",
+      "details": "Status tiket #TMG-2026-T2145 diubah dari \"diterima\" menjadi \"tindakan\"",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-10-04T09:38:04.998Z"
+    },
+    {
+      "id": "03b62e6c-e019-4b92-9322-be6065366da8",
+      "school_id": "default-school",
+      "action": "Bukti Tindak Lanjut Diunggah",
+      "actor_role": "Guru BK",
+      "actor_name": "Guru BK / Satgas PPKSP",
+      "details": "Bukti Surat Permintaan Maaf Pelaku & Mediasi diunggah untuk tiket #79c643ce-13ba-40ac-8d32-c4049d5ec4da. Status: Menunggu Konfirmasi Siswa.",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-10-04T09:38:05.005Z"
+    },
+    {
+      "id": "c64e65f4-e403-45ff-a5ab-52c39ed38a39",
+      "school_id": "default-school",
+      "action": "Profil Sekolah Diperbarui",
+      "actor_role": "Guru BK",
+      "actor_name": "Dra. Nurhayati, M.Pd",
+      "details": "Profil Satgas & Sekolah diperbarui: SMA Negeri 1 Jakarta (NPSN: 20100192)",
+      "zkp_proof_status": "Tervalidasi",
+      "created_at": "2026-10-04T09:38:05.027Z"
     }
   ],
   "interventions": [
@@ -1101,6 +1303,20 @@
       "created_at": "2026-10-04T06:51:25.315Z",
       "updated_at": "2026-10-04T06:51:25.318Z",
       "assignedPsychologist": "Dra. Anita Kartika, M.Psi"
+    },
+    {
+      "id": "PPA-5014",
+      "ticketId": "79c643ce-13ba-40ac-8d32-c4049d5ec4da",
+      "victimAlias": "Ananda Bunga (Samaran)",
+      "schoolOrigin": "SMA Negeri 1 Jakarta",
+      "category": "Perundungan Berat",
+      "urgency": "Tinggi",
+      "stage": "Pemulihan Psikologis",
+      "shelterRequired": false,
+      "notes": [],
+      "created_at": "2026-10-04T09:38:05.014Z",
+      "updated_at": "2026-10-04T09:38:05.017Z",
+      "assignedPsychologist": "Dra. Anita Kartika, M.Psi"
     }
   ],
   "news_articles": [
@@ -1127,7 +1343,7 @@
       "district": "Jakarta Pusat",
       "level": "SMA",
       "activeSatgasCount": 6,
-      "totalReports": 19,
+      "totalReports": 20,
       "resolvedReports": 12,
       "avgResponseHours": 1.8,
       "complianceStatus": "Patuh (A)",
@@ -1188,7 +1404,7 @@
     "emergencyPin": "9911",
     "satgasSkNumber": "SK-PPKSP/2026/088-SYNC",
     "satgasSkDate": "15 Januari 2024",
-    "updatedAt": "2026-10-04T06:51:25.330Z",
+    "updatedAt": "2026-10-04T09:38:05.027Z",
     "satgasNumber": "SK-PPKSP/2026/088-SYNC",
     "satgasLeader": "Dra. Nurhayati, M.Pd",
     "emergencyContact": "081299887766",
@@ -1235,6 +1451,16 @@
       "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
       "status": "Baru",
       "created_at": "2026-10-04T06:51:25.322Z"
+    },
+    {
+      "id": "dee36584-6c31-441a-a348-82c0c65cb150",
+      "name": "Ibu Ratna",
+      "email": "ratna@gmail.com",
+      "subject": "Konsultasi PPKSP",
+      "category": "Pertanyaan Satgas",
+      "message": "Bagaimana cara sekolah kami bermitra dengan Ruang Aman?",
+      "status": "Baru",
+      "created_at": "2026-10-04T09:38:05.020Z"
     }
   ],
   "supervision_notices": [
@@ -1261,6 +1487,14 @@
       "message": "Percepatan tindak lanjut kasus mediasi",
       "officerName": "Drs. H. Hendra Setiawan, M.Pd",
       "created_at": "2026-10-04T06:51:25.333Z"
+    },
+    {
+      "id": "a988677e-03f3-45a3-9736-910a18aacd58",
+      "schoolId": "sch-01",
+      "schoolName": "SMA Negeri 1 Jakarta",
+      "message": "Percepatan tindak lanjut kasus mediasi",
+      "officerName": "Drs. H. Hendra Setiawan, M.Pd",
+      "created_at": "2026-10-04T09:38:05.030Z"
     }
   ]
 }

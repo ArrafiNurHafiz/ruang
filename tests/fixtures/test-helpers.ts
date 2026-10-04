@@ -89,25 +89,25 @@ export function generateExpiredTestJWT(
 export const TEST_USERS = {
   counselor: {
     id: "b0000000-0000-0000-0000-000000000001",
-    email: "guru.bk@sekolah.sch.id",
+    email: "arrafinur2@gmail.com",
     role: "guru",
     school_id: "default-school",
   },
   admin: {
     id: "b0000000-0000-0000-0000-000000000002",
-    email: "admin@sekolah.sch.id",
+    email: "arrafinur1@gmail.com",
     role: "admin",
     school_id: "default-school",
   },
   disdik: {
     id: "b0000000-0000-0000-0000-000000000003",
-    email: "disdik@pemprov.go.id",
+    email: "arrafinur3@gmail.com",
     role: "dinas-pendidikan",
     school_id: "regional-dkijakarta",
   },
   dppa: {
     id: "b0000000-0000-0000-0000-000000000004",
-    email: "uptd.ppa@dppapp.jakarta.go.id",
+    email: "arrafinur4@gmail.com",
     role: "dinas-perlindungan",
     school_id: "uptd-regional",
   },

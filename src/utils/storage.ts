@@ -215,7 +215,7 @@ export const StorageEngine = {
       {
         id: "usr-admin-01",
         name: customProfile.principalName || "Administrator Satgas",
-        email: customProfile.email || "admin.satgas@sekolah.sch.id",
+        email: customProfile.email || "arrafinur1@gmail.com",
         role: "admin",
         roleTitle: "Administrator Satgas PPKSP & IT",
         organization: customProfile.schoolName,
@@ -232,7 +232,7 @@ export const StorageEngine = {
         id: "usr-guru-01",
         name:
           customProfile.counselorCoordinatorName || "Dra. Hj. Nurjanah, M.Pd",
-        email: "guru.bk@sekolah.sch.id",
+        email: "arrafinur2@gmail.com",
         role: "guru",
         roleTitle: "Koordinator Guru BK & Konselor Satgas",
         organization: customProfile.schoolName,

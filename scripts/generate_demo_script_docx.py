@@ -190,12 +190,12 @@ def main():
         run.font.color.rgb = WHITE
 
     creds_rows = [
-        ("Guru BK (Hulu)", "guru.bk@sekolah.sch.id", "password123\n(11223344)", "LANGKAH 1: Generate batch token siswa (prefix SCH-X1-), salin kode SCH-X1-8831 / cetak slip acak."),
+        ("Guru BK (Hulu)", "arrafinur2@gmail.com", "11223344", "LANGKAH 1: Generate batch token siswa (prefix SCH-X1-), salin kode SCH-X1-8831 / cetak slip acak."),
         ("Siswa / Pelapor", "Tanpa Login Akun\nToken: SCH-X1-8831", "Sandi: siswa2026\nPIN: 7890", "LANGKAH 2: Masukkan token hasil generate, pasang sandi pribadi, sensor AI PII, ZKP, & Camouflage ESC 2x."),
-        ("Guru BK (Hilir)", "guru.bk@sekolah.sch.id", "password123", "LANGKAH 3: Triase kasus baru, chat dua arah, catatan investigasi, & terbitkan Berita Acara (BAP) resmi."),
-        ("Dinas Pendidikan", "h.hendro@disdik.prov.go.id", "password123", "Monitoring heatmap kerawanan wilayah agregat, SLA respon sekolah, & terbitkan Nota Supervisi."),
-        ("UPTD PPA (PPPA)", "sri.rahayu@uptd-ppa.go.id", "password123", "Intervensi kasus kritis, disposisi psikolog klinis, pendampingan hukum, & safehouse."),
-        ("Admin Sistem (IT)", "admin@ruang.com", "admin123", "Audit log kriptografi tak terhapus (immutable), kelola akun wilayah, & backup database.")
+        ("Guru BK (Hilir)", "arrafinur2@gmail.com", "11223344", "LANGKAH 3: Triase kasus baru, chat dua arah, catatan investigasi, & terbitkan Berita Acara (BAP) resmi."),
+        ("Dinas Pendidikan", "arrafinur3@gmail.com", "11223344", "Monitoring heatmap kerawanan wilayah agregat, SLA respon sekolah, & terbitkan Nota Supervisi."),
+        ("UPTD PPA (PPPA)", "arrafinur4@gmail.com", "11223344", "Intervensi kasus kritis, disposisi psikolog klinis, pendampingan hukum, & safehouse."),
+        ("Admin Sistem (IT)", "arrafinur1@gmail.com", "11223344", "Audit log kriptografi tak terhapus (immutable), kelola akun wilayah, & backup database.")
     ]
 
     for i, row_data in enumerate(creds_rows, start=1):
@@ -319,7 +319,7 @@ def main():
             "time": "00:25 - 01:00 (35 Detik)",
             "title": "Inovasi ZKP & Persiapan Sekolah: Guru BK Generate Batch Token",
             "visual": [
-                "Beralih ke konsol Guru BK / Satgas PPKSP (guru.bk@sekolah.sch.id).",
+                "Beralih ke konsol Guru BK / Satgas PPKSP (arrafinur2@gmail.com / 11223344).",
                 "Buka tab 'Kelola Token Anonim'.",
                 "Masukkan jumlah token: 25, pilih rombel: Kelas X, dan custom prefix: SCH-X1-.",
                 "Klik tombol 'Generate Token' (Tunjukkan notifikasi sukses 'Berhasil membuat 25 token untuk Kelas X' dan token baru muncul di tabel).",
@@ -384,9 +384,9 @@ def main():
             "time": "02:10 - 02:45 (35 Detik)",
             "title": "Dashboard Multi-Peran & Kolaborasi Lintas Lembaga Terpadu",
             "visual": [
-                "Beralih kembali ke peran Guru BK (guru.bk@sekolah.sch.id). Buka tiket laporan, tunjukkan kolom triase urgensi, catatan internal, lalu klik 'Cetak BAP Digital'.",
-                "Beralih ke portal Dinas Pendidikan (h.hendro@disdik.prov.go.id). Tunjukkan heatmap kerawanan wilayah, SLA respon 4,2 jam, dan tombol kirim Nota Supervisi.",
-                "Beralih ke portal UPTD PPA (sri.rahayu@uptd-ppa.go.id). Tunjukkan disposisi psikolog klinis, bantuan hukum, dan safehouse."
+                "Beralih kembali ke peran Guru BK (arrafinur2@gmail.com). Buka tiket laporan, tunjukkan kolom triase urgensi, catatan internal, lalu klik 'Cetak BAP Digital'.",
+                "Beralih ke portal Dinas Pendidikan (arrafinur3@gmail.com). Tunjukkan heatmap kerawanan wilayah, SLA respon 4,2 jam, dan tombol kirim Nota Supervisi.",
+                "Beralih ke portal UPTD PPA (arrafinur4@gmail.com). Tunjukkan disposisi psikolog klinis, bantuan hukum, dan safehouse."
             ],
             "narration": (
                 "\"RUANG AMAN bukan sekadar kotak pengaduan, melainkan ekosistem penanganan terpadu.\n\n"

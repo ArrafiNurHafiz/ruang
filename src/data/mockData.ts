@@ -261,7 +261,7 @@ export const INITIAL_TOKENS = MOCK_SCHOOL_TOKENS;
 export const MOCK_COUNSELOR: CounselorUser = {
   id: "csl-01",
   name: "Dra. Hj. Nurjanah, M.Pd",
-  email: "guru.bk@sekolah.sch.id",
+  email: "arrafinur2@gmail.com",
   role: "Guru Bimbingan Konseling (BK)",
   nip: "19780412 200501 2 003",
   avatar:
@@ -299,7 +299,7 @@ export const MOCK_USERS: Record<
   guru: {
     id: "usr-guru-01",
     name: "Dra. Hj. Nurjanah, M.Pd",
-    email: "guru.bk@sekolah.sch.id",
+    email: "arrafinur2@gmail.com",
     role: "guru",
     roleTitle: "Koordinator Guru BK & Satgas PPKSP",
     organization: "SMA Negeri 1 Jakarta",
@@ -316,7 +316,7 @@ export const MOCK_USERS: Record<
   admin: {
     id: "usr-admin-sys-01",
     name: "Admin Sistem",
-    email: "admin@ruang.com",
+    email: "arrafinur1@gmail.com",
     role: "admin",
     roleTitle: "Administrator Sistem PPKSP",
     organization: "Pusat Kendali Ruang Aman",
@@ -333,7 +333,7 @@ export const MOCK_USERS: Record<
   "dinas-pendidikan": {
     id: "usr-disdik-01",
     name: "Dr. H. Hendro Wicaksono, M.Pd",
-    email: "h.hendro@disdik.prov.go.id",
+    email: "arrafinur3@gmail.com",
     role: "dinas-pendidikan",
     roleTitle: "Kabid Pembinaan SMA & Pengawas PPKSP Wilayah",
     organization: "Dinas Pendidikan Provinsi DKI Jakarta",
@@ -350,7 +350,7 @@ export const MOCK_USERS: Record<
   "dinas-perlindungan": {
     id: "usr-dinas-pppa-01",
     name: "Sri Rahayu, S.Psi., M.Si",
-    email: "sri.rahayu@uptd-ppa.go.id",
+    email: "arrafinur4@gmail.com",
     role: "dinas-perlindungan",
     roleTitle: "Kepala Satuan Pelaksana Penanganan Kasus UPTD PPA",
     organization: "Dinas PPPA / UPTD Perlindungan Perempuan & Anak",

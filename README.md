@@ -111,10 +111,10 @@ Aplikasi menyediakan kredensial peran resmi untuk pengujian alur penanganan keke
 
 | Peran | Email | Kata Sandi | Tugas & Kewenangan Utama |
 | :--- | :--- | :--- | :--- |
-| **Admin Sistem** | `admin.ppksp@sekolah.sch.id` | `password123` | Manajemen akun petugas nasional, inspeksi audit trail ZKP, & cadangan data global. (Bersifat tunggal / 1 akun). |
-| **Guru BK / Admin Sekolah** | `guru.bk@sekolah.sch.id` | `password123` | Triase laporan masuk, chat 2-arah terenkripsi, batch generator token siswa, & bukti tindak lanjut. |
-| **Dinas Pendidikan** | `h.hendro@disdik.prov.go.id` | `password123` | Monitoring makro kepatuhan SOP PPKSP antarsekolah & indeks kerawanan wilayah. |
-| **UPTD PPA (Dinas PPPA)** | `sri.rahayu@uptd-ppa.go.id` | `password123` | Disposisi kasus darurat kritis, penugasan psikolog klinis, bantuan hukum, & safehouse. |
+| **Admin Sistem** | `arrafinur1@gmail.com` | `11223344` | Manajemen akun petugas nasional, inspeksi audit trail ZKP, & cadangan data global. (Bersifat tunggal / 1 akun). |
+| **Guru BK / Admin Sekolah** | `arrafinur2@gmail.com` | `11223344` | Triase laporan masuk, chat 2-arah terenkripsi, batch generator token siswa, & bukti tindak lanjut. |
+| **Dinas Pendidikan** | `arrafinur3@gmail.com` | `11223344` | Monitoring makro kepatuhan SOP PPKSP antarsekolah & indeks kerawanan wilayah. |
+| **UPTD PPA (Dinas PPPA)** | `arrafinur4@gmail.com` | `11223344` | Disposisi kasus darurat kritis, penugasan psikolog klinis, bantuan hukum, & safehouse. |
 | **Siswa / Pelapor** | *(Tanpa Perlu Login)* | *Gunakan Token / Sandi* | Lapor anonim, mode samaran cepat (ESC), pantau tiket & chat rahasia. |
 
 ---

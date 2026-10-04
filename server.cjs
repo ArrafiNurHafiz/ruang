@@ -30,9 +30,9 @@ const INITIAL_DATA = {
     {
       id: "usr-guru-01",
       name: "Dra. Hj. Nurjanah, M.Pd",
-      email: "guru.bk@sekolah.sch.id",
+      email: "arrafinur2@gmail.com",
       password_hash:
-        "JTI0MmElMTAkcmU3YVl2WkV3VlphcWRSNmFhRldIeS5Nai8ueHVsVzh3LlEuWjYuNHZ2Lnp5dnZ2dnZ2dg==",
+        "4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4",
       role: "guru",
       roleTitle: "Koordinator Guru BK & Satgas PPKSP",
       organization: "SMA Negeri 1 Jakarta",
@@ -49,9 +49,9 @@ const INITIAL_DATA = {
     {
       id: "usr-admin-01",
       name: "Bambang Prasetyo, S.Kom",
-      email: "admin.ppksp@sekolah.sch.id",
+      email: "arrafinur1@gmail.com",
       password_hash:
-        "JTI0MmElMTAkcmU3YVl2WkV3VlphcWRSNmFhRldIeS5Nai8ueHVsVzh3LlEuWjYuNHZ2Lnp5dnZ2dnZ2dg==",
+        "4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4",
       role: "admin",
       roleTitle: "Administrator Sistem & Satgas IT Sekolah",
       organization: "SMA Negeri 1 Jakarta",
@@ -68,9 +68,9 @@ const INITIAL_DATA = {
     {
       id: "usr-disdik-01",
       name: "Dr. H. Hendro Wicaksono, M.Pd",
-      email: "h.hendro@disdik.prov.go.id",
+      email: "arrafinur3@gmail.com",
       password_hash:
-        "JTI0MmElMTAkcmU3YVl2WkV3VlphcWRSNmFhRldIeS5Nai8ueHVsVzh3LlEuWjYuNHZ2Lnp5dnZ2dnZ2dg==",
+        "4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4",
       role: "dinas-pendidikan",
       roleTitle: "Kabid Pembinaan SMA & Pengawas PPKSP Wilayah",
       organization: "Dinas Pendidikan Provinsi DKI Jakarta",
@@ -87,9 +87,9 @@ const INITIAL_DATA = {
     {
       id: "usr-dinas-pppa-01",
       name: "Sri Rahayu, S.Psi., M.Si",
-      email: "sri.rahayu@uptd-ppa.go.id",
+      email: "arrafinur4@gmail.com",
       password_hash:
-        "JTI0MmElMTAkcmU3YVl2WkV3VlphcWRSNmFhRldIeS5Nai8ueHVsVzh3LlEuWjYuNHZ2Lnp5dnZ2dnZ2dg==",
+        "4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4",
       role: "dinas-perlindungan",
       roleTitle: "Kepala Satuan Pelaksana Penanganan Kasus UPTD PPA",
       organization: "Dinas PPPA / UPTD Perlindungan Perempuan & Anak",

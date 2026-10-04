@@ -181,6 +181,63 @@ export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({
               </button>
             </form>
 
+            {/* Quick Demo Credentials helper */}
+            <div className="pt-2 border-t border-slate-100">
+              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2 text-center">
+                {t("login.quickTitle")}
+              </p>
+              <div className="grid grid-cols-2 gap-1.5 text-xs">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail("arrafinur1@gmail.com");
+                    setPassword("11223344");
+                    setError("");
+                  }}
+                  className="px-2.5 py-1.5 text-left rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 transition cursor-pointer text-slate-700"
+                >
+                  <span className="font-bold block text-[11px]">Admin</span>
+                  <span className="text-[10px] text-slate-500 font-mono">arrafinur1@gmail.com</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail("arrafinur2@gmail.com");
+                    setPassword("11223344");
+                    setError("");
+                  }}
+                  className="px-2.5 py-1.5 text-left rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 transition cursor-pointer text-slate-700"
+                >
+                  <span className="font-bold block text-[11px]">Guru BK</span>
+                  <span className="text-[10px] text-slate-500 font-mono">arrafinur2@gmail.com</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail("arrafinur3@gmail.com");
+                    setPassword("11223344");
+                    setError("");
+                  }}
+                  className="px-2.5 py-1.5 text-left rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 transition cursor-pointer text-slate-700"
+                >
+                  <span className="font-bold block text-[11px]">Dinas Pendidikan</span>
+                  <span className="text-[10px] text-slate-500 font-mono">arrafinur3@gmail.com</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEmail("arrafinur4@gmail.com");
+                    setPassword("11223344");
+                    setError("");
+                  }}
+                  className="px-2.5 py-1.5 text-left rounded-lg bg-slate-50 hover:bg-slate-100 border border-slate-200 transition cursor-pointer text-slate-700"
+                >
+                  <span className="font-bold block text-[11px]">Dinas Perlindungan</span>
+                  <span className="text-[10px] text-slate-500 font-mono">arrafinur4@gmail.com</span>
+                </button>
+              </div>
+            </div>
+
             <div className="text-center text-[11px] text-slate-400 space-y-2">
               <p>{lang === "en" ? "Don't have an account? Contact System Admin to request staff access." : "Belum punya akun? Hubungi Admin Sistem untuk pengajuan akun petugas."}</p>
             </div>
