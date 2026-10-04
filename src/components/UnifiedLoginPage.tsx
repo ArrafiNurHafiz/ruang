@@ -10,6 +10,7 @@ import {
 import { AppUserRole, CounselorUser } from "../types";
 import { MOCK_USERS } from "../data/mockData";
 import { api } from "../lib/api";
+import { useLanguage } from "../lib/i18n";
 
 interface UnifiedLoginPageProps {
   onLogin: (role: AppUserRole, counselor?: CounselorUser) => void;
@@ -18,6 +19,7 @@ interface UnifiedLoginPageProps {
 export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({
   onLogin,
 }) => {
+  const { t, lang } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -57,7 +59,7 @@ export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({
           role: candidateRole,
         });
       } catch (authErr: any) {
-        setError(authErr.message || "Email atau kata sandi salah.");
+        setError(authErr.message || (lang === "en" ? "Invalid email or password." : "Email atau kata sandi salah."));
         return;
       }
 
@@ -82,7 +84,7 @@ export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({
 
       onLogin(userRole, counselor);
     } catch (err) {
-      setError("Terjadi kesalahan saat masuk. Silakan coba lagi.");
+      setError(lang === "en" ? "An error occurred during login. Please try again." : "Terjadi kesalahan saat masuk. Silakan coba lagi.");
     } finally {
       setIsLoading(false);
     }
@@ -97,9 +99,9 @@ export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({
             <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-white/20">
               <ShieldCheck className="w-8 h-8 text-emerald-400" />
             </div>
-            <h1 className="text-xl font-extrabold">Masuk ke Ruang Aman</h1>
+            <h1 className="text-xl font-extrabold">{t("login.title")}</h1>
             <p className="text-xs text-slate-400 mt-1">
-              Satu akun untuk semua peran — Guru BK, Admin, Dinas
+              {t("login.subtitle")}
             </p>
           </div>
 
@@ -108,7 +110,7 @@ export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                  Email
+                  {t("login.email")}
                 </label>
                 <input
                   type="email"
@@ -118,14 +120,14 @@ export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({
                     setEmail(e.target.value);
                     setError("");
                   }}
-                  placeholder="nama@sekolah.sch.id"
+                  placeholder="name@school.sch.id"
                   className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-slate-900 transition-all"
                 />
               </div>
 
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                  Kata Sandi
+                  {t("login.password")}
                 </label>
                 <div className="relative">
                   <input
@@ -168,19 +170,19 @@ export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({
                 {isLoading ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Memverifikasi...</span>
+                    <span>{t("login.verifying")}</span>
                   </>
                 ) : (
                   <>
                     <LogIn className="w-4 h-4" />
-                    <span>Masuk</span>
+                    <span>{t("login.submit")}</span>
                   </>
                 )}
               </button>
             </form>
 
             <div className="text-center text-[11px] text-slate-400 space-y-2">
-              <p>Belum punya akun? Hubungi Admin Sistem untuk pengajuan akun petugas.</p>
+              <p>{lang === "en" ? "Don't have an account? Contact System Admin to request staff access." : "Belum punya akun? Hubungi Admin Sistem untuk pengajuan akun petugas."}</p>
             </div>
           </div>
         </div>

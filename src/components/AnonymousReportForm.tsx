@@ -56,6 +56,7 @@ import {
   DetectedEntity,
 } from "../utils/crypto";
 import { api } from "../lib/api";
+import { useLanguage, getCategoryLabel } from "../lib/i18n";
 
 interface AnonymousReportFormProps {
   onReportSubmitted: (newTicket: ReportTicket) => void;
@@ -88,6 +89,7 @@ export const AnonymousReportForm: React.FC<AnonymousReportFormProps> = ({
   regionalSchools = [],
   onVerifyStudentToken,
 }) => {
+  const { t, lang } = useLanguage();
   const [currentStep, setCurrentStep] = useState<1 | 2>(1);
 
   // Cakupan Nasional: Pilihan Satuan Pendidikan Asal Pelapor
@@ -597,13 +599,17 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                 <div className="mb-6 border-b border-slate-100 pb-5">
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold mb-2">
                     <ShieldCheck className="w-4 h-4 text-blue-600" />
-                    <span>Verifikasi Siswa • Platform PPKSP Satuan Pendidikan Nasional</span>
+                    <span>{lang === "en" ? "Student Verification • National PPKSP Educational Unit Safety Platform" : "Verifikasi Siswa • Platform PPKSP Satuan Pendidikan Nasional"}</span>
                   </div>
                   <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                    Verifikasi Siswa Sebelum Melapor
+                    {lang === "en" ? "Student Verification Before Reporting" : "Verifikasi Siswa Sebelum Melapor"}
                   </h1>
                   <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
-                    Untuk memastikan laporan berasal dari siswa sah dan mencegah pihak luar/spam menyusup, sistem menerapkan <strong>Verifikasi 2 Langkah</strong>. Masukkan <strong>Kode Akses Sekolah</strong> Anda untuk memulai, atau gunakan <strong>Sandi Pribadi Pelajar</strong> jika Anda lupa kode slip. Identitas Anda tetap 100% anonim.
+                    {lang === "en" ? (
+                      <>To ensure reports originate from legitimate students and block malicious spam, the system employs <strong>2-Step Verification</strong>. Enter your <strong>School Access Code</strong> to start, or use your <strong>Student Personal Password</strong> if you misplaced the slip. Your identity remains 100% anonymous.</>
+                    ) : (
+                      <>Untuk memastikan laporan berasal dari siswa sah dan mencegah pihak luar/spam menyusup, sistem menerapkan <strong>Verifikasi 2 Langkah</strong>. Masukkan <strong>Kode Akses Sekolah</strong> Anda untuk memulai, atau gunakan <strong>Sandi Pribadi Pelajar</strong> jika Anda lupa kode slip. Identitas Anda tetap 100% anonim.</>
+                    )}
                   </p>
                 </div>
 
@@ -624,7 +630,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                     }`}
                   >
                     <KeyRound className="w-4 h-4 text-blue-600" />
-                    <span>1. Gunakan Kode Akses Sekolah</span>
+                    <span>{lang === "en" ? "1. Use School Access Code" : "1. Gunakan Kode Akses Sekolah"}</span>
                   </button>
                   <button
                     type="button"
@@ -641,7 +647,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                     }`}
                   >
                     <Lock className="w-4 h-4 text-indigo-600" />
-                    <span>2. Lupa Kode? Gunakan Sandi Pribadi</span>
+                    <span>{lang === "en" ? "2. Forgot Code? Use Personal Password" : "2. Lupa Kode? Gunakan Sandi Pribadi"}</span>
                   </button>
                 </div>
 
@@ -651,16 +657,16 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                     <div className="p-4 rounded-2xl bg-slate-50 border border-slate-200">
                       <div className="flex items-center justify-between mb-2">
                         <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                          Langkah 1: Masukkan Kode Akses Pelajar
+                          {lang === "en" ? "Step 1: Enter Student Access Code" : "Langkah 1: Masukkan Kode Akses Pelajar"}
                         </label>
                         <span className="text-[11px] text-slate-500">
-                          Dari kartu MPLS / dibagikan wali kelas
+                          {lang === "en" ? "From school orientation card / homeroom teacher" : "Dari kartu MPLS / dibagikan wali kelas"}
                         </span>
                       </div>
                       <div className="flex gap-2">
                         <input
                           type="text"
-                          placeholder="Misal: SCH-X1-8831"
+                          placeholder={lang === "en" ? "e.g., SCH-X1-8831" : "Misal: SCH-X1-8831"}
                           value={tokenGateInput}
                           onChange={(e) => {
                             setTokenGateInput(e.target.value.toUpperCase());
@@ -680,7 +686,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                           onClick={() => handleVerifyByToken()}
                           className="px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-semibold text-xs transition-colors cursor-pointer shrink-0"
                         >
-                          {isVerifyingToken ? "Memeriksa..." : "Verifikasi"}
+                          {isVerifyingToken ? (lang === "en" ? "Verifying..." : "Memeriksa...") : (lang === "en" ? "Verify" : "Verifikasi")}
                         </button>
                       </div>
 
@@ -701,10 +707,12 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                           </div>
                           <div>
                             <h2 className="text-xs font-bold text-slate-900">
-                              Alur Verifikasi 2 Langkah Wajib
+                              {lang === "en" ? "Mandatory 2-Step Verification Workflow" : "Alur Verifikasi 2 Langkah Wajib"}
                             </h2>
                             <p className="text-[11px] text-slate-500">
-                              Setelah kode diverifikasi, Anda wajib memasangkan sandi pribadi sebelum formulir laporan terbuka agar privasi Anda terlindungi penuh.
+                              {lang === "en"
+                                ? "Once the code is verified, you create a personal password before opening the report form to guarantee absolute privacy."
+                                : "Setelah kode diverifikasi, Anda wajib memasangkan sandi pribadi sebelum formulir laporan terbuka agar privasi Anda terlindungi penuh."}
                             </p>
                           </div>
                         </div>
@@ -714,12 +722,12 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                             if (tokenGateInput.trim()) {
                               handleVerifyByToken();
                             } else {
-                              setTokenGateError("Ketik kode akses Anda di atas terlebih dahulu, lalu klik Verifikasi.");
+                              setTokenGateError(lang === "en" ? "Type your access code above first, then click Verify." : "Ketik kode akses Anda di atas terlebih dahulu, lalu klik Verifikasi.");
                             }
                           }}
                           className="px-3 py-1.5 rounded-lg bg-white border border-blue-200 text-blue-700 hover:bg-blue-50 text-xs font-semibold transition-colors cursor-pointer shrink-0"
                         >
-                          Lanjut Verifikasi
+                          {lang === "en" ? "Continue Verification" : "Lanjut Verifikasi"}
                         </button>
                       </div>
                     </div>
@@ -735,17 +743,17 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                     >
                       <div className="flex items-center justify-between">
                         <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                          Masukkan Sandi Pribadi Pelajar
+                          {lang === "en" ? "Enter Student Personal Password" : "Masukkan Sandi Pribadi Pelajar"}
                         </label>
                         <span className="text-[11px] text-slate-500">
-                          Sandi rahasia yang pernah Anda buat
+                          {lang === "en" ? "Secret password you previously created" : "Sandi rahasia yang pernah Anda buat"}
                         </span>
                       </div>
                       <div className="flex gap-2 relative">
                         <div className="relative flex-1">
                           <input
                             type={showPassword ? "text" : "password"}
-                            placeholder="Masukkan sandi rahasia Anda..."
+                            placeholder={lang === "en" ? "Enter your secret password..." : "Masukkan sandi rahasia Anda..."}
                             value={passwordInput}
                             onChange={(e) => {
                               setPasswordInput(e.target.value);
@@ -771,7 +779,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                           disabled={isVerifyingPassword}
                           className="px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-semibold text-xs transition-colors cursor-pointer shrink-0"
                         >
-                          {isVerifyingPassword ? "Memeriksa..." : "Verifikasi Sandi"}
+                          {isVerifyingPassword ? (lang === "en" ? "Checking..." : "Memeriksa...") : (lang === "en" ? "Verify Password" : "Verifikasi Sandi")}
                         </button>
                       </div>
 
@@ -787,15 +795,17 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                         <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-slate-800 space-y-2 animate-fadeIn">
                           <div className="flex items-center gap-2 text-amber-900 font-bold text-xs">
                             <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0" />
-                            <span>Perlindungan Privasi: Tabrakan Sandi Terdeteksi</span>
+                            <span>{lang === "en" ? "Privacy Protection: Password Collision Detected" : "Perlindungan Privasi: Tabrakan Sandi Terdeteksi"}</span>
                           </div>
                           <p className="text-xs text-amber-800 leading-relaxed">
-                            Terdeteksi lebih dari satu akun di sistem dengan kata sandi yang sama. Demi melindungi privasi Anda dan mencegah laporan tertukar dengan siswa lain, sistem menolak masuk secara acak. Silakan masukkan salah satu pengenal di bawah ini:
+                            {lang === "en"
+                              ? "More than one student account in the system shares this password. To protect your privacy and prevent reports from mixing with other students, please enter one of the identifiers below:"
+                              : "Terdeteksi lebih dari satu akun di sistem dengan kata sandi yang sama. Demi melindungi privasi Anda dan mencegah laporan tertukar dengan siswa lain, sistem menolak masuk secara acak. Silakan masukkan salah satu pengenal di bawah ini:"}
                           </p>
                           <div className="space-y-2 pt-1">
                             <input
                               type="text"
-                              placeholder="Masukkan Kode Akses Sekolah (Misal: SCH-XXXX) ATAU Kunci Pemulihan (Misal: kunci-xxxx-1234)"
+                              placeholder={lang === "en" ? "Enter School Access Code (e.g., SCH-XXXX) OR Recovery Key (e.g., kunci-xxxx-1234)" : "Masukkan Kode Akses Sekolah (Misal: SCH-XXXX) ATAU Kunci Pemulihan (Misal: kunci-xxxx-1234)"}
                               value={collisionCodeInput || recoveryKeyInput}
                               onChange={(e) => {
                                 const val = e.target.value;
@@ -816,7 +826,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                                 onClick={() => handleVerifyByPassword()}
                                 className="flex-1 py-2 px-3 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs transition-colors cursor-pointer"
                               >
-                                {isVerifyingPassword ? "Memverifikasi..." : "Lanjut Verifikasi Pengaman"}
+                                {isVerifyingPassword ? (lang === "en" ? "Verifying..." : "Memverifikasi...") : (lang === "en" ? "Continue Secure Verification" : "Lanjut Verifikasi Pengaman")}
                               </button>
                               <button
                                 type="button"
@@ -826,7 +836,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                                 }}
                                 className="py-2 px-3 rounded-lg bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 text-xs font-semibold transition-colors cursor-pointer"
                               >
-                                Ambil Slip Baru / Batal
+                                {lang === "en" ? "Get New Slip / Cancel" : "Ambil Slip Baru / Batal"}
                               </button>
                             </div>
                           </div>
@@ -834,7 +844,9 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                       )}
 
                       <p className="text-[11px] text-slate-500">
-                        Lupa kode slip sekolah? Cukup gunakan sandi pribadi yang pernah Anda buat untuk melapor dengan aman. Jika sandi Anda sama dengan siswa lain, sistem keamanan akan meminta pengenal cadangan.
+                        {lang === "en"
+                          ? "Forgot school slip code? Simply use your student personal password to report safely. If your password matches another student, backup identification is requested."
+                          : "Lupa kode slip sekolah? Cukup gunakan sandi pribadi yang pernah Anda buat untuk melapor dengan aman. Jika sandi Anda sama dengan siswa lain, sistem keamanan akan meminta pengenal cadangan."}
                       </p>
                     </form>
                   </div>
@@ -849,52 +861,56 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                 <div className="flex items-center gap-2 p-3 rounded-2xl bg-blue-50/70 border border-blue-200">
                   <div className="flex items-center gap-1 text-xs font-semibold text-emerald-700">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>1. Kode Sekolah Valid ({pendingVerifiedToken.tokenCode})</span>
+                    <span>{lang === "en" ? `1. Valid School Code (${pendingVerifiedToken.tokenCode})` : `1. Kode Sekolah Valid (${pendingVerifiedToken.tokenCode})`}</span>
                   </div>
                   <ArrowRight className="w-3.5 h-3.5 text-blue-400" />
                   <div className="flex items-center gap-1 text-xs font-bold text-blue-900">
                     <Lock className="w-4 h-4 text-blue-600" />
-                    <span>2. Buat Sandi Pribadi Pelajar (Wajib)</span>
+                    <span>{lang === "en" ? "2. Create Personal Password (Required)" : "2. Buat Sandi Pribadi Pelajar (Wajib)"}</span>
                   </div>
                 </div>
 
                 <div>
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold mb-2">
                     <ShieldCheck className="w-4 h-4 text-indigo-600" />
-                    <span>Verifikasi 2 Langkah • Langkah 2 dari 2</span>
+                    <span>{lang === "en" ? "2-Step Verification • Step 2 of 2" : "Verifikasi 2 Langkah • Langkah 2 dari 2"}</span>
                   </div>
                   <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-                    Buat Kata Sandi Pribadi Pelajar
+                    {lang === "en" ? "Create Student Personal Password" : "Buat Kata Sandi Pribadi Pelajar"}
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
-                    Kode akses <strong>{pendingVerifiedToken.tokenCode}</strong> valid terdaftar di {pendingVerifiedToken.schoolName || activeSchoolDisplayName}. Sesuai standar keamanan, Anda <strong>wajib membuat kata sandi pribadi</strong> terlebih dahulu agar orang lain yang menemukan slip Anda tidak dapat melihat laporan Anda.
+                    {lang === "en" ? (
+                      <>Access code <strong>{pendingVerifiedToken.tokenCode}</strong> is valid and registered at {pendingVerifiedToken.schoolName || activeSchoolDisplayName}. By security standards, you <strong>must create a personal password</strong> first so anyone finding your code slip cannot view your report.</>
+                    ) : (
+                      <>Kode akses <strong>{pendingVerifiedToken.tokenCode}</strong> valid terdaftar di {pendingVerifiedToken.schoolName || activeSchoolDisplayName}. Sesuai standar keamanan, Anda <strong>wajib membuat kata sandi pribadi</strong> terlebih dahulu agar orang lain yang menemukan slip Anda tidak dapat melihat laporan Anda.</>
+                    )}
                   </p>
                 </div>
 
                 <form onSubmit={handleCreateStudentPassword} className="space-y-4">
                   <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
                     <div>
-                      <span className="text-slate-500 font-medium block">Kode Akses Sekolah:</span>
+                      <span className="text-slate-500 font-medium block">{lang === "en" ? "School Access Code:" : "Kode Akses Sekolah:"}</span>
                       <span className="font-mono font-bold text-slate-900 text-sm">
                         {pendingVerifiedToken.tokenCode}
                       </span>
                     </div>
                     <span className="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-semibold flex items-center gap-1">
                       <Check className="w-3 h-3 text-emerald-600" />
-                      Terdaftar Sah
+                      {lang === "en" ? "Registered & Valid" : "Terdaftar Sah"}
                     </span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                        Buat Kata Sandi Pribadi *
+                        {lang === "en" ? "Create Personal Password *" : "Buat Kata Sandi Pribadi *"}
                       </label>
                       <div className="relative">
                         <input
                           type={showNewPassword ? "text" : "password"}
                           required
-                          placeholder="Minimal 4 karakter (angka/huruf)"
+                          placeholder={lang === "en" ? "Min. 4 characters (alphanumeric)" : "Minimal 4 karakter (angka/huruf)"}
                           value={newPasswordValue}
                           onChange={(e) => setNewPasswordValue(e.target.value)}
                           className="w-full px-3.5 py-2.5 pr-9 rounded-xl border border-slate-200 text-sm bg-white focus:outline-hidden focus:border-blue-600"
@@ -915,12 +931,12 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
 
                     <div>
                       <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                        Ulangi Kata Sandi *
+                        {lang === "en" ? "Confirm Password *" : "Ulangi Kata Sandi *"}
                       </label>
                       <input
                         type={showNewPassword ? "text" : "password"}
                         required
-                        placeholder="Ketik ulang kata sandi"
+                        placeholder={lang === "en" ? "Retype password" : "Ketik ulang kata sandi"}
                         value={newPasswordConfirm}
                         onChange={(e) => setNewPasswordConfirm(e.target.value)}
                         className="w-full px-3.5 py-2.5 rounded-xl border border-slate-200 text-sm bg-white focus:outline-hidden focus:border-blue-600"
@@ -939,18 +955,23 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                     <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-xs text-emerald-800 space-y-1">
                       <p className="flex items-center gap-1.5 font-semibold">
                         <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                        <span>Sandi berhasil disimpan &amp; terenkripsi! Membuka formulir laporan...</span>
+                        <span>{lang === "en" ? "Password saved & encrypted! Opening report form..." : "Sandi berhasil disimpan & terenkripsi! Membuka formulir laporan..."}</span>
                       </p>
                       {newlyCreatedRecoveryKey && (
                         <p className="font-mono text-[11px] text-emerald-900 bg-emerald-100 px-2 py-1 rounded">
-                          Kunci Pemulihan Anda: <strong>{newlyCreatedRecoveryKey}</strong> (Simpan jika sewaktu-waktu lupa kode sekolah)
+                          {lang === "en"
+                            ? <>Your Recovery Key: <strong>{newlyCreatedRecoveryKey}</strong> (Save this in case you forget your code)</>
+                            : <>Kunci Pemulihan Anda: <strong>{newlyCreatedRecoveryKey}</strong> (Simpan jika sewaktu-waktu lupa kode sekolah)</>}
                         </p>
                       )}
                     </div>
                   )}
 
                   <div className="p-3 rounded-xl bg-blue-50/60 border border-blue-100 text-[11px] text-slate-600 leading-relaxed">
-                    <strong>Catatan Rahasia:</strong> Sandi ini hanya diketahui oleh Anda. Guru BK dan pihak sekolah pun tidak dapat melihat kata sandi Anda. Anda akan mendapatkan Kunci Pemulihan unik untuk cadangan jika lupa kode slip.
+                    <strong>{lang === "en" ? "Confidential Note: " : "Catatan Rahasia: "}</strong>
+                    {lang === "en"
+                      ? "This password is known only to you. School counselors and staff cannot view your password. You will receive a unique Recovery Key as backup."
+                      : "Sandi ini hanya diketahui oleh Anda. Guru BK dan pihak sekolah pun tidak dapat melihat kata sandi Anda. Anda akan mendapatkan Kunci Pemulihan unik untuk cadangan jika lupa kode slip."}
                   </div>
 
                   <div className="flex flex-col sm:flex-row gap-2 pt-2">
@@ -962,8 +983,8 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                       <Lock className="w-4 h-4" />
                       <span>
                         {isSubmittingNewPassword
-                          ? "Menyimpan sandi terenkripsi..."
-                          : "Simpan Sandi & Buka Formulir Laporan"}
+                          ? (lang === "en" ? "Saving encrypted password..." : "Menyimpan sandi terenkripsi...")
+                          : (lang === "en" ? "Save Password & Open Report Form" : "Simpan Sandi & Buka Formulir Laporan")}
                       </span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
@@ -975,7 +996,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                       }}
                       className="py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
                     >
-                      Ganti Kode Lain
+                      {lang === "en" ? "Use Another Code" : "Ganti Kode Lain"}
                     </button>
                   </div>
                 </form>
@@ -989,51 +1010,55 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                 <div className="flex items-center gap-2 p-3 rounded-2xl bg-indigo-50/70 border border-indigo-200">
                   <div className="flex items-center gap-1 text-xs font-semibold text-emerald-700">
                     <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                    <span>1. Kode Sekolah Valid ({pendingVerifiedToken.tokenCode})</span>
+                    <span>{lang === "en" ? `1. Valid School Code (${pendingVerifiedToken.tokenCode})` : `1. Kode Sekolah Valid (${pendingVerifiedToken.tokenCode})`}</span>
                   </div>
                   <ArrowRight className="w-3.5 h-3.5 text-indigo-400" />
                   <div className="flex items-center gap-1 text-xs font-bold text-indigo-900">
                     <Lock className="w-4 h-4 text-indigo-600" />
-                    <span>2. Masukkan Sandi Pribadi (Terproteksi)</span>
+                    <span>{lang === "en" ? "2. Enter Personal Password (Protected)" : "2. Masukkan Sandi Pribadi (Terproteksi)"}</span>
                   </div>
                 </div>
 
                 <div>
                   <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-xs font-semibold mb-2">
                     <Lock className="w-4 h-4 text-indigo-600" />
-                    <span>Verifikasi 2 Langkah • Langkah 2 dari 2</span>
+                    <span>{lang === "en" ? "2-Step Verification • Step 2 of 2" : "Verifikasi 2 Langkah • Langkah 2 dari 2"}</span>
                   </div>
                   <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
-                    Masukkan Sandi Pribadi Pelajar
+                    {lang === "en" ? "Enter Student Personal Password" : "Masukkan Sandi Pribadi Pelajar"}
                   </h2>
                   <p className="text-xs sm:text-sm text-slate-600 mt-1 leading-relaxed">
-                    Kode akses <strong>{pendingVerifiedToken.tokenCode}</strong> telah dilindungi kata sandi pribadi Anda. Masukkan sandi Anda untuk membuka formulir laporan.
+                    {lang === "en" ? (
+                      <>Access code <strong>{pendingVerifiedToken.tokenCode}</strong> is protected with your personal password. Enter your password to open the report form.</>
+                    ) : (
+                      <>Kode akses <strong>{pendingVerifiedToken.tokenCode}</strong> telah dilindungi kata sandi pribadi Anda. Masukkan sandi Anda untuk membuka formulir laporan.</>
+                    )}
                   </p>
                 </div>
 
                 <form onSubmit={handleVerifyStep2Password} className="space-y-4">
                   <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs flex items-center justify-between">
                     <div>
-                      <span className="text-slate-500 font-medium block">Kode Akses Terverifikasi:</span>
+                      <span className="text-slate-500 font-medium block">{lang === "en" ? "Verified Access Code:" : "Kode Akses Terverifikasi:"}</span>
                       <span className="font-mono font-bold text-slate-900 text-sm">
                         {pendingVerifiedToken.tokenCode}
                       </span>
                     </div>
                     <span className="px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-800 text-[11px] font-semibold flex items-center gap-1">
                       <Lock className="w-3 h-3 text-indigo-600" />
-                      Terproteksi Sandi
+                      {lang === "en" ? "Password Protected" : "Terproteksi Sandi"}
                     </span>
                   </div>
 
                   <div>
                     <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
-                      Sandi Pribadi Pelajar *
+                      {lang === "en" ? "Student Personal Password *" : "Sandi Pribadi Pelajar *"}
                     </label>
                     <div className="relative">
                       <input
                         type={showPassword ? "text" : "password"}
                         required
-                        placeholder="Masukkan sandi rahasia Anda..."
+                        placeholder={lang === "en" ? "Enter your secret password..." : "Masukkan sandi rahasia Anda..."}
                         value={passwordInput}
                         onChange={(e) => {
                           setPasswordInput(e.target.value);
@@ -1070,7 +1095,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                     >
                       <Lock className="w-4 h-4" />
                       <span>
-                        {isVerifyingPassword ? "Memeriksa..." : "Verifikasi Sandi & Buka Formulir Laporan"}
+                        {isVerifyingPassword ? (lang === "en" ? "Checking..." : "Memeriksa...") : (lang === "en" ? "Verify Password & Open Report Form" : "Verifikasi Sandi & Buka Formulir Laporan")}
                       </span>
                       <ArrowRight className="w-4 h-4" />
                     </button>
@@ -1082,7 +1107,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                       }}
                       className="py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs transition-colors cursor-pointer"
                     >
-                      Ganti Kode Lain
+                      {lang === "en" ? "Use Another Code" : "Ganti Kode Lain"}
                     </button>
                   </div>
                 </form>
@@ -1093,7 +1118,10 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
             <div className="mt-6 pt-5 border-t border-slate-100 flex items-center gap-3 text-xs text-slate-500">
               <Lock className="w-4 h-4 text-emerald-600 shrink-0" />
               <span>
-                <strong>Jaminan Kerahasiaan Kriptografi:</strong> Seluruh sandi dienkripsi dengan hash satu arah (SHA-256). Sistem tidak pernah menyimpan teks asli sandi dan tidak meminta nama lengkap, nomor HP, atau NISN Anda.
+                <strong>{lang === "en" ? "Cryptographic Privacy Guarantee: " : "Jaminan Kerahasiaan Kriptografi: "}</strong>
+                {lang === "en"
+                  ? "All passwords are encrypted with a one-way hash (SHA-256). The system never stores plain text and never requests your full name, phone number, or student ID."
+                  : "Seluruh sandi dienkripsi dengan hash satu arah (SHA-256). Sistem tidak pernah menyimpan teks asli sandi dan tidak meminta nama lengkap, nomor HP, atau NISN Anda."}
               </span>
             </div>
           </div>
@@ -1110,15 +1138,17 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                 </div>
                 <div>
                   <div className="text-xs font-bold text-emerald-900 flex flex-wrap items-center gap-2">
-                    <span>Terverifikasi: Siswa Sah {activeSchoolDisplayName}</span>
+                    <span>{lang === "en" ? `Verified: Valid Student of ${activeSchoolDisplayName}` : `Terverifikasi: Siswa Sah ${activeSchoolDisplayName}`}</span>
                     <span className="px-2 py-0.5 rounded-full bg-emerald-200 text-emerald-800 text-[10px]">
                       {verificationMethod === "token"
-                        ? "Kode Akses Sekolah"
-                        : "Sandi Pribadi Pelajar"}
+                        ? (lang === "en" ? "School Access Code" : "Kode Akses Sekolah")
+                        : (lang === "en" ? "Student Personal Password" : "Sandi Pribadi Pelajar")}
                     </span>
                   </div>
                   <p className="text-[11px] text-emerald-700 mt-0.5">
-                    Laporan Anda sah dari warga sekolah &amp; identitas Anda tetap 100% rahasia tanpa jejak.
+                    {lang === "en"
+                      ? "Your report is authenticated from a school member & your identity remains 100% anonymous without a trace."
+                      : "Laporan Anda sah dari warga sekolah & identitas Anda tetap 100% rahasia tanpa jejak."}
                   </p>
                 </div>
               </div>
@@ -1127,7 +1157,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                 onClick={() => setIsStudentVerified(false)}
                 className="text-xs font-medium text-emerald-800 hover:text-emerald-950 underline cursor-pointer"
               >
-                Ganti
+                {lang === "en" ? "Change" : "Ganti"}
               </button>
             </div>
 
@@ -1135,13 +1165,15 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
             <div className="mb-6 border-b border-slate-100 pb-5">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-semibold mb-2">
                 <ShieldCheck className="w-4 h-4 text-blue-600" />
-                <span>100% Rahasia &amp; Bebas Jejak</span>
+                <span>{lang === "en" ? "100% Confidential & Zero-Trace" : "100% Rahasia & Bebas Jejak"}</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-                Buat Laporan Aman
+                {lang === "en" ? "Submit Confidential Report" : "Buat Laporan Aman"}
               </h1>
               <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                Ceritakan apa yang terjadi. Identitasmu tidak akan pernah ditampilkan atau dibagikan ke siapapun.
+                {lang === "en"
+                  ? "Describe what happened. Your identity will never be revealed or shared with anyone."
+                  : "Ceritakan apa yang terjadi. Identitasmu tidak akan pernah ditampilkan atau dibagikan ke siapapun."}
               </p>
             </div>
 
@@ -1151,10 +1183,10 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1.5">
                     <Building2 className="w-3.5 h-3.5 text-blue-600" />
-                    <span>Satuan Pendidikan Asal (Cakupan Nasional)</span>
+                    <span>{lang === "en" ? "Origin Educational Unit (National Scope)" : "Satuan Pendidikan Asal (Cakupan Nasional)"}</span>
                   </label>
                   <span className="text-[10px] font-semibold text-blue-700 bg-blue-100/80 px-2 py-0.5 rounded-full">
-                    38 Provinsi
+                    {lang === "en" ? "38 Provinces" : "38 Provinsi"}
                   </span>
                 </div>
 
@@ -1167,12 +1199,12 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                           {studentSession.schoolName}
                         </div>
                         <div className="text-[11px] text-slate-500">
-                          Terverifikasi otomatis via sesi pelajar sekolah
+                          {lang === "en" ? "Auto-verified via student school session" : "Terverifikasi otomatis via sesi pelajar sekolah"}
                         </div>
                       </div>
                     </div>
                     <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                      Tervalidasi
+                      {lang === "en" ? "Validated" : "Tervalidasi"}
                     </span>
                   </div>
                 ) : (
@@ -1187,7 +1219,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                           {sch.schoolName} — {sch.district || ""}, {sch.province || "Indonesia"} {sch.npsn ? `(NPSN: ${sch.npsn})` : ""}
                         </option>
                       ))}
-                      <option value="other">+ Sekolah Lainnya (Ketik Nama Sekolah)</option>
+                      <option value="other">{lang === "en" ? "+ Other School (Type School Name)" : "+ Sekolah Lainnya (Ketik Nama Sekolah)"}</option>
                     </select>
 
                     {selectedSchool === "other" && (
@@ -1195,14 +1227,14 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                         <input
                           type="text"
                           required
-                          placeholder="Nama Satuan Pendidikan (misal: SMP Negeri 1 Medan)"
+                          placeholder={lang === "en" ? "School Name (e.g., SMP Negeri 1 Medan)" : "Nama Satuan Pendidikan (misal: SMP Negeri 1 Medan)"}
                           value={customSchoolName}
                           onChange={(e) => setCustomSchoolName(e.target.value)}
                           className="px-3 py-2 bg-white rounded-xl border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                         />
                         <input
                           type="text"
-                          placeholder="Provinsi / Kota (misal: Sumatera Utara)"
+                          placeholder={lang === "en" ? "Province / City (e.g., North Sumatra)" : "Provinsi / Kota (misal: Sumatera Utara)"}
                           value={customSchoolProvince}
                           onChange={(e) => setCustomSchoolProvince(e.target.value)}
                           className="px-3 py-2 bg-white rounded-xl border border-slate-200 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
@@ -1210,7 +1242,9 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                       </div>
                     )}
                     <p className="text-[11px] text-slate-500">
-                      Laporan akan diteruskan ke Satgas PPKSP satuan pendidikan dan dapat dipantau oleh Dinas Pendidikan terkait.
+                      {lang === "en"
+                        ? "Report will be forwarded to the school PPKSP task force and can be monitored by the relevant Education Agency."
+                        : "Laporan akan diteruskan ke Satgas PPKSP satuan pendidikan dan dapat dipantau oleh Dinas Pendidikan terkait."}
                     </p>
                   </div>
                 )}
@@ -1219,7 +1253,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
               {/* 1. Pilih Kategori */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2.5">
-                  1. Pilih Jenis Kejadian
+                  {lang === "en" ? "1. Select Incident Type" : "1. Pilih Jenis Kejadian"}
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {CATEGORIES.map((cat) => {
@@ -1241,7 +1275,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                             isSelected ? "text-blue-600" : "text-slate-400"
                           }`}
                         />
-                        <span className="truncate">{cat.label}</span>
+                        <span className="truncate">{getCategoryLabel(cat.id, lang)}</span>
                       </button>
                     );
                   })}
@@ -1252,10 +1286,10 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <label className="text-xs font-bold text-slate-700 uppercase tracking-wider">
-                    2. Ceritakan Apa yang Terjadi *
+                    {lang === "en" ? "2. Describe What Happened *" : "2. Ceritakan Apa yang Terjadi *"}
                   </label>
                   <span className="text-[11px] text-slate-400">
-                    {story.length} karakter
+                    {story.length} {lang === "en" ? "characters" : "karakter"}
                   </span>
                 </div>
                 <textarea
@@ -1263,7 +1297,9 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                   rows={5}
                   value={story}
                   onChange={(e) => setStory(e.target.value)}
-                  placeholder="Ceritakan dengan tenang apa yang kamu alami atau saksikan... Siapa saja yang terlibat, bagaimana kronologinya, atau apa bantuan yang kamu butuhkan."
+                  placeholder={lang === "en"
+                    ? "Calmly describe what you experienced or witnessed... Who was involved, chronology of events, or what assistance you need."
+                    : "Ceritakan dengan tenang apa yang kamu alami atau saksikan... Siapa saja yang terlibat, bagaimana kronologinya, atau apa bantuan yang kamu butuhkan."}
                   className="w-full p-4 rounded-2xl border border-slate-200 text-sm placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-blue-500 focus:border-blue-500 leading-relaxed bg-slate-50/50"
                 />
 
@@ -1273,7 +1309,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                     <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                     <div>
                       <span className="font-bold">
-                        Privasi Terdeteksi &amp; Diamankan:{" "}
+                        {lang === "en" ? "Privacy Protected & Redacted: " : "Privasi Terdeteksi & Diamankan: "}
                       </span>
                       {detectedEntities.map((e, idx) => (
                         <span
@@ -1284,7 +1320,9 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                         </span>
                       ))}
                       <p className="mt-0.5 text-[11px] text-emerald-700">
-                        Data pengenal ini otomatis disamarkan (DIRAHASIAKAN) pada sistem agar identitasmu tetap aman.
+                        {lang === "en"
+                          ? "These personal identifiers are automatically masked (CONFIDENTIAL) in the system to protect your identity."
+                          : "Data pengenal ini otomatis disamarkan (DIRAHASIAKAN) pada sistem agar identitasmu tetap aman."}
                       </p>
                     </div>
                   </div>
@@ -1292,7 +1330,9 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                   <p className="mt-1.5 text-[11px] text-slate-500 flex items-center gap-1">
                     <Lock className="w-3 h-3 text-slate-400" />
                     <span>
-                      Sistem secara otomatis menyamarkan nama, nomor HP, atau kelas yang Anda tulis.
+                      {lang === "en"
+                        ? "The system automatically redacts names, phone numbers, or classes you type."
+                        : "Sistem secara otomatis menyamarkan nama, nomor HP, atau kelas yang Anda tulis."}
                     </span>
                   </p>
                 )}
@@ -1301,24 +1341,24 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
               {/* 3. Tingkat Urgensi */}
               <div>
                 <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                  3. Tingkat Urgensi Penanganan
+                  {lang === "en" ? "3. Handling Urgency Level" : "3. Tingkat Urgensi Penanganan"}
                 </label>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
                   {[
                     {
                       id: "Rendah" as ReportUrgency,
-                      title: "Biasa / Konseling",
-                      desc: "Butuh saran bertahap",
+                      title: lang === "en" ? "Low / Counseling" : "Biasa / Konseling",
+                      desc: lang === "en" ? "Gradual guidance needed" : "Butuh saran bertahap",
                     },
                     {
                       id: "Sedang" as ReportUrgency,
-                      title: "Penting",
-                      desc: "Kejadian berulang / mengganggu",
+                      title: lang === "en" ? "Medium / Important" : "Penting",
+                      desc: lang === "en" ? "Recurring / distressing event" : "Kejadian berulang / mengganggu",
                     },
                     {
                       id: "Kritis (Darurat Segera)" as ReportUrgency,
-                      title: "Darurat Segera",
-                      desc: "Ada ancaman fisik / bahaya",
+                      title: lang === "en" ? "Critical / Emergency" : "Darurat Segera",
+                      desc: lang === "en" ? "Physical threat / danger" : "Ada ancaman fisik / bahaya",
                     },
                   ].map((lvl) => {
                     const isSelected = urgency === lvl.id;
@@ -1353,17 +1393,19 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                 <div className="flex items-center gap-2 mb-1.5">
                   <KeyRound className="w-4 h-4 text-sky-600 shrink-0" />
                   <label className="text-xs font-bold text-sky-950 uppercase tracking-wider">
-                    4. PIN Rahasia / Kata Sandi Pemulihan (Opsional)
+                    {lang === "en" ? "4. Secret PIN / Recovery Passphrase (Optional)" : "4. PIN Rahasia / Kata Sandi Pemulihan (Opsional)"}
                   </label>
                 </div>
                 <p className="text-[11px] text-sky-800 leading-relaxed mb-2.5">
-                  Jika suatu saat Anda lupa atau kehilangan Nomor Tiket, Anda bisa membuka kembali laporan menggunakan jenis masalah dan PIN rahasia yang Anda buat di sini.
+                  {lang === "en"
+                    ? "If you ever lose or forget your Ticket Number, you can reopen your report using your incident type and secret PIN created here."
+                    : "Jika suatu saat Anda lupa atau kehilangan Nomor Tiket, Anda bisa membuka kembali laporan menggunakan jenis masalah dan PIN rahasia yang Anda buat di sini."}
                 </p>
                 <input
                   type="text"
                   value={secretPin}
                   onChange={(e) => setSecretPin(e.target.value)}
-                  placeholder="Contoh: 1234 atau kata rahasiamu (kucingoren)"
+                  placeholder={lang === "en" ? "e.g., 1234 or secret word (orangecat)" : "Contoh: 1234 atau kata rahasiamu (kucingoren)"}
                   className="w-full sm:max-w-xs px-3.5 py-2.5 rounded-xl border border-sky-200 bg-white text-xs font-mono text-slate-900 placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -1382,8 +1424,8 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                   )}
                   <span>
                     {showOptionalDetails
-                      ? "Sembunyikan detail tambahan"
-                      : "Tambah detail opsional (lokasi, lampiran bukti, atau kode sekolah)"}
+                      ? (lang === "en" ? "Hide additional details" : "Sembunyikan detail tambahan")
+                      : (lang === "en" ? "Add optional details (location, evidence attachment, or school code)" : "Tambah detail opsional (lokasi, lampiran bukti, atau kode sekolah)")}
                   </span>
                 </button>
 
@@ -1392,25 +1434,25 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div>
                         <label className="block text-[11px] font-semibold text-slate-600 mb-1">
-                          Lokasi Kejadian (Opsional)
+                          {lang === "en" ? "Incident Location (Optional)" : "Lokasi Kejadian (Opsional)"}
                         </label>
                         <input
                           type="text"
                           value={location}
                           onChange={(e) => setLocation(e.target.value)}
-                          placeholder="Contoh: Belakang kantin, Lab komputer"
+                          placeholder={lang === "en" ? "e.g., Behind canteen, Computer lab" : "Contoh: Belakang kantin, Lab komputer"}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
                         />
                       </div>
                       <div>
                         <label className="block text-[11px] font-semibold text-slate-600 mb-1">
-                          Waktu / Kapan Terjadi (Opsional)
+                          {lang === "en" ? "Time / When Occurred (Optional)" : "Waktu / Kapan Terjadi (Opsional)"}
                         </label>
                         <input
                           type="text"
                           value={incidentDate}
                           onChange={(e) => setIncidentDate(e.target.value)}
-                          placeholder="Contoh: Kemarin saat istirahat kedua"
+                          placeholder={lang === "en" ? "e.g., Yesterday during second recess" : "Contoh: Kemarin saat istirahat kedua"}
                           className="w-full px-3 py-2 rounded-xl border border-slate-200 text-xs bg-white focus:outline-hidden focus:ring-1 focus:ring-blue-500"
                         />
                       </div>
@@ -1419,12 +1461,12 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                     {/* Lampiran Bukti */}
                     <div>
                       <label className="block text-[11px] font-semibold text-slate-600 mb-1.5">
-                        Lampirkan Bukti Foto / Tangkapan Layar (Opsional)
+                        {lang === "en" ? "Attach Photo / Screenshot Proof (Optional)" : "Lampirkan Bukti Foto / Tangkapan Layar (Opsional)"}
                       </label>
                       <div className="flex flex-wrap items-center gap-2">
                         <label className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-white border border-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-100 cursor-pointer">
                           <UploadCloud className="w-3.5 h-3.5 text-slate-500" />
-                          <span>Pilih Foto/Berkas</span>
+                          <span>{lang === "en" ? "Choose Photo/File" : "Pilih Foto/Berkas"}</span>
                           <input
                             ref={fileInputRef}
                             type="file"
@@ -1447,8 +1489,8 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                           <Mic className="w-3.5 h-3.5" />
                           <span>
                             {isRecording
-                              ? `Merekam (${recordingSeconds}s) - Klik Selesai`
-                              : "Rekam Suara (Opsional)"}
+                              ? (lang === "en" ? `Recording (${recordingSeconds}s) - Click Finish` : `Merekam (${recordingSeconds}s) - Klik Selesai`)
+                              : (lang === "en" ? "Record Audio (Optional)" : "Rekam Suara (Opsional)")}
                           </span>
                         </button>
                       </div>
@@ -1484,14 +1526,14 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                     {/* Kode Akses Sekolah (Opsional) */}
                     <div>
                       <label className="block text-[11px] font-semibold text-slate-600 mb-1">
-                        Kode Akses Sekolah (Opsional, jika dibagikan)
+                        {lang === "en" ? "School Access Code (Optional, if provided)" : "Kode Akses Sekolah (Opsional, jika dibagikan)"}
                       </label>
                       <div className="flex items-center gap-2 max-w-sm">
                         <input
                           type="text"
                           value={tokenInput}
                           onChange={(e) => setTokenInput(e.target.value)}
-                          placeholder="Contoh: SCH-X1-8821"
+                          placeholder={lang === "en" ? "e.g., SCH-X1-8821" : "Contoh: SCH-X1-8821"}
                           className="flex-1 px-3 py-2 rounded-xl border border-slate-200 text-xs uppercase font-mono bg-white focus:outline-hidden"
                         />
                         <button
@@ -1499,7 +1541,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                           onClick={handleVerifyTokenOptional}
                           className="px-3 py-2 rounded-xl bg-slate-800 text-white text-xs font-semibold cursor-pointer"
                         >
-                          Periksa
+                          {lang === "en" ? "Verify" : "Periksa"}
                         </button>
                       </div>
                       {tokenStatusMessage && (
@@ -1521,16 +1563,18 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                   className="w-full py-3.5 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer disabled:opacity-50"
                 >
                   {isSubmitting ? (
-                    <span>Mengirim secara rahasia...</span>
+                    <span>{lang === "en" ? "Submitting securely..." : "Mengirim secara rahasia..."}</span>
                   ) : (
                     <>
                       <Send className="w-4 h-4" />
-                      <span>Kirim Laporan Secara Rahasia</span>
+                      <span>{lang === "en" ? "Submit Report Confidentially" : "Kirim Laporan Secara Rahasia"}</span>
                     </>
                   )}
                 </button>
                 <p className="text-center text-[11px] text-slate-400 mt-2">
-                  Laporan dienkripsi langsung ke tim Guru BK &amp; Satgas PPKSP.
+                  {lang === "en"
+                    ? "Report is encrypted directly to the BK Counselors & PPKSP Task Force team."
+                    : "Laporan dienkripsi langsung ke tim Guru BK & Satgas PPKSP."}
                 </p>
               </div>
             </div>
@@ -1545,17 +1589,19 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
             </div>
 
             <h2 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-              Laporan Berhasil Terkirim
+              {lang === "en" ? "Report Successfully Submitted" : "Laporan Berhasil Terkirim"}
             </h2>
             <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto mt-2 leading-relaxed">
-              Laporanmu telah diterima secara rahasia oleh Guru BK. Simpan kode tiket di bawah ini untuk memantau tanggapan dan melanjutkan chat.
+              {lang === "en"
+                ? "Your report has been securely received by the School Counselor. Save the ticket code below to monitor replies and continue chat."
+                : "Laporanmu telah diterima secara rahasia oleh Guru BK. Simpan kode tiket di bawah ini untuk memantau tanggapan dan melanjutkan chat."}
             </p>
 
             {/* Ticket Credentials Card */}
             <div className="mt-6 max-w-md mx-auto p-5 rounded-2xl bg-slate-50 border border-slate-200 text-left space-y-4">
               <div>
                 <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                  Nomor Tiket Anda
+                  {lang === "en" ? "Your Ticket Number" : "Nomor Tiket Anda"}
                 </span>
                 <div className="flex items-center justify-between mt-1">
                   <span className="text-xl sm:text-2xl font-mono font-extrabold text-blue-700">
@@ -1569,12 +1615,12 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                     {copiedTicketId ? (
                       <>
                         <Check className="w-3.5 h-3.5 text-emerald-600" />
-                        <span className="text-emerald-700">Tersalin</span>
+                        <span className="text-emerald-700">{lang === "en" ? "Copied" : "Tersalin"}</span>
                       </>
                     ) : (
                       <>
                         <Copy className="w-3.5 h-3.5 text-slate-500" />
-                        <span>Salin</span>
+                        <span>{lang === "en" ? "Copy" : "Salin"}</span>
                       </>
                     )}
                   </button>
@@ -1583,7 +1629,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
 
               <div className="pt-3 border-t border-slate-200">
                 <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                  Kunci Pemulihan Rahasia
+                  {lang === "en" ? "Secret Recovery Key" : "Kunci Pemulihan Rahasia"}
                 </span>
                 <div className="flex items-center justify-between mt-1">
                   <span className="text-xs font-mono text-slate-600 select-all truncate max-w-[200px]">
@@ -1594,7 +1640,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                     onClick={handleCopyKey}
                     className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-white border border-slate-200 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 cursor-pointer"
                   >
-                    {copiedKey ? "Tersalin" : "Salin Kunci"}
+                    {copiedKey ? (lang === "en" ? "Copied" : "Tersalin") : (lang === "en" ? "Copy Key" : "Salin Kunci")}
                   </button>
                 </div>
               </div>
@@ -1602,14 +1648,14 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
               {secretPin.trim() && (
                 <div className="pt-3 border-t border-slate-200">
                   <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
-                    PIN Rahasia Pemulihan Anda
+                    {lang === "en" ? "Your Recovery Secret PIN" : "PIN Rahasia Pemulihan Anda"}
                   </span>
                   <div className="mt-1 flex items-center gap-2">
                     <span className="text-xs font-mono font-bold text-sky-800 bg-sky-50 px-2 py-0.5 rounded border border-sky-200">
                       {secretPin.trim()}
                     </span>
                     <span className="text-[11px] text-slate-500">
-                      (Dapat dipakai jika lupa nomor tiket)
+                      {lang === "en" ? "(Can be used if ticket number is lost)" : "(Dapat dipakai jika lupa nomor tiket)"}
                     </span>
                   </div>
                 </div>
@@ -1623,7 +1669,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                 >
                   <Download className="w-3.5 h-3.5 text-slate-600" />
                   <span>
-                    {downloadReceiptDone ? "Bukti Tiket Berhasil Diunduh" : "Unduh Bukti Tiket (.txt)"}
+                    {downloadReceiptDone ? (lang === "en" ? "Ticket Receipt Downloaded" : "Bukti Tiket Berhasil Diunduh") : (lang === "en" ? "Download Ticket Receipt (.txt)" : "Unduh Bukti Tiket (.txt)")}
                   </span>
                 </button>
               </div>
@@ -1637,7 +1683,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                 className="w-full py-3.5 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 transition-all cursor-pointer"
               >
                 <MessageSquare className="w-4 h-4" />
-                <span>Buka Chat Konseling Sekarang</span>
+                <span>{lang === "en" ? "Open Counseling Chat Now" : "Buka Chat Konseling Sekarang"}</span>
               </button>
 
               <button
@@ -1648,7 +1694,7 @@ Catatan Keamanan: Berkas ini disimpan di perangkat Anda sendiri.
                 }}
                 className="w-full py-2.5 px-4 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 transition-colors cursor-pointer"
               >
-                Buat Laporan Lain
+                {lang === "en" ? "Submit Another Report" : "Buat Laporan Lain"}
               </button>
             </div>
           </div>

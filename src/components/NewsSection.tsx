@@ -24,6 +24,7 @@ import {
   MentalHealthVectorArt,
   ZKPVectorArt,
 } from "./AnimatedIllustrations";
+import { useLanguage } from "../lib/i18n";
 
 interface NewsSectionProps {
   onNavigateToReport: () => void;
@@ -32,9 +33,10 @@ interface NewsSectionProps {
 export const NewsSection: React.FC<NewsSectionProps> = ({
   onNavigateToReport,
 }) => {
+  const { lang, t } = useLanguage();
   const [articles, setArticles] = useState<NewsArticle[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [selectedCategory, setSelectedCategory] = useState<string>("Semua");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedArticle, setSelectedArticle] = useState<NewsArticle | null>(
     null,
@@ -77,12 +79,12 @@ export const NewsSection: React.FC<NewsSectionProps> = ({
     }
   };
 
-  const categories = [
-    "Semua",
-    "Regulasi & PPKSP",
-    "Edukasi Anti-Bullying",
-    "Kesehatan Mental",
-    "Keamanan Digital",
+  const categoryDefs = [
+    { id: "all", labelKey: "news.catAll", idMatch: "Semua", enMatch: "All" },
+    { id: "reg", labelKey: "news.catReg", idMatch: "Regulasi & PPKSP", enMatch: "Regulations & PPKSP" },
+    { id: "bully", labelKey: "news.catAntiBullying", idMatch: "Edukasi Anti-Bullying", enMatch: "Anti-Bullying Education" },
+    { id: "mental", labelKey: "news.catMentalHealth", idMatch: "Kesehatan Mental", enMatch: "Mental Health" },
+    { id: "digital", labelKey: "news.catDigital", idMatch: "Keamanan Digital", enMatch: "Digital & Cyber Safety" },
   ];
 
   const renderIllustration = (type?: string, className = "w-full h-full") => {
@@ -104,8 +106,10 @@ export const NewsSection: React.FC<NewsSectionProps> = ({
 
   const filteredArticles = useMemo(() => {
     return articles.filter((article) => {
+      const activeDef = categoryDefs.find((c) => c.id === selectedCategory);
       const matchCategory =
-        selectedCategory === "Semua" || article.category === selectedCategory;
+        selectedCategory === "all" ||
+        (activeDef && (article.category === activeDef.idMatch || article.category === activeDef.enMatch));
       const matchQuery =
         article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         article.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -114,7 +118,7 @@ export const NewsSection: React.FC<NewsSectionProps> = ({
         );
       return matchCategory && matchQuery;
     });
-  }, [articles, selectedCategory, searchQuery]);
+  }, [articles, selectedCategory, searchQuery, categoryDefs]);
 
   const featuredArticle = useMemo(() => {
     return articles.find((a) => a.isFeatured) || articles[0];
@@ -173,20 +177,18 @@ export const NewsSection: React.FC<NewsSectionProps> = ({
         <div className="relative z-10 max-w-2xl space-y-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/15 text-white text-xs font-medium border border-white/25 backdrop-blur-md">
             <Newspaper className="w-3.5 h-3.5 text-sky-200" />
-            <span>Kanal Berita &amp; Edukasi Ruang Aman</span>
+            <span>{t("news.bannerBadge", "Kanal Berita & Edukasi Ruang Aman")}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
-            Berita &amp; Edukasi Perlindungan Siswa
+            {t("news.bannerTitle", "Berita & Edukasi Perlindungan Siswa")}
           </h1>
           <p className="text-xs sm:text-sm text-blue-100 leading-relaxed">
-            Kumpulan informasi resmi, panduan pencegahan perundungan, regulasi
-            PPKSP, dan edukasi kesehatan mental untuk menciptakan sekolah yang
-            aman dan inklusif.
+            {t("news.bannerSub", "Kumpulan informasi resmi, panduan pencegahan perundungan, regulasi PPKSP, dan edukasi kesehatan mental untuk menciptakan sekolah yang aman dan inklusif.")}
           </p>
         </div>
       </div>
 
-      {!searchQuery && selectedCategory === "Semua" && featuredArticle && (
+      {!searchQuery && selectedCategory === "all" && featuredArticle && (
         <div
           onClick={() => setSelectedArticle(featuredArticle)}
           className="bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 overflow-hidden cursor-pointer hover:shadow-2xl transition-all duration-300 group"
@@ -200,7 +202,7 @@ export const NewsSection: React.FC<NewsSectionProps> = ({
               <div className="absolute top-4 left-4">
                 <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-600 text-white text-xs font-bold shadow-md">
                   <Sparkles className="w-3.5 h-3.5" />
-                  <span>Sorotan Utama</span>
+                  <span>{t("news.featured", "Sorotan Utama")}</span>
                 </span>
               </div>
             </div>
@@ -253,7 +255,7 @@ export const NewsSection: React.FC<NewsSectionProps> = ({
                 </div>
 
                 <span className="inline-flex items-center gap-1 text-xs font-bold text-blue-600 group-hover:translate-x-1 transition-transform">
-                  <span>Baca Selengkapnya</span>
+                  <span>{t("news.readMore", "Baca Selengkapnya")}</span>
                   <ArrowRight className="w-3.5 h-3.5" />
                 </span>
               </div>
@@ -264,17 +266,17 @@ export const NewsSection: React.FC<NewsSectionProps> = ({
 
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto pb-2 sm:pb-0 scrollbar-none">
-          {categories.map((cat) => (
+          {categoryDefs.map((cat) => (
             <button
-              key={cat}
-              onClick={() => setSelectedCategory(cat)}
+              key={cat.id}
+              onClick={() => setSelectedCategory(cat.id)}
               className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
-                selectedCategory === cat
+                selectedCategory === cat.id
                   ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
                   : "bg-white border border-slate-200 text-slate-600 hover:bg-slate-50"
               }`}
             >
-              {cat}
+              {t(cat.labelKey, cat.idMatch)}
             </button>
           ))}
         </div>
@@ -285,7 +287,7 @@ export const NewsSection: React.FC<NewsSectionProps> = ({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cari artikel, topik, regulasi..."
+            placeholder={t("news.searchPlaceholder", "Cari artikel, topik, regulasi...")}
             className="w-full pl-9 pr-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-2xs"
           />
         </div>
@@ -351,7 +353,7 @@ export const NewsSection: React.FC<NewsSectionProps> = ({
                       {article.author}
                     </span>
                     <span className="font-bold text-blue-600 flex items-center gap-1 group-hover:translate-x-1 transition-transform">
-                      <span>Baca</span>
+                      <span>{t("news.readMore", "Baca Selengkapnya")}</span>
                       <ChevronRight className="w-3.5 h-3.5" />
                     </span>
                   </div>
@@ -364,11 +366,10 @@ export const NewsSection: React.FC<NewsSectionProps> = ({
         <div className="bg-white rounded-3xl border border-slate-100 p-12 text-center space-y-3 shadow-md">
           <Newspaper className="w-10 h-10 text-slate-300 mx-auto" />
           <h3 className="text-base font-bold text-slate-800">
-            Tidak ada artikel ditemukan
+            {t("news.emptyTitle", "Tidak ada artikel ditemukan")}
           </h3>
           <p className="text-xs text-slate-500 max-w-sm mx-auto">
-            Coba gunakan kata kunci pencarian lain atau pilih kategori Semua
-            untuk menampilkan seluruh artikel.
+            {t("news.emptySub", "Coba gunakan kata kunci pencarian lain atau pilih kategori Semua untuk menampilkan seluruh artikel.")}
           </p>
         </div>
       )}
@@ -380,12 +381,10 @@ export const NewsSection: React.FC<NewsSectionProps> = ({
           </div>
           <div className="space-y-1 text-center sm:text-left">
             <h3 className="text-lg font-extrabold text-white">
-              Mengalami atau Menyaksikan Kejadian Serupa?
+              {t("news.calloutTitle", "Mengalami atau Menyaksikan Kejadian Serupa?")}
             </h3>
             <p className="text-xs text-blue-200 max-w-xl">
-              Jangan simpan sendiri. Suaramu dilindungi oleh enkripsi penuh.
-              Buat pengaduan anonim sekarang dan dapatkan pertolongan dari Guru
-              BK.
+              {t("news.calloutSub", "Jangan simpan sendiri. Suaramu dilindungi oleh enkripsi penuh. Buat pengaduan anonim sekarang dan dapatkan pertolongan dari Guru BK.")}
             </p>
           </div>
         </div>
@@ -394,7 +393,7 @@ export const NewsSection: React.FC<NewsSectionProps> = ({
           onClick={onNavigateToReport}
           className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-900/40 transition-all hover:scale-105 shrink-0 cursor-pointer flex items-center gap-2"
         >
-          <span>Buat Laporan Sekarang</span>
+          <span>{t("news.calloutBtn", "Buat Laporan Sekarang")}</span>
           <ArrowRight className="w-4 h-4" />
         </button>
       </div>
@@ -483,11 +482,10 @@ export const NewsSection: React.FC<NewsSectionProps> = ({
               <div className="bg-blue-50 border border-blue-100 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
                 <div className="text-xs text-blue-950 space-y-0.5">
                   <span className="font-bold block">
-                    Butuh bantuan darurat atau konsultasi rahasia?
+                    {t("news.calloutTitle", "Butuh bantuan darurat atau konsultasi rahasia?")}
                   </span>
                   <p className="text-slate-600">
-                    Laporkan insiden atau hubungi Guru BK tanpa takut identitas
-                    terungkap.
+                    {t("news.calloutSub", "Laporkan insiden atau hubungi Guru BK tanpa takut identitas terungkap.")}
                   </p>
                 </div>
                 <button
@@ -497,7 +495,7 @@ export const NewsSection: React.FC<NewsSectionProps> = ({
                   }}
                   className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-xl text-xs font-bold whitespace-nowrap shadow-md cursor-pointer shrink-0"
                 >
-                  Buat Pengaduan
+                  {t("news.calloutBtn", "Buat Pengaduan")}
                 </button>
               </div>
             </div>

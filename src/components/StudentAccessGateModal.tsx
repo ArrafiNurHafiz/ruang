@@ -16,6 +16,7 @@ import {
 import confetti from "canvas-confetti";
 import { api } from "../lib/api";
 import { SchoolToken } from "../types";
+import { useLanguage } from "../lib/i18n";
 
 interface StudentAccessGateModalProps {
   isOpen: boolean;
@@ -32,6 +33,7 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
   onVerifyAndLogin,
   onNavigateToReport,
 }) => {
+  const { t, lang } = useLanguage();
   const [activeTab, setActiveTab] = useState<"token" | "sandi">("token");
 
   // Tab 1: Token Code
@@ -76,7 +78,11 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
   const handleVerifyByToken = async (codeOverride?: string) => {
     const cleanCode = (codeOverride || code).trim().toUpperCase();
     if (!cleanCode) {
-      setCodeError("Harap masukkan kode akses yang diberikan oleh pihak sekolah.");
+      setCodeError(
+        lang === "en"
+          ? "Please enter the access code provided by your school."
+          : "Harap masukkan kode akses yang diberikan oleh pihak sekolah.",
+      );
       return;
     }
 
@@ -87,7 +93,9 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
       const matched = await api.verifyToken(cleanCode);
       if (matched.status === "Kedaluwarsa") {
         setCodeError(
-          "Kode akses ini telah kedaluwarsa atau dinonaktifkan oleh sekolah. Silakan hubungi Guru BK.",
+          lang === "en"
+            ? "This access code has expired or been disabled by the school. Please contact a counselor."
+            : "Kode akses ini telah kedaluwarsa atau dinonaktifkan oleh sekolah. Silakan hubungi Guru BK.",
         );
         setIsVerifyingCode(false);
         return;
@@ -111,7 +119,9 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
       }
     } catch {
       setCodeError(
-        "Kode akses tidak terdaftar di database sekolah. Pastikan kode sesuai dengan slip resmi.",
+        lang === "en"
+          ? "Access code not registered in school database. Ensure the code matches your official slip."
+          : "Kode akses tidak terdaftar di database sekolah. Pastikan kode sesuai dengan slip resmi.",
       );
     } finally {
       setIsVerifyingCode(false);
@@ -124,7 +134,11 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
     if (!pendingToken) return;
     const cleanPass = password.trim();
     if (!cleanPass) {
-      setPasswordError("Harap masukkan sandi pribadi untuk kode akses ini.");
+      setPasswordError(
+        lang === "en"
+          ? "Please enter the personal password for this access code."
+          : "Harap masukkan sandi pribadi untuk kode akses ini.",
+      );
       return;
     }
 
@@ -144,7 +158,10 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
       } catch {}
     } catch (err: any) {
       setPasswordError(
-        err.message || "Sandi pribadi salah untuk kode akses ini. Silakan coba lagi.",
+        err.message ||
+          (lang === "en"
+            ? "Incorrect password for this access code. Please try again."
+            : "Sandi pribadi salah untuk kode akses ini. Silakan coba lagi."),
       );
     } finally {
       setIsVerifyingPassword(false);
@@ -159,7 +176,11 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
     const cleanCollision = collisionCodeInput.trim().toUpperCase();
 
     if (!cleanPass) {
-      setPasswordError("Harap masukkan sandi pribadi yang pernah Anda buat.");
+      setPasswordError(
+        lang === "en"
+          ? "Please enter the personal password you previously created."
+          : "Harap masukkan sandi pribadi yang pernah Anda buat.",
+      );
       return;
     }
 
@@ -187,12 +208,16 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
       ) {
         setHasCollision(true);
         setPasswordError(
-          "Terdeteksi beberapa akun siswa dengan kata sandi yang sama. Masukkan Kode Akses Sekolah atau Kunci Pemulihan Anda.",
+          lang === "en"
+            ? "Multiple student accounts detected with the same password. Please enter your School Access Code or Recovery Key."
+            : "Terdeteksi beberapa akun siswa dengan kata sandi yang sama. Masukkan Kode Akses Sekolah atau Kunci Pemulihan Anda.",
         );
       } else {
         setPasswordError(
           err.message ||
-            "Sandi pelajar tidak cocok atau belum pernah diaktivasi dengan kode sekolah.",
+            (lang === "en"
+              ? "Student password does not match or has not been activated with a school code."
+              : "Sandi pelajar tidak cocok atau belum pernah diaktivasi dengan kode sekolah."),
         );
       }
     } finally {
@@ -210,15 +235,27 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
     const conf = createPasswordConfirm.trim();
 
     if (!cleanCode) {
-      setCreateError("Harap masukkan kode akses dari sekolah.");
+      setCreateError(
+        lang === "en"
+          ? "Please enter the school access code."
+          : "Harap masukkan kode akses dari sekolah.",
+      );
       return;
     }
     if (pass.length < 4) {
-      setCreateError("Sandi minimal 4 karakter.");
+      setCreateError(
+        lang === "en"
+          ? "Password must be at least 4 characters."
+          : "Sandi minimal 4 karakter.",
+      );
       return;
     }
     if (pass !== conf) {
-      setCreateError("Konfirmasi sandi tidak sesuai.");
+      setCreateError(
+        lang === "en"
+          ? "Password confirmation does not match."
+          : "Konfirmasi sandi tidak sesuai.",
+      );
       return;
     }
 
@@ -240,7 +277,10 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
       }, 1000);
     } catch (err: any) {
       setCreateError(
-        err.message || "Kode akses sekolah tidak ditemukan atau sudah tidak aktif.",
+        err.message ||
+          (lang === "en"
+            ? "School access code not found or no longer active."
+            : "Kode akses sekolah tidak ditemukan atau sudah tidak aktif."),
       );
     } finally {
       setIsSubmittingCreate(false);
@@ -263,7 +303,7 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
           <button
             onClick={onClose}
             className="absolute top-5 right-5 p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors cursor-pointer"
-            aria-label="Tutup"
+            aria-label={t("gate.closeBtn")}
           >
             <X className="w-5 h-5" />
           </button>
@@ -275,16 +315,16 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
             <div>
               <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-blue-500/30 border border-blue-300/30 text-[11px] font-bold text-blue-100 mb-1">
                 <ShieldCheck className="w-3 h-3 text-emerald-300" />
-                <span>Verifikasi Siswa Terproteksi</span>
+                <span>{t("gate.badge")}</span>
               </div>
               <h2 className="text-xl sm:text-2xl font-extrabold tracking-tight text-white">
-                Verifikasi Siswa SMAN 1
+                {t("gate.title")}
               </h2>
             </div>
           </div>
 
           <p className="text-xs sm:text-sm text-blue-100 mt-2.5 leading-relaxed">
-            Pilih salah satu cara verifikasi: <strong>Kode Akses Sekolah</strong> ATAU <strong>Sandi Pribadi Pelajar</strong> yang tersimpan terenkripsi.
+            {t("gate.subtitle")}
           </p>
         </div>
 
@@ -312,7 +352,7 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                       }`}
                     >
                       <KeyRound className="w-3.5 h-3.5 text-blue-600" />
-                      <span>1. Kode Akses</span>
+                      <span>{t("gate.tabCode")}</span>
                     </button>
                     <button
                       type="button"
@@ -329,7 +369,7 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                       }`}
                     >
                       <Lock className="w-3.5 h-3.5 text-indigo-600" />
-                      <span>2. Lupa Kode? Gunakan Sandi</span>
+                      <span>{t("gate.tabPassword")}</span>
                     </button>
                   </div>
 
@@ -344,7 +384,7 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                     >
                       <div>
                         <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                          Langkah 1: Masukkan Kode Akses Siswa
+                          {t("gate.codeLabel")}
                         </label>
                         <div className="relative">
                           <input
@@ -354,7 +394,7 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                               setCode(e.target.value.toUpperCase());
                               setCodeError("");
                             }}
-                            placeholder="Contoh: SCH-X1-8831"
+                            placeholder={t("gate.codePlaceholder")}
                             className="w-full pl-11 pr-4 py-3 bg-slate-50 border-2 border-slate-300 focus:border-blue-600 rounded-2xl text-slate-900 font-mono font-bold text-sm uppercase tracking-wider focus:bg-white focus:outline-none transition-all"
                           />
                           <KeyRound className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
@@ -374,18 +414,18 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                         className="w-full py-3 px-6 rounded-2xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-extrabold text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                       >
                         {isVerifyingCode ? (
-                          <span>Memeriksa Kode Akses...</span>
+                          <span>{t("gate.verifyCodeChecking")}</span>
                         ) : (
                           <>
                             <ShieldCheck className="w-4 h-4" />
-                            <span>Verifikasi Kode &amp; Lanjut Langkah 2</span>
+                            <span>{t("gate.verifyCodeBtn")}</span>
                             <ArrowRight className="w-4 h-4" />
                           </>
                         )}
                       </button>
 
                       <div className="p-3 rounded-xl bg-blue-50/60 border border-blue-100 text-[11px] text-slate-600 leading-relaxed">
-                        Sistem menerapkan <strong>Verifikasi 2 Langkah</strong>: Anda wajib memasangkan kata sandi pribadi pada Langkah 2 agar slip kode tidak bisa disalahgunakan orang lain.
+                        {t("gate.twoStepNotice")}
                       </div>
                     </form>
                   )}
@@ -395,7 +435,7 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                     <form onSubmit={handleVerifyByPassword} className="space-y-4 animate-fadeIn">
                       <div>
                         <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                          Masukkan Sandi Pribadi Pelajar
+                          {t("gate.passLabel")}
                         </label>
                         <div className="relative">
                           <input
@@ -406,7 +446,7 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                               setPasswordError("");
                               setHasCollision(false);
                             }}
-                            placeholder="Masukkan sandi rahasia Anda..."
+                            placeholder={t("gate.passPlaceholder")}
                             className="w-full pl-11 pr-10 py-3 bg-slate-50 border-2 border-slate-300 focus:border-indigo-600 rounded-2xl text-slate-900 text-sm focus:bg-white focus:outline-none transition-all"
                           />
                           <Lock className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
@@ -432,18 +472,18 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                         <div className="p-3.5 rounded-xl bg-amber-50 border border-amber-300 text-slate-800 space-y-2 animate-fadeIn">
                           <div className="flex items-center gap-2 text-amber-900 font-bold text-xs">
                             <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-                            <span>Privasi Terlindungi: Tabrakan Sandi Terdeteksi</span>
+                            <span>{t("gate.collisionTitle")}</span>
                           </div>
                           <p className="text-xs text-amber-800 leading-relaxed">
-                            Terdeteksi lebih dari satu akun di sistem dengan kata sandi yang sama. Demi melindungi privasi Anda, sistem meminta verifikasi tambahan:
+                            {t("gate.collisionDesc")}
                           </p>
                           <input
                             type="text"
-                            placeholder="Kode Akses Sekolah ATAU Kunci Pemulihan (kunci-xxxx)"
+                            placeholder={t("gate.collisionPlaceholder")}
                             value={collisionCodeInput || recoveryKeyInput}
                             onChange={(e) => {
                               const val = e.target.value;
-                              if (val.toLowerCase().startsWith("kunci-")) {
+                              if (val.toLowerCase().startsWith("kunci-") || val.toLowerCase().startsWith("key-")) {
                                 setRecoveryKeyInput(val.toLowerCase());
                                 setCollisionCodeInput("");
                               } else {
@@ -459,7 +499,7 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                             onClick={(e) => handleVerifyByPassword(e)}
                             className="w-full py-2 px-3 rounded-lg bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs transition-colors cursor-pointer"
                           >
-                            {isVerifyingPassword ? "Memverifikasi..." : "Verifikasi dengan Pengaman Tambahan"}
+                            {isVerifyingPassword ? (lang === "en" ? "Verifying..." : "Memverifikasi...") : t("gate.collisionBtn")}
                           </button>
                         </div>
                       )}
@@ -470,17 +510,17 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                         className="w-full py-3 px-6 rounded-2xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-extrabold text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                       >
                         {isVerifyingPassword ? (
-                          <span>Memeriksa Sandi...</span>
+                          <span>{t("gate.verifyPassChecking")}</span>
                         ) : (
                           <>
                             <Lock className="w-4 h-4" />
-                            <span>Verifikasi Sandi &amp; Lanjut</span>
+                            <span>{t("gate.verifyPassBtn")}</span>
                             <ArrowRight className="w-4 h-4" />
                           </>
                         )}
                       </button>
                       <p className="text-[11px] text-slate-500">
-                        Sandi pribadi melindungi akses Anda tanpa perlu membawa slip kode sekolah. Jika sandi Anda sama dengan siswa lain, sistem akan meminta pengenal cadangan.
+                        {t("gate.passHint")}
                       </p>
                     </form>
                   )}
@@ -494,21 +534,21 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                   <div className="flex items-center gap-2 p-2.5 rounded-xl bg-blue-50 border border-blue-200 text-xs">
                     <div className="flex items-center gap-1 font-semibold text-emerald-700">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      <span>1. Kode Valid ({pendingToken.tokenCode})</span>
+                      <span>{t("gate.stepValidCode")} ({pendingToken.tokenCode})</span>
                     </div>
                     <ArrowRight className="w-3 h-3 text-blue-400" />
                     <div className="flex items-center gap-1 font-bold text-blue-900">
                       <Lock className="w-3.5 h-3.5 text-blue-600" />
-                      <span>2. Buat Sandi (Wajib)</span>
+                      <span>{t("gate.stepCreatePass")}</span>
                     </div>
                   </div>
 
                   <div>
                     <h3 className="text-base font-bold text-slate-900">
-                      Buat Kata Sandi Pribadi Pelajar
+                      {t("gate.createPassTitle")}
                     </h3>
                     <p className="text-xs text-slate-600 mt-0.5">
-                      Untuk keamanan verifikasi 2-langkah, Anda wajib membuat sandi sebelum membuka laporan.
+                      {t("gate.createPassDesc")}
                     </p>
                   </div>
 
@@ -516,13 +556,13 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                     <div className="grid grid-cols-2 gap-2">
                       <div>
                         <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                          Sandi Baru *
+                          {t("gate.newPass")}
                         </label>
                         <div className="relative">
                           <input
                             type={showCreatePassword ? "text" : "password"}
                             required
-                            placeholder="Min 4 karakter"
+                            placeholder={t("gate.minChars")}
                             value={createPassword}
                             onChange={(e) => setCreatePassword(e.target.value)}
                             className="w-full px-3 py-2 pr-7 rounded-xl border border-slate-300 text-xs bg-white focus:outline-hidden focus:border-blue-600"
@@ -538,12 +578,12 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                       </div>
                       <div>
                         <label className="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">
-                          Konfirmasi Sandi *
+                          {t("gate.confirmPass")}
                         </label>
                         <input
                           type={showCreatePassword ? "text" : "password"}
                           required
-                          placeholder="Ulangi sandi"
+                          placeholder={t("gate.repeatPass")}
                           value={createPasswordConfirm}
                           onChange={(e) => setCreatePasswordConfirm(e.target.value)}
                           className="w-full px-3 py-2 rounded-xl border border-slate-300 text-xs bg-white focus:outline-hidden focus:border-blue-600"
@@ -561,7 +601,7 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                     {createSuccess && (
                       <p className="text-xs text-emerald-700 flex items-center gap-1 font-semibold">
                         <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-                        <span>Sandi berhasil disimpan! Membuka sesi...</span>
+                        <span>{t("gate.passSaved")}</span>
                       </p>
                     )}
 
@@ -571,14 +611,14 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                         disabled={isSubmittingCreate}
                         className="flex-1 py-2.5 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white font-bold text-xs transition-colors cursor-pointer"
                       >
-                        {isSubmittingCreate ? "Menyimpan sandi..." : "Simpan Sandi & Lanjut"}
+                        {isSubmittingCreate ? t("gate.savingPass") : t("gate.savePassBtn")}
                       </button>
                       <button
                         type="button"
                         onClick={() => setGateFlowStep("step1")}
                         className="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer"
                       >
-                        Ganti Kode
+                        {t("gate.changeCode")}
                       </button>
                     </div>
                   </form>
@@ -592,21 +632,21 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                   <div className="flex items-center gap-2 p-2.5 rounded-xl bg-indigo-50 border border-indigo-200 text-xs">
                     <div className="flex items-center gap-1 font-semibold text-emerald-700">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600" />
-                      <span>1. Kode Valid ({pendingToken.tokenCode})</span>
+                      <span>{t("gate.stepValidCode")} ({pendingToken.tokenCode})</span>
                     </div>
                     <ArrowRight className="w-3 h-3 text-indigo-400" />
                     <div className="flex items-center gap-1 font-bold text-indigo-900">
                       <Lock className="w-3.5 h-3.5 text-indigo-600" />
-                      <span>2. Masukkan Sandi</span>
+                      <span>{t("gate.stepEnterPass")}</span>
                     </div>
                   </div>
 
                   <div>
                     <h3 className="text-base font-bold text-slate-900">
-                      Masukkan Sandi Pribadi Pelajar
+                      {t("gate.enterPassTitle")}
                     </h3>
                     <p className="text-xs text-slate-600 mt-0.5">
-                      Kode akses ini terproteksi oleh kata sandi Anda. Masukkan sandi untuk membuka akses.
+                      {t("gate.enterPassDesc")}
                     </p>
                   </div>
 
@@ -615,7 +655,7 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                       <input
                         type={showPassword ? "text" : "password"}
                         required
-                        placeholder="Masukkan sandi rahasia Anda..."
+                        placeholder={t("gate.passPlaceholder")}
                         value={password}
                         onChange={(e) => {
                           setPassword(e.target.value);
@@ -645,14 +685,14 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                         disabled={isVerifyingPassword}
                         className="flex-1 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white font-bold text-xs transition-colors cursor-pointer"
                       >
-                        {isVerifyingPassword ? "Memeriksa..." : "Verifikasi Sandi & Lanjut"}
+                        {isVerifyingPassword ? (lang === "en" ? "Verifying..." : "Memeriksa...") : t("gate.verifyPassBtn")}
                       </button>
                       <button
                         type="button"
                         onClick={() => setGateFlowStep("step1")}
                         className="py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold cursor-pointer"
                       >
-                        Ganti Kode
+                        {t("gate.changeCode")}
                       </button>
                     </div>
                   </form>
@@ -668,20 +708,28 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
 
               <div className="space-y-1">
                 <h3 className="text-lg font-extrabold text-slate-900">
-                  Verifikasi Pelajar Berhasil!
+                  {t("gate.successTitle")}
                 </h3>
                 <p className="text-xs text-slate-600 max-w-sm mx-auto">
-                  Metode: <strong>{verificationMethod === "token" ? "Kode Akses Sekolah" : "Sandi Pribadi Pelajar"}</strong>. Laporan Anda sah dari siswa internal dan identitas Anda 100% anonim.
+                  {lang === "en" ? (
+                    <>
+                      Method: <strong>{verificationMethod === "token" ? "School Access Code" : "Personal Student Password"}</strong>. Your report is authenticated from an enrolled student and your identity remains 100% anonymous.
+                    </>
+                  ) : (
+                    <>
+                      Metode: <strong>{verificationMethod === "token" ? "Kode Akses Sekolah" : "Sandi Pribadi Pelajar"}</strong>. Laporan Anda sah dari siswa internal dan identitas Anda 100% anonim.
+                    </>
+                  )}
                 </p>
               </div>
 
               <div className="bg-slate-50 rounded-2xl p-3.5 border border-slate-200 text-left space-y-2 text-xs">
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Status Validasi:</span>
-                  <span className="font-bold text-emerald-700">Siswa Sah SMAN 1</span>
+                  <span className="text-slate-500">{t("gate.validationStatus")}</span>
+                  <span className="font-bold text-emerald-700">{t("gate.verifiedStudent")}</span>
                 </div>
                 <div className="flex items-center justify-between">
-                  <span className="text-slate-500">Sandi Terenkripsi:</span>
+                  <span className="text-slate-500">{t("gate.encryptedPass")}</span>
                   <span className="font-mono text-indigo-700 font-semibold">SHA-256 Secured</span>
                 </div>
               </div>
@@ -693,14 +741,14 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
                   className="flex-1 py-3 px-5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <FileText className="w-4 h-4" />
-                  <span>Mulai Tulis Laporan Sekarang</span>
+                  <span>{t("gate.startReportBtn")}</span>
                 </button>
                 <button
                   type="button"
                   onClick={onClose}
                   className="py-3 px-4 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs transition-colors cursor-pointer"
                 >
-                  Tutup
+                  {t("gate.closeBtn")}
                 </button>
               </div>
             </div>
@@ -711,7 +759,7 @@ export const StudentAccessGateModal: React.FC<StudentAccessGateModalProps> = ({
         <div className="bg-slate-50 border-t border-slate-100 px-6 py-3 flex items-center justify-between text-[11px] text-slate-500">
           <span className="flex items-center gap-1.5">
             <School className="w-3.5 h-3.5 text-slate-400" />
-            <span>Satgas PPKSP Satuan Pendidikan Indonesia</span>
+            <span>{t("gate.footer")}</span>
           </span>
           <span className="text-blue-600 font-medium">
             Zero-Knowledge &amp; E2EE

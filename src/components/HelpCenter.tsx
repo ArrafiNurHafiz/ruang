@@ -16,6 +16,7 @@ import { api } from "../lib/api";
 import { isSupabaseEnabled } from "../lib/supabase";
 import { MentalHealthVectorArt } from "./AnimatedIllustrations";
 import { HELP_ARTICLES, FAQ_ITEMS } from "../data/mockData";
+import { useLanguage, translateHelpArticle, translateFAQItem } from "../lib/i18n";
 
 interface HelpCenterProps {
   onNavigateToContact: () => void;
@@ -26,11 +27,12 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
   onNavigateToContact,
   onNavigateToReport,
 }) => {
+  const { lang, t } = useLanguage();
   const [articles, setArticles] = useState<HelpArticle[]>([]);
   const [faqs, setFaqs] = useState<FAQItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState<string>("");
-  const [selectedCategory, setSelectedCategory] = useState<string>("Semua");
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [openFaqId, setOpenFaqId] = useState<string | null>(null);
   const [selectedArticle, setSelectedArticle] = useState<HelpArticle | null>(
     null,
@@ -61,33 +63,39 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
     }
   };
 
-  const categories = [
-    "Semua",
-    "Cara Melapor",
-    "Privasi & Keamanan",
-    "Tracking Tiket",
-    "Akun & Token",
-    "Kebijakan Sekolah",
+  const categoryDefs = [
+    { id: "all", labelKey: "help.catAll", idMatch: "Semua", enMatch: "All" },
+    { id: "report", labelKey: "help.catReport", idMatch: "Cara Melapor", enMatch: "How to Report" },
+    { id: "privacy", labelKey: "help.catPrivacy", idMatch: "Privasi & Keamanan", enMatch: "Privacy & Security" },
+    { id: "tracking", labelKey: "help.catTracking", idMatch: "Tracking Tiket", enMatch: "Ticket Tracking" },
+    { id: "tokens", labelKey: "help.catTokens", idMatch: "Akun & Token", enMatch: "Tokens & Accounts" },
+    { id: "policy", labelKey: "help.catPolicy", idMatch: "Kebijakan Sekolah", enMatch: "School Policies" },
   ];
 
-  const filteredArticles = articles.filter((art) => {
-    const matchesSearch =
-      art.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      art.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      art.content.some((c) =>
-        c.toLowerCase().includes(searchQuery.toLowerCase()),
-      );
-    const matchesCat =
-      selectedCategory === "Semua" || art.category === selectedCategory;
-    return matchesSearch && matchesCat;
-  });
+  const filteredArticles = articles
+    .map((art) => translateHelpArticle(art, lang))
+    .filter((art) => {
+      const activeDef = categoryDefs.find((c) => c.id === selectedCategory);
+      const matchesCat =
+        selectedCategory === "all" ||
+        (activeDef && (art.category === activeDef.idMatch || art.category === activeDef.enMatch));
+      const matchesSearch =
+        art.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        art.excerpt.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        art.content.some((c) =>
+          c.toLowerCase().includes(searchQuery.toLowerCase()),
+        );
+      return matchesCat && matchesSearch;
+    });
 
-  const filteredFaqs = faqs.filter((faq) => {
-    return (
-      faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  });
+  const filteredFaqs = faqs
+    .map((faq) => translateFAQItem(faq, lang))
+    .filter((faq) => {
+      return (
+        faq.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        faq.answer.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+    });
 
   const toggleFaq = (id: string) => {
     setOpenFaqId((prev) => (prev === id ? null : id));
@@ -106,14 +114,13 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
       <div className="text-center max-w-2xl mx-auto space-y-3">
         <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-blue-50 text-blue-700 text-xs font-bold border border-blue-200 shadow-2xs">
           <HelpCircle className="w-3.5 h-3.5 text-blue-600" />
-          <span>Pusat Bantuan &amp; Panduan Siswa</span>
+          <span>{t("help.badge", "Pusat Bantuan & Panduan Siswa")}</span>
         </div>
         <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-900 tracking-tight">
-          Ada yang Bisa Kami Bantu?
+          {t("help.title", "Ada yang Bisa Kami Bantu?")}
         </h1>
         <p className="text-sm sm:text-base text-slate-600">
-          Cari panduan langkah pelaporan, jaminan privasi kriptografis, dan
-          informasi perlindungan hukum anak.
+          {t("help.sub", "Cari panduan langkah pelaporan, jaminan privasi kriptografis, dan informasi perlindungan hukum anak.")}
         </p>
 
         <div className="pt-2 relative max-w-xl mx-auto">
@@ -122,7 +129,7 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
             type="text"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Cari artikel bantuan, FAQ, atau kata kunci..."
+            placeholder={t("help.searchPlaceholder", "Cari artikel bantuan, FAQ, atau kata kunci...")}
             className="w-full pl-12 pr-4 py-3.5 bg-white border border-slate-200 rounded-2xl text-sm sm:text-base text-slate-900 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
@@ -132,15 +139,13 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
         <div className="space-y-3 max-w-lg">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/15 text-sky-200 text-xs font-bold border border-white/20 backdrop-blur-xs">
             <Lock className="w-3.5 h-3.5" />
-            <span>Pendampingan Ramah Anak &amp; Guru BK</span>
+            <span>{t("help.bannerBadge", "Pendampingan Ramah Anak & Guru BK")}</span>
           </div>
           <h2 className="text-xl sm:text-2xl font-extrabold text-white">
-            Jangan Ragu, Kamu Tidak Sendirian
+            {t("help.bannerTitle", "Jangan Ragu, Kamu Tidak Sendirian")}
           </h2>
           <p className="text-xs sm:text-sm text-blue-100/90 leading-relaxed">
-            Semua proses konsultasi dan tindak lanjut dijamin bebas intimidasi,
-            didampingi guru konselor bersertifikasi, dan hak privasimu
-            dilindungi penuh oleh undang-undang.
+            {t("help.bannerSub", "Semua proses konsultasi dan tindak lanjut dijamin bebas intimidasi, didampingi guru konselor bersertifikasi, dan hak privasimu dilindungi penuh oleh undang-undang.")}
           </p>
         </div>
 
@@ -150,17 +155,17 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-2">
-        {categories.map((cat) => (
+        {categoryDefs.map((cat) => (
           <button
-            key={cat}
-            onClick={() => setSelectedCategory(cat)}
+            key={cat.id}
+            onClick={() => setSelectedCategory(cat.id)}
             className={`px-4 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-              selectedCategory === cat
+              selectedCategory === cat.id
                 ? "bg-blue-600 text-white shadow-md shadow-blue-500/20"
                 : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-100"
             }`}
           >
-            {cat}
+            {t(cat.labelKey, cat.idMatch)}
           </button>
         ))}
       </div>
@@ -175,7 +180,7 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
               onClick={() => setSelectedArticle(null)}
               className="text-xs font-bold text-slate-500 hover:text-slate-900 px-3 py-1 rounded-lg bg-slate-100 cursor-pointer"
             >
-              Tutup Artikel
+              {t("help.closeArticle", "Tutup Artikel")}
             </button>
           </div>
 
@@ -199,7 +204,7 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
               onClick={onNavigateToReport}
               className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2.5 px-5 rounded-xl text-xs transition-colors shadow-md shadow-blue-500/20 cursor-pointer"
             >
-              <span>Mulai Buat Laporan</span>
+              <span>{t("help.startReport", "Mulai Buat Laporan")}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>
@@ -209,7 +214,7 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
       <div className="space-y-4">
         <h2 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
           <BookOpen className="w-5 h-5 text-blue-600" />
-          <span>Panduan Utama &amp; Topik Bantuan</span>
+          <span>{t("help.keyGuides", "Panduan Utama & Topik Bantuan")}</span>
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -237,7 +242,7 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
               </div>
 
               <div className="pt-2 flex items-center gap-1 text-xs font-bold text-blue-600">
-                <span>Baca Panduan Selengkapnya</span>
+                <span>{t("help.readFull", "Baca Panduan Selengkapnya")}</span>
                 <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
               </div>
             </div>
@@ -249,11 +254,10 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
         <div className="space-y-1">
           <h2 className="text-lg sm:text-xl font-bold text-slate-900 flex items-center gap-2">
             <HelpCircle className="w-5 h-5 text-blue-600" />
-            <span>Pertanyaan yang Sering Diajukan (FAQ)</span>
+            <span>{t("help.faqTitle", "Pertanyaan yang Sering Diajukan (FAQ)")}</span>
           </h2>
           <p className="text-xs sm:text-sm text-slate-500">
-            Jawaban langsung seputar kerahasiaan identitas, tindak lanjut, dan
-            operasional aplikasi.
+            {t("help.faqSub", "Jawaban langsung seputar kerahasiaan identitas, tindak lanjut, dan operasional aplikasi.")}
           </p>
         </div>
 
@@ -294,11 +298,10 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
       <div className="bg-gradient-to-r from-blue-900 via-indigo-900 to-blue-950 text-white rounded-3xl p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-xl border border-blue-800">
         <div className="space-y-1 text-center sm:text-left">
           <h3 className="text-lg sm:text-xl font-extrabold">
-            Masih Memiliki Pertanyaan Lain?
+            {t("help.moreQuestions", "Masih Memiliki Pertanyaan Lain?")}
           </h3>
           <p className="text-xs sm:text-sm text-blue-200 max-w-md">
-            Hubungi saluran bantuan resmi kami atau kirim pesan rahasia langsung
-            ke tim Guru BK.
+            {t("help.moreQuestionsSub", "Hubungi saluran bantuan resmi kami atau kirim pesan rahasia langsung ke tim Guru BK.")}
           </p>
         </div>
 
@@ -308,7 +311,7 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
             className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-5 rounded-xl text-xs transition-colors shadow-md shadow-blue-900/30 cursor-pointer"
           >
             <Mail className="w-4 h-4" />
-            <span>Kirim Pesan Resmi</span>
+            <span>{t("help.sendOfficial", "Kirim Pesan Resmi")}</span>
           </button>
         </div>
       </div>

@@ -19,6 +19,7 @@ import confetti from "canvas-confetti";
 import { SchoolToken } from "../types";
 import { api } from "../lib/api";
 import { generateRecoveryKey } from "../utils/crypto";
+import { useLanguage } from "../lib/i18n";
 
 interface TokenActivationProps {
   onTokenActivated: (token: SchoolToken) => void;
@@ -29,6 +30,7 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
   onTokenActivated,
   onNavigateToReport,
 }) => {
+  const { t } = useLanguage();
   const [step, setStep] = useState<number>(1);
   const [tokenInput, setTokenInput] = useState<string>("");
   const [selectedPresetToken, setSelectedPresetToken] = useState<string>("");
@@ -63,13 +65,13 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
       const found = await api.verifyToken(cleanToken);
       if (found.isActivated) {
         setTokenError(
-          `Token ${cleanToken} sudah diaktivasi sebelumnya. Gunakan Kode Pemulihan untuk masuk.`,
+          `${cleanToken}: ${t("tokenAct.errAlreadyActive")}`,
         );
         return;
       }
       setStep(2);
     } catch (err) {
-      setTokenError("Kode Akses Siswa tidak valid atau tidak ditemukan.");
+      setTokenError(t("tokenAct.errNotFound"));
     } finally {
       setIsLoading(false);
     }
@@ -80,11 +82,11 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
     setPinError("");
 
     if (pin.length !== 6 || !/^\d{6}$/.test(pin)) {
-      setPinError("PIN harus berupa 6 angka rahasia.");
+      setPinError(t("tokenAct.errPinDigits"));
       return;
     }
     if (pin !== confirmPin) {
-      setPinError("Konfirmasi PIN tidak cocok dengan PIN pertama.");
+      setPinError(t("tokenAct.errPinMismatch"));
       return;
     }
 
@@ -117,7 +119,7 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
 
       setStep(3);
     } catch (err) {
-      setTokenError("Gagal mengaktifkan token. Silakan coba lagi.");
+      setTokenError(t("tokenAct.errFailed"));
     } finally {
       setIsLoading(false);
     }
@@ -157,15 +159,13 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
         <div className="relative z-10 max-w-xl space-y-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/15 text-white text-xs font-medium border border-white/25 backdrop-blur-md">
             <CreditCard className="w-3.5 h-3.5 text-sky-200" />
-            <span>Kartu Fisik / Digital Sekolah</span>
+            <span>{t("tokenAct.badge")}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
-            Aktivasi Token Siswa
+            {t("tokenAct.title")}
           </h1>
           <p className="text-xs sm:text-sm text-blue-100 leading-relaxed">
-            Aktivasi token verifikasi dari sekolah dalam 3 langkah sederhana
-            untuk memastikan keamanan lokal tanpa mengirim identitas pribadi ke
-            server.
+            {t("tokenAct.headerDesc")}
           </p>
         </div>
       </div>
@@ -174,9 +174,9 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
       <div>
         <div className="grid grid-cols-3 gap-3 text-center text-xs font-bold">
           {[
-            { step: 1, title: "1. Masukkan Token" },
-            { step: 2, title: "2. Buat PIN 6-Digit" },
-            { step: 3, title: "3. Simpan Pemulihan" },
+            { step: 1, title: t("tokenAct.step1") },
+            { step: 2, title: t("tokenAct.step2") },
+            { step: 3, title: t("tokenAct.step3") },
           ].map((item) => (
             <div key={item.step} className="space-y-1.5">
               <div
@@ -205,17 +205,16 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
             <div className="border-b border-slate-100 pb-4">
               <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <KeyRound className="w-5 h-5 text-blue-600" />
-                <span>Langkah 1: Masukkan Kode Token Sekolah</span>
+                <span>{t("tokenAct.step1Card")}</span>
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                Token adalah kombinasi acak yang tercetak pada kartu privasi
-                fisik yang dibagikan sekolah.
+                {t("tokenAct.step1CardDesc")}
               </p>
             </div>
 
             <div className="space-y-2">
               <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                Nomor Token Kartu Siswa:
+                {t("tokenAct.tokenCardLabel")}
               </label>
               <input
                 type="text"
@@ -225,7 +224,7 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
                   setTokenInput(e.target.value);
                   setTokenError("");
                 }}
-                placeholder="Contoh: TMG-SCH-8831"
+                placeholder={t("tokenAct.tokenPlaceholder")}
                 className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-mono font-bold tracking-widest text-slate-900 uppercase focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
               {tokenError && (
@@ -245,7 +244,7 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
                     : "bg-slate-200 text-slate-400 cursor-not-allowed"
                 }`}
               >
-                <span>Lanjut ke Buat PIN</span>
+                <span>{t("tokenAct.nextToPin")}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -261,11 +260,10 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
             <div className="border-b border-slate-100 pb-4">
               <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
                 <Lock className="w-5 h-5 text-blue-600" />
-                <span>Langkah 2: Buat PIN 6-Digit Lokal</span>
+                <span>{t("tokenAct.step2Card")}</span>
               </h2>
               <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                PIN ini hanya disimpan di memori browser perangkat Anda sendiri
-                dan tidak pernah dikirim ke server.
+                {t("tokenAct.step2CardDesc")}
               </p>
             </div>
 
@@ -273,10 +271,9 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
             <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3 text-xs text-amber-900">
               <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
               <div>
-                <strong className="block font-bold">Privasi Mutlak PIN:</strong>
+                <strong className="block font-bold">{t("tokenAct.pinGuarantee")}</strong>
                 <p className="text-slate-700">
-                  Guru, staf sekolah, maupun developer Ruang Aman tidak memiliki
-                  akses terhadap PIN ini.
+                  {t("tokenAct.pinGuaranteeDesc")}
                 </p>
               </div>
             </div>
@@ -291,7 +288,7 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                  Buat PIN 6 Digit:
+                  {t("tokenAct.createPinLabel")}
                 </label>
                 <div className="relative">
                   <input
@@ -319,7 +316,7 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
 
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                  Konfirmasi PIN:
+                  {t("tokenAct.confirmPinLabel")}
                 </label>
                 <input
                   type={showPin ? "text" : "password"}
@@ -342,7 +339,7 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
                 className="flex items-center gap-2 text-slate-600 hover:text-slate-900 font-bold text-xs sm:text-sm py-2 px-4 rounded-lg hover:bg-slate-100 cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4" />
-                <span>Kembali</span>
+                <span>{t("tokenAct.backBtn")}</span>
               </button>
 
               <button
@@ -354,7 +351,7 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
                     : "bg-slate-200 text-slate-400 cursor-not-allowed"
                 }`}
               >
-                <span>Aktivasi &amp; Simpan Pemulihan</span>
+                <span>{t("tokenAct.activateSaveBtn")}</span>
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -369,11 +366,10 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
                 <CheckCircle2 className="w-8 h-8" />
               </div>
               <h2 className="text-xl font-extrabold text-slate-900">
-                Token Berhasil Diaktivasi!
+                {t("tokenAct.successMsg")}
               </h2>
               <p className="text-xs sm:text-sm text-slate-600">
-                Simpan kode pemulihan berikut jika Anda perlu mengakses akun
-                dari perangkat lain atau jika lupa PIN.
+                {t("tokenAct.successDesc")}
               </p>
             </div>
 
@@ -381,10 +377,10 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
             <div className="bg-slate-900 text-white rounded-2xl p-5 space-y-3 border border-slate-800 shadow-xl">
               <div className="flex items-center justify-between border-b border-slate-800 pb-2">
                 <span className="text-xs font-mono uppercase text-sky-400 font-bold">
-                  KODE PEMULIHAN (RECOVERY KEY)
+                  {t("tokenAct.recoveryKeyHeader")}
                 </span>
                 <span className="text-[11px] text-slate-400">
-                  16 Karakter Rahasia
+                  {t("tokenAct.secretChars")}
                 </span>
               </div>
 
@@ -397,13 +393,12 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
                   className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold px-3.5 py-2 rounded-lg transition-all shadow-sm shrink-0 cursor-pointer"
                 >
                   <Copy className="w-3.5 h-3.5" />
-                  <span>{copiedKey ? "Tersalin!" : "Salin"}</span>
+                  <span>{copiedKey ? t("tokenAct.copied") : t("tokenAct.copy")}</span>
                 </button>
               </div>
 
               <p className="text-[11px] text-slate-400">
-                Catat kode ini di buku catatan pribadi atau simpan di pengelola
-                kata sandi Anda.
+                {t("tokenAct.recoveryNotice")}
               </p>
             </div>
 
@@ -413,7 +408,7 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
                 className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg shadow-blue-500/25 transition-all hover:scale-101 cursor-pointer"
               >
                 <Send className="w-4 h-4" />
-                <span>Mulai Buat Laporan Anonim Sekarang</span>
+                <span>{t("tokenAct.startReportNow")}</span>
               </button>
 
               <button
@@ -426,7 +421,7 @@ export const TokenActivation: React.FC<TokenActivationProps> = ({
                 className="flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3 px-5 rounded-xl transition-colors text-xs cursor-pointer"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
-                <span>Aktivasi Token Lain</span>
+                <span>{t("tokenAct.activateAnother")}</span>
               </button>
             </div>
           </div>

@@ -1,5 +1,6 @@
 import React from "react";
 import { ArrowRight, Phone, X } from "lucide-react";
+import { useLanguage } from "../lib/i18n";
 
 interface EmergencyBannerProps {
   onOpenModal: () => void;
@@ -8,6 +9,7 @@ interface EmergencyBannerProps {
 export const EmergencyBanner: React.FC<EmergencyBannerProps> = ({
   onOpenModal,
 }) => {
+  const { t, lang } = useLanguage();
   const [dismissed, setDismissed] = React.useState(false);
 
   if (dismissed) return null;
@@ -17,8 +19,9 @@ export const EmergencyBanner: React.FC<EmergencyBannerProps> = ({
       <p>
         <span className="status-dot" />
         <span>
-          Situasi darurat atau merasa tidak aman? Segera hubungi{" "}
-          <strong>SAPA 129</strong> atau <strong>Polisi 110</strong>.
+          {t("emergency.barText")}{" "}
+          <strong>{t("emergency.sapa")}</strong> {lang === "en" ? "or" : "atau"}{" "}
+          <strong>{t("emergency.police")}</strong>.
         </span>
       </p>
 
@@ -29,14 +32,14 @@ export const EmergencyBanner: React.FC<EmergencyBannerProps> = ({
           onClick={onOpenModal}
           className="action-btn"
         >
-          <span>Kontak Darurat</span>
+          <span>{t("emergency.btn")}</span>
           <ArrowRight size={12} />
         </button>
 
         <button
           type="button"
           onClick={() => setDismissed(true)}
-          aria-label="Tutup Banner Darurat"
+          aria-label={lang === "en" ? "Dismiss Emergency Banner" : "Tutup Banner Darurat"}
           className="text-danger/60 hover:text-danger p-1 rounded-md transition-colors cursor-pointer"
         >
           <X size={14} />
@@ -45,3 +48,4 @@ export const EmergencyBanner: React.FC<EmergencyBannerProps> = ({
     </div>
   );
 };
+

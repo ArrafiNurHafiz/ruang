@@ -12,6 +12,7 @@ import {
   HelpCircle,
   FileCheck,
 } from "lucide-react";
+import { useLanguage } from "../lib/i18n";
 
 interface KioskModeProps {
   onStartKioskSession: (sessionCode: string) => void;
@@ -28,6 +29,7 @@ export const KioskMode: React.FC<KioskModeProps> = ({
   onNavigateToReport,
   onNavigateToStatus,
 }) => {
+  const { t } = useLanguage();
   const [sessionCode, setSessionCode] = useState<string>("");
   const [errorMsg, setErrorMsg] = useState<string>("");
 
@@ -37,16 +39,14 @@ export const KioskMode: React.FC<KioskModeProps> = ({
     e.preventDefault();
     const code = sessionCode.trim().toUpperCase();
     if (!code) {
-      setErrorMsg("Masukkan kode sesi TU atau kode pemulihan Anda.");
+      setErrorMsg(t("kiosk.errEmpty"));
       return;
     }
     // Validate: must be a known TU code or match recovery code pattern (word-word-word-number)
     const isValidTUCode = sampleTUCodes.includes(code);
     const isValidRecoveryPattern = /^[A-Z]+-[A-Z]+-[A-Z]+-\d{4}$/.test(code);
     if (!isValidTUCode && !isValidRecoveryPattern) {
-      setErrorMsg(
-        "Kode sesi tidak valid. Gunakan kode TU dari petugas atau Kode Pemulihan tiket Anda.",
-      );
+      setErrorMsg(t("kiosk.errInvalid"));
       return;
     }
     setErrorMsg("");
@@ -62,14 +62,13 @@ export const KioskMode: React.FC<KioskModeProps> = ({
               <Monitor className="w-8 h-8" />
             </div>
             <span className="text-xs uppercase font-mono tracking-widest text-sky-200 font-bold">
-              SESI AKTIF PERANGKAT BERSAMA
+              {t("kiosk.sessionActive")}
             </span>
             <h2 className="text-2xl font-extrabold tracking-tight">
-              Mode Kios Sekolah Sedang Berjalan
+              {t("kiosk.title")}
             </h2>
             <p className="text-xs sm:text-sm text-blue-100 max-w-md mx-auto">
-              Sistem akan menghapus seluruh data tampilan secara otomatis jika
-              tidak ada aktivitas selama 3 menit.
+              {t("kiosk.desc")}
             </p>
           </div>
 
@@ -81,13 +80,12 @@ export const KioskMode: React.FC<KioskModeProps> = ({
               >
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-blue-950 text-base">
-                    1. Buat Laporan Cepat
+                    {t("kiosk.quickReportTitle")}
                   </span>
                   <ArrowRight className="w-4 h-4 text-blue-700 group-hover:translate-x-1 transition-transform" />
                 </div>
                 <p className="text-xs text-slate-600">
-                  Kirim pengaduan perundungan/kekerasan secara instan tanpa
-                  meninggalkan jejak di komputer ini.
+                  {t("kiosk.quickReportDesc")}
                 </p>
               </div>
 
@@ -97,13 +95,12 @@ export const KioskMode: React.FC<KioskModeProps> = ({
               >
                 <div className="flex items-center justify-between">
                   <span className="font-bold text-slate-900 text-base">
-                    2. Cek Status Tiket
+                    {t("kiosk.checkStatusTitle")}
                   </span>
                   <ArrowRight className="w-4 h-4 text-slate-700 group-hover:translate-x-1 transition-transform" />
                 </div>
                 <p className="text-xs text-slate-600">
-                  Pantau respons Guru BK atau lanjutkan percakapan 2-arah yang
-                  sedang berlangsung.
+                  {t("kiosk.checkStatusDesc")}
                 </p>
               </div>
             </div>
@@ -112,12 +109,10 @@ export const KioskMode: React.FC<KioskModeProps> = ({
               <ShieldAlert className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
               <div className="space-y-1">
                 <span className="font-bold block">
-                  Peringatan Keamanan Komputer Bersama:
+                  {t("kiosk.warnTitle")}
                 </span>
                 <p className="text-slate-700">
-                  Pastikan tidak ada orang lain di belakang Anda yang dapat
-                  mengintip layar. Tekan tombol &quot;Selesai &amp;
-                  Bersihkan&quot; saat Anda hendak meninggalkan komputer.
+                  {t("kiosk.warnDesc")}
                 </p>
               </div>
             </div>
@@ -128,7 +123,7 @@ export const KioskMode: React.FC<KioskModeProps> = ({
                 className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md shadow-red-600/20 hover:scale-101 cursor-pointer"
               >
                 <Trash2 className="w-4 h-4" />
-                <span>Akhiri Sesi &amp; Hapus Seluruh Memori</span>
+                <span>{t("kiosk.endWipeBtn")}</span>
               </button>
             </div>
           </div>
@@ -165,14 +160,13 @@ export const KioskMode: React.FC<KioskModeProps> = ({
         <div className="relative z-10 max-w-xl space-y-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/15 text-white text-xs font-medium border border-white/25 backdrop-blur-md">
             <Monitor className="w-3.5 h-3.5 text-sky-200" />
-            <span>Komputer Lab / Tablet Sekolah</span>
+            <span>{t("kiosk.headerBadge")}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
-            Mode Kios (Perangkat Bersama)
+            {t("kiosk.headerTitle")}
           </h1>
           <p className="text-xs sm:text-sm text-blue-100 leading-relaxed">
-            Dirancang khusus bagi siswa yang menggunakan komputer perpustakaan
-            atau lab sekolah tanpa meninggalkan riwayat penelusuran.
+            {t("kiosk.headerSubtitle")}
           </p>
         </div>
       </div>
@@ -183,30 +177,30 @@ export const KioskMode: React.FC<KioskModeProps> = ({
           <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-1">
             <div className="flex items-center gap-1.5 font-bold text-slate-900">
               <Clock className="w-4 h-4 text-blue-600" />
-              <span>Batas Waktu 3 Menit</span>
+              <span>{t("kiosk.feat1Title")}</span>
             </div>
             <p className="text-slate-500 text-[11px]">
-              Sesi terputus otomatis bila ditinggalkan tanpa aktivitas.
+              {t("kiosk.feat1Desc")}
             </p>
           </div>
 
           <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-1">
             <div className="flex items-center gap-1.5 font-bold text-slate-900">
               <Trash2 className="w-4 h-4 text-red-600" />
-              <span>Zero-Storage Cache</span>
+              <span>{t("kiosk.feat2Title")}</span>
             </div>
             <p className="text-slate-500 text-[11px]">
-              Tidak menyimpan cookie, password, ataupun histori browser.
+              {t("kiosk.feat2Desc")}
             </p>
           </div>
 
           <div className="p-3.5 bg-slate-50 rounded-2xl border border-slate-200 text-xs space-y-1">
             <div className="flex items-center gap-1.5 font-bold text-slate-900">
               <Lock className="w-4 h-4 text-blue-600" />
-              <span>Enkripsi Sesi Ephemeral</span>
+              <span>{t("kiosk.feat3Title")}</span>
             </div>
             <p className="text-slate-500 text-[11px]">
-              Kunci enkripsi dihancurkan seketika saat sesi ditutup.
+              {t("kiosk.feat3Desc")}
             </p>
           </div>
         </div>
@@ -215,14 +209,14 @@ export const KioskMode: React.FC<KioskModeProps> = ({
         <form onSubmit={handleStartSession} className="space-y-4 pt-2">
           <div className="space-y-1.5">
             <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-              Masukkan Kode Sesi Petugas TU atau Kode Pemulihan:
+              {t("kiosk.inputLabel")}
             </label>
             <input
               type="text"
               required
               value={sessionCode}
               onChange={(e) => setSessionCode(e.target.value)}
-              placeholder="Contoh: TU-SMAN1-2025 atau kata-kunci-pemulihan"
+              placeholder={t("kiosk.inputPlaceholder")}
               className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-base font-mono font-bold tracking-wider text-slate-900 focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -234,7 +228,7 @@ export const KioskMode: React.FC<KioskModeProps> = ({
           {/* Quick Demo Sesi Codes */}
           <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200 space-y-2">
             <span className="text-[11px] font-bold text-slate-600 block">
-              Gunakan Kode Sesi Demo Petugas TU:
+              {t("kiosk.demoCodesLabel")}
             </span>
             <div className="flex flex-wrap gap-2">
               {sampleTUCodes.map((code) => (
@@ -260,7 +254,7 @@ export const KioskMode: React.FC<KioskModeProps> = ({
               disabled={!sessionCode.trim()}
               className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all shadow-md shadow-blue-500/20 cursor-pointer"
             >
-              <span>Mulai Sesi Bersih (3 Menit)</span>
+              <span>{t("kiosk.startBtn")}</span>
               <ArrowRight className="w-4 h-4" />
             </button>
           </div>

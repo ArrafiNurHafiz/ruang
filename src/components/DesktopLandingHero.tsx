@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import studentHero from "../assets/student-hero.png";
 import { StudentSession, SchoolProfile } from "../types";
+import { useLanguage } from "../lib/i18n";
 
 interface DesktopLandingHeroProps {
   onNavigateToReport: () => void;
@@ -31,64 +32,6 @@ interface DesktopLandingHeroProps {
   onOpenHibahGuide?: () => void;
 }
 
-const protections = [
-  {
-    icon: EyeOff,
-    title: "Identitas Rahasia Mutlak",
-    text: "Nama, nomor HP, dan informasi pribadi disaring otomatis. Tidak ada catatan digital yang bisa melacak perangkat Anda.",
-    tone: "mint" as const,
-  },
-  {
-    icon: MessageCircleMore,
-    title: "Konseling Rahasia 2-Arah",
-    text: "Dapat berkomunikasi langsung dengan Guru BK melalui ruang chat terenkripsi untuk mendapatkan bantuan dan tindak lanjut.",
-    tone: "sky" as const,
-  },
-  {
-    icon: ShieldCheck,
-    title: "Pendampingan Satgas PPKSP",
-    text: "Laporan ditangani secara profesional oleh Satgas PPKSP sekolah dan berkoordinasi dengan pihak terkait jika diperlukan.",
-    tone: "violet" as const,
-  },
-];
-
-const steps = [
-  {
-    icon: FileText,
-    title: "Tulis Laporan",
-    text: "Pilih jenis masalah dan ceritakan peristiwa yang dialami. Tambahkan bukti jika ada.",
-  },
-  {
-    icon: LockKeyhole,
-    title: "Simpan Kode Tiket",
-    text: "Sistem memberikan nomor tiket rahasia. Simpan baik-baik untuk memantau perkembangan laporan.",
-  },
-  {
-    icon: Send,
-    title: "Terima Perlindungan",
-    text: "Laporan akan ditindaklanjuti oleh sekolah dan instansi terkait sesuai prosedur yang berlaku.",
-  },
-];
-
-const faqs = [
-  {
-    q: "Apakah identitas saya benar-benar tidak diketahui siapa pun?",
-    a: "Ya, 100% aman. Sistem Ruang Aman tidak mencatat nama, NISN, alamat IP, ataupun perangkat Anda. Data yang diterima Guru BK hanya kronologi kejadian dan bukti yang Anda lampirkan.",
-  },
-  {
-    q: "Bagaimana cara saya membaca tanggapan dari Guru BK?",
-    a: "Setelah melapor, Anda akan menerima Nomor Tiket unik. Simpan nomor tersebut. Anda dapat memasukkannya di menu 'Pantau Tiket' kapan saja untuk melihat status dan melakukan chat 2-arah secara rahasia.",
-  },
-  {
-    q: "Apakah saya harus punya kode akses sekolah untuk melapor?",
-    a: "Tidak wajib. Siswa tetap dapat membuat laporan kapan saja secara langsung tanpa terhambat kode. Kode sekolah hanya digunakan jika sekolah Anda membagikan token validasi khusus.",
-  },
-  {
-    q: "Jenis kasus apa saja yang bisa dilaporkan?",
-    a: "Kekerasan fisik, perundungan (bullying), kekerasan seksual, diskriminasi/intoleransi, pemerasan, kebijakan diskriminatif, dan segala bentuk ketidaknyamanan di lingkungan sekolah sesuai Permendikbudristek No. 46/2023.",
-  },
-];
-
 export const DesktopLandingHero: React.FC<DesktopLandingHeroProps> = ({
   onNavigateToReport,
   onNavigateToStatus,
@@ -102,12 +45,71 @@ export const DesktopLandingHero: React.FC<DesktopLandingHeroProps> = ({
   schoolProfile,
   onOpenHibahGuide,
 }) => {
+  const { t, lang } = useLanguage();
   const [quickTicketCode, setQuickTicketCode] = useState("");
 
   const handleQuickTrack = (e: React.FormEvent) => {
     e.preventDefault();
     onNavigateToStatus();
   };
+
+  const protections = [
+    {
+      icon: EyeOff,
+      title: t("prot.oneTitle"),
+      text: t("prot.oneText"),
+      tone: "mint" as const,
+    },
+    {
+      icon: MessageCircleMore,
+      title: t("prot.twoTitle"),
+      text: t("prot.twoText"),
+      tone: "sky" as const,
+    },
+    {
+      icon: ShieldCheck,
+      title: t("prot.threeTitle"),
+      text: t("prot.threeText"),
+      tone: "violet" as const,
+    },
+  ];
+
+  const steps = [
+    {
+      icon: FileText,
+      title: t("steps.oneTitle"),
+      text: t("steps.oneText"),
+    },
+    {
+      icon: LockKeyhole,
+      title: t("steps.twoTitle"),
+      text: t("steps.twoText"),
+    },
+    {
+      icon: Send,
+      title: t("steps.threeTitle"),
+      text: t("steps.threeText"),
+    },
+  ];
+
+  const faqs = [
+    {
+      q: t("faq.q1"),
+      a: t("faq.a1"),
+    },
+    {
+      q: t("faq.q2"),
+      a: t("faq.a2"),
+    },
+    {
+      q: t("faq.q3"),
+      a: t("faq.a3"),
+    },
+    {
+      q: t("faq.q4"),
+      a: t("faq.a4"),
+    },
+  ];
 
   return (
     <div className="w-full flex flex-col bg-background text-foreground">
@@ -117,50 +119,39 @@ export const DesktopLandingHero: React.FC<DesktopLandingHeroProps> = ({
           <div className="relative z-10 max-w-[720px] pt-4 lg:pt-10">
             <div className="platform-badge">
               <ShieldCheck className="w-4 h-4 text-primary" />
-              <strong>Platform Nasional PPKSP</strong>
-              <span>Sesuai Permendikbudristek No. 46/2023</span>
+              <strong>{t("hero.badge")}</strong>
+              <span>{t("hero.badgeSub")}</span>
             </div>
 
             <h1>
-              Suaramu Berarti.
+              {t("hero.title1")}
               <br />
               <span>
-                Kami Siap Mendengarkan
-                <br />
-                &amp; Melindungi.
+                {t("hero.title2")}
               </span>
             </h1>
 
             <p className="hero-copy">
-              Kanal resmi pencegahan dan penanganan kekerasan untuk seluruh siswa,
-              pendidik, dan warga sekolah di 38 Provinsi Indonesia. Identitasmu
-              sepenuhnya terlindungi dengan teknologi privasi tanpa pelacakan
-              jejak.
+              {t("hero.copy")}
             </p>
 
             <div className="hero-stats">
               <span>
                 <ShieldCheck />
                 <span>
-                  38 Provinsi
-                  <br />
-                  Terkoneksi
+                  {t("hero.stat1")}
                 </span>
               </span>
               <span>
                 <LockKeyhole />
                 <span>
-                  Sesuai Regulasi
-                  <br />
-                  PPKSP 46/2023
+                  {t("hero.stat2")}
                 </span>
               </span>
               <span>
                 <UsersRound />
                 <span>
-                  Dikelola Sekolah,
-                  <br />
-                  Dinas &amp; Mitra
+                  {t("hero.stat3")}
                 </span>
               </span>
             </div>
@@ -171,11 +162,9 @@ export const DesktopLandingHero: React.FC<DesktopLandingHeroProps> = ({
             <div className="trust-chip trust-one">
               <LockKeyhole />
               <span>
-                <b>Aman</b>
-                <small>
-                  Anonim
-                  <br />
-                  Terenkripsi
+                <b>{t("hero.trustChip1")}</b>
+                <small className="whitespace-pre-line">
+                  {t("hero.trustChip1Sub")}
                 </small>
               </span>
             </div>
@@ -183,11 +172,9 @@ export const DesktopLandingHero: React.FC<DesktopLandingHeroProps> = ({
             <div className="trust-chip trust-two">
               <UsersRound />
               <span>
-                <b>Didengar</b>
-                <small>
-                  Ditindaklanjuti
-                  <br />
-                  Dilindungi
+                <b>{t("hero.trustChip2")}</b>
+                <small className="whitespace-pre-line">
+                  {t("hero.trustChip2Sub")}
                 </small>
               </span>
             </div>
@@ -198,7 +185,7 @@ export const DesktopLandingHero: React.FC<DesktopLandingHeroProps> = ({
 
             <img
               src={studentHero}
-              alt="Siswi membawa buku dan mengenakan tas sekolah"
+              alt="Student with backpack and books"
               width={912}
               height={1104}
             />
@@ -217,11 +204,9 @@ export const DesktopLandingHero: React.FC<DesktopLandingHeroProps> = ({
               <Send className="w-6 h-6" />
             </span>
             <span>
-              <strong>Buat Laporan Baru</strong>
+              <strong>{t("hero.createReport")}</strong>
               <small>
-                Ceritakan apa yang kamu alami atau saksikan.
-                <br />
-                100% anonim, tanpa perlu login akun.
+                {t("hero.createReportSub")}
               </small>
             </span>
             <i>
@@ -234,21 +219,19 @@ export const DesktopLandingHero: React.FC<DesktopLandingHeroProps> = ({
               <Sparkles className="w-6 h-6" />
             </span>
             <label>
-              <strong>Pantau Tiket &amp; Balas Chat</strong>
+              <strong>{t("hero.trackTicket")}</strong>
               <small>
-                Sudah pernah melapor? Cek tanggapan
-                <br />
-                dan update tanpa mengungkapkan identitas.
+                {t("hero.trackTicketSub")}
               </small>
             </label>
             <div className="ticket-search">
               <input
-                aria-label="Kode tiket"
-                placeholder="Contoh: TKT-2025-XXXX"
+                aria-label="Ticket code"
+                placeholder={t("hero.ticketPlaceholder")}
                 value={quickTicketCode}
                 onChange={(e) => setQuickTicketCode(e.target.value)}
               />
-              <button type="submit">Cek</button>
+              <button type="submit">{t("hero.trackBtn")}</button>
             </div>
           </form>
         </div>
@@ -257,19 +240,19 @@ export const DesktopLandingHero: React.FC<DesktopLandingHeroProps> = ({
         <div className="privacy-strip">
           <span>
             <EyeOff />
-            Tanpa Rekam Nama / Akun
+            {lang === "en" ? "Zero Name / Device Tracking" : "Tanpa Rekam Nama / Akun"}
           </span>
           <span>
             <LockKeyhole />
-            Enkripsi Pesan 2-Arah
+            {lang === "en" ? "2-Way Encrypted Chat" : "Enkripsi Pesan 2-Arah"}
           </span>
           <span>
             <Clock3 />
-            Respons Tim BK &lt; 24 Jam
+            {lang === "en" ? "Counselor Response < 24h" : "Respons Tim BK < 24 Jam"}
           </span>
           <span>
             <ImageIcon />
-            Mendukung Bukti Gambar
+            {lang === "en" ? "Image Evidence Supported" : "Mendukung Bukti Gambar"}
           </span>
         </div>
       </section>
@@ -277,15 +260,12 @@ export const DesktopLandingHero: React.FC<DesktopLandingHeroProps> = ({
       {/* 2. THREE PILLARS OF PROTECTION */}
       <section id="tentang" className="section-shell protection-section">
         <div className="section-heading">
-          <span>RUANG AMAN UNTUK SEMUA</span>
+          <span>{lang === "en" ? "SAFE SPACE FOR EVERYONE" : "RUANG AMAN UNTUK SEMUA"}</span>
           <h2>
-            Perlindungan Penuh untuk <em>Setiap Siswa</em>
+            {lang === "en" ? "Comprehensive Protection for Every Student" : "Perlindungan Penuh untuk Setiap Siswa"}
           </h2>
           <p>
-            Kami mengutamakan rasa aman Anda agar sekolah menjadi tempat yang
-            ramah,
-            <br />
-            aman, dan bebas dari segala bentuk kekerasan.
+            {t("prot.sub")}
           </p>
         </div>
 
@@ -310,9 +290,9 @@ export const DesktopLandingHero: React.FC<DesktopLandingHeroProps> = ({
       {/* 3. THREE EASY STEPS */}
       <section id="cara" className="section-shell steps-section">
         <div className="section-heading">
-          <span>ALUR SANGAT MUDAH</span>
+          <span>{lang === "en" ? "SIMPLE PROCESS" : "ALUR SANGAT MUDAH"}</span>
           <h2>
-            Cara Melapor dalam <em>3 Langkah</em>
+            {lang === "en" ? "How to Report in 3 Simple Steps" : "Cara Melapor dalam 3 Langkah"}
           </h2>
         </div>
 
@@ -333,22 +313,21 @@ export const DesktopLandingHero: React.FC<DesktopLandingHeroProps> = ({
       {/* 4. FREQUENTLY ASKED QUESTIONS */}
       <section id="faq" className="section-shell faq-section">
         <div>
-          <span className="mini-label">TANYA • JAWAB</span>
+          <span className="mini-label">{lang === "en" ? "Q & A" : "TANYA • JAWAB"}</span>
           <h2>
-            Pertanyaan yang
-            <br />
-            Sering Diajukan
+            {t("faq.title")}
           </h2>
           <p>
-            Temukan jawaban atas pertanyaan yang paling sering ditanyakan seputar
-            laporan anonim dan perlindungan siswa.
+            {lang === "en"
+              ? "Find answers to frequently asked questions about confidential reporting and student protection."
+              : "Temukan jawaban atas pertanyaan yang paling sering ditanyakan seputar laporan anonim dan perlindungan siswa."}
           </p>
           <button
             type="button"
             onClick={onNavigateToHelp}
             className="faq-link"
           >
-            Lihat pusat bantuan lengkap <ArrowRight />
+            {lang === "en" ? "View full help center" : "Lihat pusat bantuan lengkap"} <ArrowRight />
           </button>
         </div>
 
@@ -368,13 +347,12 @@ export const DesktopLandingHero: React.FC<DesktopLandingHeroProps> = ({
       {/* 5. CALL TO ACTION SECTION */}
       <section className="cta-section section-shell">
         <div>
-          <span>JANGAN SIMPAN MASALAHMU SENDIRIAN.</span>
-          <h2>Kami Ada untuk Mendengarkan.</h2>
+          <span>{lang === "en" ? "NEVER SUFFER IN SILENCE." : "JANGAN SIMPAN MASALAHMU SENDIRIAN."}</span>
+          <h2>{lang === "en" ? "We Are Here to Listen and Help." : "Kami Ada untuk Mendengarkan."}</h2>
           <p>
-            Suara kamu penting untuk menciptakan lingkungan sekolah yang lebih
-            aman,
-            <br />
-            nyaman, dan bebas dari kekerasan.
+            {lang === "en"
+              ? "Your voice is vital to creating a safe, welcoming, and violence-free school environment."
+              : "Suara kamu penting untuk menciptakan lingkungan sekolah yang lebih aman, nyaman, dan bebas dari kekerasan."}
           </p>
         </div>
 
@@ -386,11 +364,12 @@ export const DesktopLandingHero: React.FC<DesktopLandingHeroProps> = ({
           className="cta-btn"
         >
           <Send />
-          Buat Laporan Anonim Sekarang
+          {lang === "en" ? "Report Anonymously Now" : "Buat Laporan Anonim Sekarang"}
         </button>
 
-        <small>Aman　•　Terenkripsi　•　Respons Cepat</small>
+        <small>{lang === "en" ? "Confidential • Encrypted • Fast Response" : "Aman • Terenkripsi • Respons Cepat"}</small>
       </section>
     </div>
   );
 };
+

@@ -48,11 +48,10 @@ export class ErrorBoundary extends React.Component<
               <AlertTriangle className="w-6 h-6 text-rose-600" />
             </div>
             <h2 className="text-lg font-extrabold text-slate-900">
-              Terjadi Kesalahan
+              An Error Occurred
             </h2>
             <p className="text-xs text-slate-600">
-              Halaman gagal dirender karena error internal. Coba reset dan
-              kembali ke beranda.
+              The page failed to render due to an unexpected error. Try resetting the page or returning to the home screen.
             </p>
             <pre className="text-[10px] text-left bg-slate-50 p-3 rounded-lg overflow-auto max-h-32 text-slate-500">
               {this.state.error?.message ?? "Unknown error"}
@@ -61,13 +60,13 @@ export class ErrorBoundary extends React.Component<
               onClick={this.handleReset}
               className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-2.5 rounded-xl text-sm cursor-pointer"
             >
-              Reset Halaman
+              Reset Page
             </button>
             <button
               onClick={() => (window.location.href = "/")}
               className="w-full bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold py-2.5 rounded-xl text-sm cursor-pointer"
             >
-              Kembali ke Beranda
+              Back to Home
             </button>
           </div>
         </div>

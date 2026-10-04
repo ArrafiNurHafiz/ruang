@@ -19,6 +19,7 @@ import {
   StudentSession,
   SchoolProfile,
 } from "../types";
+import { useLanguage } from "../lib/i18n";
 
 interface NavbarProps {
   currentTab: string;
@@ -55,6 +56,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenHibahGuide,
   activeRole = "siswa",
 }) => {
+  const { lang, setLang, t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const handleNavClick = (id: string) => {
@@ -75,12 +77,12 @@ export const Navbar: React.FC<NavbarProps> = ({
         </span>
         <span className="leading-tight">
           <strong className="block text-[17px] text-ink font-bold">
-            Ruang Aman
+            {t("brand.name")}
           </strong>
           <small className="text-[11px] text-muted-foreground font-medium">
             {activeRole === "guru" && schoolProfile?.schoolName
-              ? `Satgas PPKSP • ${schoolProfile.schoolName}`
-              : "PPKSP • Suara Siswa"}
+              ? `${t("brand.satgas")} • ${schoolProfile.schoolName}`
+              : t("brand.tagline")}
           </small>
         </span>
       </div>
@@ -88,8 +90,8 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Desktop Navigation Links */}
       {activeRole === "siswa" ? (
         <nav
-          className="hidden items-center gap-8 lg:flex"
-          aria-label="Navigasi utama"
+          className="hidden items-center gap-7 lg:flex"
+          aria-label="Main Navigation"
         >
           <button
             type="button"
@@ -97,7 +99,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => handleNavClick("beranda")}
             className={`nav-btn ${currentTab === "beranda" ? "nav-active" : ""}`}
           >
-            Beranda
+            {t("nav.home")}
           </button>
           <button
             type="button"
@@ -105,7 +107,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => handleNavClick("tentang")}
             className={`nav-btn ${currentTab === "tentang" ? "nav-active" : ""}`}
           >
-            Tentang
+            {t("nav.about")}
           </button>
           <button
             type="button"
@@ -113,7 +115,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => handleNavClick("cara-kerja")}
             className={`nav-btn ${currentTab === "cara-kerja" ? "nav-active" : ""}`}
           >
-            Cara Melapor
+            {t("nav.howItWorks")}
           </button>
           <button
             type="button"
@@ -121,7 +123,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => handleNavClick("status")}
             className={`nav-btn ${currentTab === "status" ? "nav-active" : ""}`}
           >
-            Pantau Tiket
+            {t("nav.track")}
           </button>
           <button
             type="button"
@@ -129,7 +131,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={() => handleNavClick("bantuan")}
             className={`nav-btn ${currentTab === "bantuan" ? "nav-active" : ""}`}
           >
-            Pusat Bantuan
+            {t("nav.help")}
           </button>
         </nav>
       ) : (
@@ -137,17 +139,49 @@ export const Navbar: React.FC<NavbarProps> = ({
           <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-900 text-white shadow-xs text-xs font-semibold">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
             <span>
-              {activeRole === "guru" && "Ruang Kerja Guru BK / Admin Sekolah"}
-              {activeRole === "admin" && "Konsol Admin Sistem (Manajemen User & IT)"}
-              {activeRole === "dinas-pendidikan" && "Portal Pengawasan Dinas Pendidikan"}
-              {activeRole === "dinas-perlindungan" && "Portal Intervensi UPTD PPA"}
+              {activeRole === "guru" && t("role.counselor")}
+              {activeRole === "admin" && t("role.admin")}
+              {activeRole === "dinas-pendidikan" && t("role.dinasPendidikan")}
+              {activeRole === "dinas-perlindungan" && t("role.dinasPerlindungan")}
             </span>
           </div>
         </div>
       )}
 
       {/* Right Actions */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2.5">
+        {/* Language Switcher Toggle Pill */}
+        <div
+          className="inline-flex items-center bg-slate-100 dark:bg-slate-800 p-0.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold"
+          role="group"
+          aria-label="Language Selector"
+        >
+          <button
+            type="button"
+            onClick={() => setLang("en")}
+            className={`px-2 py-1 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+              lang === "en"
+                ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs"
+                : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+            }`}
+            title="English"
+          >
+            EN
+          </button>
+          <button
+            type="button"
+            onClick={() => setLang("id")}
+            className={`px-2 py-1 rounded-lg text-xs font-extrabold transition-all cursor-pointer ${
+              lang === "id"
+                ? "bg-white dark:bg-slate-900 text-blue-600 dark:text-blue-400 shadow-xs"
+                : "text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+            }`}
+            title="Bahasa Indonesia"
+          >
+            ID
+          </button>
+        </div>
+
         {activeRole === "siswa" && (
           <button
             type="button"
@@ -156,8 +190,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             id="nav-lapor-btn"
             data-testid="nav-link-lapor"
           >
-            <Send size={16} />
-            <span>Lapor Anonim</span>
+            <Send size={15} />
+            <span>{t("nav.reportAnonymous")}</span>
           </button>
         )}
 
@@ -177,8 +211,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             type="button"
             onClick={onToggleDisguise}
             className="icon-button"
-            title="Mode Samaran: Tutupi layar seketika jadi materi pelajaran (ESC 2x)"
-            aria-label="Mode Samaran"
+            title={t("nav.disguiseTooltip")}
+            aria-label={t("nav.disguiseTooltip")}
           >
             <EyeOff size={18} />
           </button>
@@ -193,7 +227,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             id="nav-logout-btn"
           >
             <LogOut size={14} />
-            <span>Keluar</span>
+            <span>{t("nav.logout")}</span>
           </button>
         ) : (
           <button
@@ -203,7 +237,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             id="nav-login-btn"
           >
             <UserCheck size={15} className="text-muted-foreground" />
-            <span>Masuk Petugas</span>
+            <span>{t("nav.staffLogin")}</span>
           </button>
         )}
 
@@ -212,7 +246,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           type="button"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           className="icon-button lg:hidden"
-          aria-label="Buka menu"
+          aria-label="Toggle menu"
           id="mobile-menu-toggle"
         >
           {mobileMenuOpen ? <X size={19} /> : <Menu size={19} />}
@@ -222,6 +256,26 @@ export const Navbar: React.FC<NavbarProps> = ({
       {/* Mobile Menu Overlay Drawer */}
       {mobileMenuOpen && (
         <div className="lg:hidden fixed top-[76px] left-0 right-0 bg-card border-b border-border p-4 shadow-xl z-50 flex flex-col gap-2 animate-in slide-in-from-top-2 duration-200">
+          <div className="flex items-center justify-between pb-2 mb-1 border-b border-border">
+            <span className="text-xs font-bold text-muted-foreground uppercase">Language / Bahasa</span>
+            <div className="inline-flex items-center bg-muted p-0.5 rounded-lg border border-border text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => setLang("en")}
+                className={`px-3 py-1 rounded-md text-xs font-bold ${lang === "en" ? "bg-card text-primary shadow-xs" : "text-muted-foreground"}`}
+              >
+                English
+              </button>
+              <button
+                type="button"
+                onClick={() => setLang("id")}
+                className={`px-3 py-1 rounded-md text-xs font-bold ${lang === "id" ? "bg-card text-primary shadow-xs" : "text-muted-foreground"}`}
+              >
+                Indonesia
+              </button>
+            </div>
+          </div>
+
           <button
             type="button"
             onClick={() => handleNavClick("beranda")}
@@ -231,7 +285,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 : "text-foreground hover:bg-muted"
             }`}
           >
-            Beranda
+            {t("nav.home")}
           </button>
 
           <button
@@ -244,7 +298,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             <Send size={15} />
-            <span>Buat Laporan Anonim</span>
+            <span>{t("nav.reportAnonymous")}</span>
           </button>
 
           <button
@@ -257,7 +311,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             <Search size={15} />
-            <span>Pantau Status Tiket</span>
+            <span>{t("nav.track")}</span>
           </button>
 
           <button
@@ -269,7 +323,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 : "text-foreground hover:bg-muted"
             }`}
           >
-            Tentang Platform
+            {t("nav.about")}
           </button>
 
           <button
@@ -281,7 +335,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 : "text-foreground hover:bg-muted"
             }`}
           >
-            Cara Melapor
+            {t("nav.howItWorks")}
           </button>
 
           <button
@@ -294,7 +348,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             }`}
           >
             <HelpCircle size={15} />
-            <span>Pusat Bantuan &amp; FAQ</span>
+            <span>{t("nav.help")}</span>
           </button>
 
           <div className="pt-2 border-t border-border mt-1">
@@ -309,7 +363,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="w-full py-2.5 px-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-bold flex items-center justify-center gap-2"
               >
                 <LogOut size={15} />
-                <span>Keluar dari Sesi</span>
+                <span>{t("nav.logout")}</span>
               </button>
             ) : (
               <button
@@ -318,12 +372,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                 className="w-full py-2.5 px-4 rounded-xl border border-border bg-muted text-foreground text-sm font-bold flex items-center justify-center gap-2"
               >
                 <UserCheck size={15} />
-                <span>Masuk Petugas / Guru BK</span>
+                <span>{t("nav.staffLogin")}</span>
               </button>
             )}
           </div>
         </div>
       )}
+
     </header>
   );
 };

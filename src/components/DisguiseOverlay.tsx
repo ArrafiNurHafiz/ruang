@@ -1,5 +1,6 @@
 import React from "react";
 import { Calculator, RotateCcw, BookOpen, Check } from "lucide-react";
+import { useLanguage } from "../lib/i18n";
 
 interface DisguiseOverlayProps {
   isActive: boolean;
@@ -10,6 +11,7 @@ export const DisguiseOverlay: React.FC<DisguiseOverlayProps> = ({
   isActive,
   onExitDisguise,
 }) => {
+  const { lang } = useLanguage();
   const [calcInput, setCalcInput] = React.useState(
     "sin(30°) + cos(60°) = 1.00",
   );
@@ -25,21 +27,24 @@ export const DisguiseOverlay: React.FC<DisguiseOverlayProps> = ({
             <BookOpen className="w-6 h-6 text-blue-700" />
             <div>
               <h1 className="text-xl font-bold text-slate-900 font-sans">
-                Latihan Mandiri Matematika Wajib & Fisika Terapan
+                {lang === "en"
+                  ? "Independent Study: Core Mathematics & Applied Physics"
+                  : "Latihan Mandiri Matematika Wajib & Fisika Terapan"}
               </h1>
               <p className="text-xs text-slate-500 font-sans">
-                Bab 4: Trigonometri Sudut Relasi & Dinamika Gerak Harmonik
-                Sederhana
+                {lang === "en"
+                  ? "Chapter 4: Trigonometric Identities & Simple Harmonic Motion Dynamics"
+                  : "Bab 4: Trigonometri Sudut Relasi & Dinamika Gerak Harmonik Sederhana"}
               </p>
             </div>
           </div>
           <button
             onClick={onExitDisguise}
-            title="Kembali ke Ruang Aman"
-            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-md text-xs font-sans font-semibold transition-colors"
+            title={lang === "en" ? "Return to Ruang Aman" : "Kembali ke Ruang Aman"}
+            className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-md text-xs font-sans font-semibold transition-colors cursor-pointer"
           >
             <RotateCcw className="w-3.5 h-3.5" />
-            <span>Tutup Catatan</span>
+            <span>{lang === "en" ? "Close Study Sheet" : "Tutup Catatan"}</span>
           </button>
         </div>
 
@@ -48,7 +53,7 @@ export const DisguiseOverlay: React.FC<DisguiseOverlayProps> = ({
           <div className="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-3">
             <h2 className="font-bold text-sm text-slate-800 flex items-center gap-2">
               <Calculator className="w-4 h-4 text-teal-600" />
-              <span>Kalkulator Rumus Cepat</span>
+              <span>{lang === "en" ? "Quick Formula Calculator" : "Kalkulator Rumus Cepat"}</span>
             </h2>
             <div className="bg-white border border-slate-300 rounded-lg p-2.5 font-mono text-sm">
               <input
@@ -114,7 +119,7 @@ export const DisguiseOverlay: React.FC<DisguiseOverlayProps> = ({
 
           <div className="border border-slate-200 rounded-xl p-4 bg-slate-50/50 space-y-3">
             <h2 className="font-bold text-sm text-slate-800">
-              Identitas Trigonometri Dasar
+              {lang === "en" ? "Fundamental Trigonometric Identities" : "Identitas Trigonometri Dasar"}
             </h2>
             <div className="text-xs space-y-2 text-slate-600 font-mono">
               <div className="p-2 bg-white rounded border border-slate-200">
@@ -133,15 +138,15 @@ export const DisguiseOverlay: React.FC<DisguiseOverlayProps> = ({
         {/* Camouflage Practice Problems */}
         <div className="space-y-4 pt-4 border-t border-slate-200">
           <h3 className="font-bold text-base text-slate-900 font-sans">
-            Soal Evaluasi Pemahaman
+            {lang === "en" ? "Concept Check & Practice Problems" : "Soal Evaluasi Pemahaman"}
           </h3>
 
           <div className="space-y-3 text-sm">
             <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-2">
               <p className="font-medium text-slate-800">
-                1. Diketahui segitiga siku-siku ABC dengan panjang sisi miring c
-                = 10 cm dan sudut A = 30°. Berapakah panjang sisi di depan sudut
-                A?
+                {lang === "en"
+                  ? "1. Given right triangle ABC with hypotenuse c = 10 cm and angle A = 30°. What is the length of the opposite side to angle A?"
+                  : "1. Diketahui segitiga siku-siku ABC dengan panjang sisi miring c = 10 cm dan sudut A = 30°. Berapakah panjang sisi di depan sudut A?"}
               </p>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-xs font-sans">
                 {["A. 5 cm", "B. 5√3 cm", "C. 10 cm", "D. 2.5 cm"].map(
@@ -164,12 +169,12 @@ export const DisguiseOverlay: React.FC<DisguiseOverlayProps> = ({
 
             <div className="p-4 rounded-xl border border-slate-200 bg-white space-y-2">
               <p className="font-medium text-slate-800">
-                2. Sebuah benda bermassa 2 kg ditarik dengan gaya 10 N pada
-                bidang datar licin. Tentukan percepatan yang dialami benda
-                tersebut.
+                {lang === "en"
+                  ? "2. An object with mass 2 kg is pulled with a 10 N force on a frictionless horizontal plane. Determine its acceleration."
+                  : "2. Sebuah benda bermassa 2 kg ditarik dengan gaya 10 N pada bidang datar licin. Tentukan percepatan yang dialami benda tersebut."}
               </p>
               <div className="text-xs text-slate-500 font-sans">
-                (Rumus: F = m · a &rarr; a = F / m)
+                {lang === "en" ? "(Formula: F = m · a → a = F / m)" : "(Rumus: F = m · a → a = F / m)"}
               </div>
             </div>
           </div>
@@ -177,12 +182,12 @@ export const DisguiseOverlay: React.FC<DisguiseOverlayProps> = ({
 
         {/* Discrete Return Button */}
         <div className="pt-6 flex justify-between items-center text-xs text-slate-400 font-sans">
-          <span>Halaman Catatan Siswa - Semester Genap</span>
+          <span>{lang === "en" ? "Student Study Sheet - Spring Term" : "Halaman Catatan Siswa - Semester Genap"}</span>
           <button
             onClick={onExitDisguise}
-            className="text-slate-500 hover:text-slate-800 underline flex items-center gap-1"
+            className="text-slate-500 hover:text-slate-800 underline flex items-center gap-1 cursor-pointer"
           >
-            <span>Lanjutkan Navigasi Sebelumnya</span>
+            <span>{lang === "en" ? "Return to Previous View" : "Lanjutkan Navigasi Sebelumnya"}</span>
           </button>
         </div>
       </div>

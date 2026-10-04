@@ -9,6 +9,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import { EMERGENCY_CONTACTS } from "../data/mockData";
+import { useLanguage } from "../lib/i18n";
 
 interface EmergencyModalProps {
   isOpen: boolean;
@@ -21,6 +22,8 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({
   onClose,
   onQuickExit,
 }) => {
+  const { t, lang } = useLanguage();
+
   if (!isOpen) return null;
 
   return (
@@ -39,17 +42,18 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({
             </div>
             <div>
               <h2 id="modal-emergency-title" className="text-lg font-bold">
-                Kontak Bantuan Darurat 24 Jam
+                {t("emergency.modalTitle")}
               </h2>
               <p className="text-xs text-rose-100 font-medium">
-                Gunakan saat ada ancaman fisik langsung atau krisis keselamatan
+                {t("emergency.modalSubtitle")}
               </p>
             </div>
           </div>
           <button
             id="close-emergency-modal-btn"
             onClick={onClose}
-            className="text-white/80 hover:text-white p-2 hover:bg-white/10 rounded-lg transition-colors"
+            aria-label={lang === "en" ? "Close" : "Tutup"}
+            className="text-white/80 hover:text-white p-2 hover:bg-white/10 rounded-lg transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -61,19 +65,23 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 text-xs text-amber-900 space-y-1.5">
             <div className="font-bold flex items-center gap-1.5 text-amber-800">
               <ShieldAlert className="w-4 h-4 text-amber-600" />
-              <span>Panduan Keselamatan Mendesak:</span>
+              <span>{lang === "en" ? "Immediate Safety Protocol:" : "Panduan Keselamatan Mendesak:"}</span>
             </div>
             <ul className="list-disc list-inside space-y-1 text-slate-700">
               <li>
-                Segera cari tempat yang ramai (perpustakaan, ruang guru, pos
-                satpam).
+                {lang === "en"
+                  ? "Move immediately to a crowded area (library, teachers' room, security post)."
+                  : "Segera cari tempat yang ramai (perpustakaan, ruang guru, pos satpam)."}
               </li>
               <li>
-                Jangan merespons provokasi fisik terduga pelaku secara
-                sendirian.
+                {lang === "en"
+                  ? "Do not confront or retaliate against perpetrators alone."
+                  : "Jangan merespons provokasi fisik terduga pelaku secara sendirian."}
               </li>
               <li>
-                Tekan nomor panggilan cepat di bawah untuk terhubung langsung.
+                {lang === "en"
+                  ? "Use the one-click hotlines below for immediate assistance."
+                  : "Tekan nomor panggilan cepat di bawah untuk terhubung langsung."}
               </li>
             </ul>
           </div>
@@ -109,7 +117,7 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({
                     className="flex items-center gap-1.5 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl transition-colors shadow-sm cursor-pointer"
                   >
                     <Phone className="w-3.5 h-3.5" />
-                    <span>Panggil {item.number}</span>
+                    <span>{lang === "en" ? "Call" : "Panggil"} {item.number}</span>
                   </a>
                 </div>
               </div>
@@ -119,14 +127,18 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({
           <div className="pt-2 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-2 text-xs text-slate-500">
               <CheckCircle2 className="w-4 h-4 text-blue-600" />
-              <span>Semua panggilan dilindungi kerahasiaan hukum anak</span>
+              <span>
+                {lang === "en"
+                  ? "All calls are safeguarded under child legal confidentiality"
+                  : "Semua panggilan dilindungi kerahasiaan hukum anak"}
+              </span>
             </div>
             <button
               id="emergency-modal-quick-exit"
               onClick={onQuickExit}
               className="text-xs text-rose-600 hover:text-rose-700 font-bold hover:underline cursor-pointer"
             >
-              Keluar Cepat dari Aplikasi (ESC)
+              {lang === "en" ? "Quick Distress Exit (ESC)" : "Keluar Cepat dari Aplikasi (ESC)"}
             </button>
           </div>
         </div>
@@ -135,12 +147,13 @@ export const EmergencyModal: React.FC<EmergencyModalProps> = ({
         <div className="bg-slate-100 px-6 py-3 border-t border-slate-200 flex justify-end">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200 rounded-lg transition-colors"
+            className="px-4 py-2 text-xs font-bold text-slate-700 hover:bg-slate-200 rounded-lg transition-colors cursor-pointer"
           >
-            Tutup Dialog
+            {lang === "en" ? "Close Dialog" : "Tutup Dialog"}
           </button>
         </div>
       </div>
     </div>
   );
 };
+

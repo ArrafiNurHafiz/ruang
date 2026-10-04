@@ -86,10 +86,12 @@ import {
 import { api } from "./lib/api";
 import { supabase, isSupabaseEnabled } from "./lib/supabase";
 import { StorageEngine } from "./utils/storage";
+import { useLanguage } from "./lib/i18n";
 
 const SCHOOL_ID = "default-school";
 
 export default function App() {
+  const { t } = useLanguage();
   // 5 User Roles State Management
   const [activeRole, setActiveRole] = useState<AppUserRole>("siswa");
   const [currentUserAccount, setCurrentUserAccount] =
@@ -1348,11 +1350,11 @@ export default function App() {
         <div className="fixed bottom-16 sm:bottom-4 right-3 sm:right-4 z-40">
           <button
             onClick={handleQuickExit}
-            title="Keluar Cepat: Bersihkan jejak seketika (ESC 2x)"
+            title={t("app.quickExitTitle")}
             className="flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-slate-900/90 hover:bg-rose-600 text-white font-medium text-xs shadow-lg backdrop-blur-xs transition-all hover:scale-105 active:scale-95 border border-white/10 cursor-pointer"
           >
             <LogOut className="w-3.5 h-3.5 text-rose-400" />
-            <span className="hidden xs:inline">Keluar Cepat</span>
+            <span className="hidden xs:inline">{t("app.quickExit")}</span>
             <kbd className="text-[9px] bg-slate-800 text-slate-300 px-1 py-0.5 rounded font-mono hidden sm:inline">
               ESC
             </kbd>
@@ -1363,10 +1365,10 @@ export default function App() {
       {/* Mobile Bottom Navigation Bar */}
       <nav className="sm:hidden fixed bottom-0 left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-slate-200 px-2 py-1 flex items-center justify-around shadow-md">
         {[
-          { id: "beranda", label: "Beranda", icon: Home },
-          { id: "lapor", label: "Lapor", icon: Send },
-          { id: "status", label: "Status", icon: Search },
-          { id: "bantuan", label: "Bantuan", icon: HelpCircle },
+          { id: "beranda", label: t("nav.home"), icon: Home },
+          { id: "lapor", label: t("nav.report"), icon: Send },
+          { id: "status", label: t("nav.status"), icon: Search },
+          { id: "bantuan", label: t("nav.help"), icon: HelpCircle },
         ].map((item) => {
           const Icon = item.icon;
           const isActive = currentTab === item.id;
@@ -1402,10 +1404,10 @@ export default function App() {
           </span>
           <span className="leading-tight text-left">
             <strong className="block text-[16px] text-ink font-bold">
-              Ruang Aman
+              {t("brand.name")}
             </strong>
             <small className="text-[11px] text-muted-foreground">
-              PPKSP • Suara Siswa
+              {t("footer.subtitle")}
             </small>
           </span>
         </div>
@@ -1416,21 +1418,21 @@ export default function App() {
             onClick={() => setCurrentTab("beranda")}
             className="hover:text-primary transition cursor-pointer text-xs font-semibold"
           >
-            Beranda
+            {t("nav.home")}
           </button>
           <button
             type="button"
             onClick={() => setCurrentTab("tentang")}
             className="hover:text-primary transition cursor-pointer text-xs font-semibold"
           >
-            Tentang
+            {t("nav.about")}
           </button>
           <button
             type="button"
             onClick={() => setCurrentTab("cara-kerja")}
             className="hover:text-primary transition cursor-pointer text-xs font-semibold"
           >
-            Cara Melapor
+            {t("nav.howItWorks")}
           </button>
           <button
             type="button"
@@ -1444,14 +1446,14 @@ export default function App() {
             onClick={() => setCurrentTab("kontak")}
             className="hover:text-primary transition cursor-pointer text-xs font-semibold"
           >
-            Kontak
+            {t("nav.contact")}
           </button>
         </nav>
 
         <p>
-          Platform Nasional PPKSP
+          {t("footer.nationalPlatform")}
           <br />
-          Sesuai Permendikbudristek No. 46/2023
+          {t("footer.regulation")}
         </p>
       </footer>
 

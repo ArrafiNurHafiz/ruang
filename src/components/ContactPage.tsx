@@ -12,6 +12,7 @@ import {
   Loader2,
 } from "lucide-react";
 import { ContactMessage } from "../types";
+import { useLanguage } from "../lib/i18n";
 
 const isLocalhost =
   typeof window !== "undefined" &&
@@ -23,6 +24,7 @@ const API_URL = isLocalhost
   : "/api";
 
 export const ContactPage: React.FC = () => {
+  const { t } = useLanguage();
   const [name, setName] = useState<string>("");
   const [email, setEmail] = useState<string>("");
   const [subject, setSubject] = useState<string>("");
@@ -89,14 +91,13 @@ export const ContactPage: React.FC = () => {
         <div className="relative z-10 max-w-xl space-y-3">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-white/15 text-white text-xs font-medium border border-white/25 backdrop-blur-md">
             <PhoneCall className="w-3.5 h-3.5 text-sky-200" />
-            <span>Hubungi Tim Ruang Aman &amp; Satgas Sekolah</span>
+            <span>{t("contact.bannerBadge", "Hubungi Tim Ruang Aman & Satgas Sekolah")}</span>
           </div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight leading-tight">
-            Kontak Layanan Dukungan
+            {t("contact.bannerTitle", "Kontak Layanan Dukungan")}
           </h1>
           <p className="text-xs sm:text-sm text-blue-100 leading-relaxed">
-            Kirimkan saran, permohonan sosialisasi, atau pertanyaan resmi kepada
-            pengelola sistem dan konselor sekolah.
+            {t("contact.bannerSub", "Kirimkan saran, permohonan sosialisasi, atau pertanyaan resmi kepada pengelola sistem dan konselor sekolah.")}
           </p>
         </div>
       </div>
@@ -107,11 +108,10 @@ export const ContactPage: React.FC = () => {
           <div className="border-b border-slate-100 pb-3">
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <MessageSquare className="w-5 h-5 text-blue-600" />
-              <span>Formulir Pesan Resmi</span>
+              <span>{t("contact.formTitle", "Formulir Pesan Resmi")}</span>
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
-              Jika ini adalah perundungan langsung, gunakan menu{" "}
-              <strong>Lapor Anonim</strong> untuk perlindungan enkripsi penuh.
+              {t("contact.formNotice", "Jika ini adalah perundungan langsung, gunakan menu Lapor Anonim untuk perlindungan enkripsi penuh.")}
             </p>
           </div>
 
@@ -119,17 +119,16 @@ export const ContactPage: React.FC = () => {
             <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-6 text-center space-y-3 animate-fadeIn">
               <CheckCircle2 className="w-12 h-12 text-emerald-600 mx-auto" />
               <h3 className="font-extrabold text-slate-900 text-lg">
-                Pesan Anda Berhasil Terkirim!
+                {t("contact.sentTitle", "Pesan Anda Berhasil Terkirim!")}
               </h3>
               <p className="text-xs text-slate-600 max-w-sm mx-auto">
-                Tim pengelola akan meninjau dan merespons pertanyaan Anda dalam
-                1x24 jam kerja.
+                {t("contact.sentSub", "Tim pengelola akan meninjau dan merespons pertanyaan Anda dalam 1x24 jam kerja.")}
               </p>
               <button
                 onClick={() => setIsSent(false)}
                 className="mt-2 text-xs font-bold text-blue-600 hover:underline cursor-pointer"
               >
-                Kirim Pesan Lainnya
+                {t("contact.sendAnother", "Kirim Pesan Lainnya")}
               </button>
             </div>
           ) : (
@@ -137,27 +136,27 @@ export const ContactPage: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                    Nama / Inisial (Opsional):
+                    {t("contact.nameLabel", "Nama / Inisial (Opsional):")}
                   </label>
                   <input
                     type="text"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
-                    placeholder="Boleh dikosongkan jika anonim"
+                    placeholder={t("contact.namePlaceholder", "Boleh dikosongkan jika anonim")}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
 
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                    Email Kontak / Balasan:
+                    {t("contact.emailLabel", "Email Kontak / Balasan:")}
                   </label>
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="email.anda@contoh.com"
+                    placeholder={t("contact.emailPlaceholder", "email.anda@contoh.com")}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -166,7 +165,7 @@ export const ContactPage: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                    Kategori Pesan:
+                    {t("contact.categoryLabel", "Kategori Pesan:")}
                   </label>
                   <select
                     value={category}
@@ -174,27 +173,31 @@ export const ContactPage: React.FC = () => {
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="Pertanyaan Layanan">
-                      Pertanyaan Layanan
+                      {t("contact.catService", "Pertanyaan Layanan")}
                     </option>
-                    <option value="Masalah Token">Kendala Kartu Token</option>
-                    <option value="Saran & Masukan">Saran &amp; Masukan</option>
+                    <option value="Masalah Token">
+                      {t("contact.catToken", "Kendala Kartu Token")}
+                    </option>
+                    <option value="Saran & Masukan">
+                      {t("contact.catFeedback", "Saran & Masukan")}
+                    </option>
                     <option value="Konsultasi Guru / Ortu">
-                      Konsultasi Guru / Orang Tua
+                      {t("contact.catConsult", "Konsultasi Guru / Orang Tua")}
                     </option>
-                    <option value="Lainnya">Lainnya</option>
+                    <option value="Lainnya">{t("contact.catOther", "Lainnya")}</option>
                   </select>
                 </div>
 
                 <div className="space-y-1.5">
                   <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                    Subjek / Judul:
+                    {t("contact.subjectLabel", "Subjek / Judul:")}
                   </label>
                   <input
                     type="text"
                     required
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
-                    placeholder="Perihal pesan Anda"
+                    placeholder={t("contact.subjectPlaceholder", "Perihal pesan Anda")}
                     className="w-full px-3.5 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
@@ -202,21 +205,21 @@ export const ContactPage: React.FC = () => {
 
               <div className="space-y-1.5">
                 <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-                  Isi Pesan:
+                  {t("contact.messageLabel", "Isi Pesan:")}
                 </label>
                 <textarea
                   rows={4}
                   required
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
-                  placeholder="Tuliskan pertanyaan atau informasi yang ingin disampaikan..."
+                  placeholder={t("contact.messagePlaceholder", "Tuliskan pertanyaan atau informasi yang ingin disampaikan...")}
                   className="w-full p-3.5 bg-slate-50 border border-slate-200 rounded-xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500 leading-relaxed"
                 />
               </div>
 
               {sendError && (
                 <div className="bg-red-50 border border-red-200 rounded-xl p-3 text-xs text-red-700">
-                  {sendError}
+                  {t("contact.sendError", sendError)}
                 </div>
               )}
 
@@ -228,12 +231,12 @@ export const ContactPage: React.FC = () => {
                 {isSending ? (
                   <>
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Mengirim...</span>
+                    <span>{t("contact.sending", "Mengirim...")}</span>
                   </>
                 ) : (
                   <>
                     <Send className="w-4 h-4" />
-                    <span>Kirim Pesan Dukungan</span>
+                    <span>{t("contact.submitBtn", "Kirim Pesan Dukungan")}</span>
                   </>
                 )}
               </button>
@@ -246,13 +249,13 @@ export const ContactPage: React.FC = () => {
           <div className="bg-gradient-to-br from-blue-900 via-indigo-900 to-blue-950 text-white rounded-3xl p-6 sm:p-7 space-y-5 shadow-xl border border-blue-800">
             <div>
               <span className="text-xs uppercase font-mono tracking-widest text-sky-300 font-bold">
-                INFORMASI RESMI
+                {t("contact.dirHeader", "INFORMASI RESMI")}
               </span>
               <h3 className="text-xl font-extrabold mt-1">
-                Sekretariat BK &amp; PPKSP
+                {t("contact.dirTitle", "Sekretariat BK & PPKSP")}
               </h3>
               <p className="text-xs text-blue-200 mt-0.5">
-                Pusat Pelayanan Terpadu Perlindungan Siswa
+                {t("contact.dirSubtitle", "Pusat Pelayanan Terpadu Perlindungan Siswa")}
               </p>
             </div>
 
@@ -263,7 +266,7 @@ export const ContactPage: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-blue-200 block text-[10px]">
-                    Email Pengaduan:
+                    {t("contact.emailTitle", "Email Pengaduan:")}
                   </span>
                   <strong className="text-white">
                     ruangaman.ppksp@sekolah.sch.id
@@ -277,10 +280,10 @@ export const ContactPage: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-blue-200 block text-[10px]">
-                    Hotline Siaga BK (WA):
+                    {t("contact.phoneTitle", "Hotline Siaga BK (WA):")}
                   </span>
                   <strong className="text-white">
-                    0821-9988-7711 (Chat Khusus)
+                    0821-9988-7711 {t("contact.phoneNote", "(Chat Khusus)")}
                   </strong>
                 </div>
               </div>
@@ -291,13 +294,13 @@ export const ContactPage: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-blue-200 block text-[10px]">
-                    Jam Layanan Konseling:
+                    {t("contact.hoursTitle", "Jam Layanan Konseling:")}
                   </span>
                   <strong className="text-white">
-                    Senin – Jumat: 07.00 – 17.00 WIB
+                    {t("contact.hoursValue", "Senin – Jumat: 07.00 – 17.00 WIB")}
                   </strong>
                   <span className="block text-blue-200/80 text-[10px] mt-0.5">
-                    Pelaporan online aktif 24 jam
+                    {t("contact.hoursNote", "Pelaporan online aktif 24 jam")}
                   </span>
                 </div>
               </div>
@@ -308,18 +311,17 @@ export const ContactPage: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-blue-200 block text-[10px]">
-                    Alamat Fisik Safe Room:
+                    {t("contact.locationTitle", "Alamat Fisik Safe Room:")}
                   </span>
                   <strong className="text-white">
-                    Ruang Bimbingan Konseling (Gedung Utama Sayap Timur Lt. 2)
+                    {t("contact.locationValue", "Ruang Bimbingan Konseling (Gedung Utama Sayap Timur Lt. 2)")}
                   </strong>
                 </div>
               </div>
             </div>
 
             <div className="pt-3 border-t border-blue-800 text-[11px] text-blue-200/90 leading-relaxed">
-              Semua laporan fisik maupun daring dijamin kerahasiaannya di bawah
-              sumpah Kode Etik Bimbingan Konseling Indonesia (ABKIN).
+              {t("contact.dirFooter", "Semua laporan fisik maupun daring dijamin kerahasiaannya di bawah sumpah Kode Etik Bimbingan Konseling Indonesia (ABKIN).")}
             </div>
           </div>
         </div>

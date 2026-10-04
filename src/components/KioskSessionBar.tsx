@@ -1,5 +1,6 @@
 import React from "react";
 import { Clock, RefreshCw, Trash2, ShieldAlert } from "lucide-react";
+import { useLanguage } from "../lib/i18n";
 
 interface KioskSessionBarProps {
   secondsLeft: number;
@@ -12,6 +13,7 @@ export const KioskSessionBar: React.FC<KioskSessionBarProps> = ({
   onResetTimer,
   onEndKioskSession,
 }) => {
+  const { t } = useLanguage();
   const minutes = Math.floor(secondsLeft / 60);
   const seconds = secondsLeft % 60;
   const isLow = secondsLeft <= 45;
@@ -34,11 +36,11 @@ export const KioskSessionBar: React.FC<KioskSessionBarProps> = ({
           </div>
           <div>
             <span className="font-bold uppercase tracking-wider text-[11px] text-teal-400">
-              Mode Kios Aktif
+              {t("kiosk.activeBadge", "Mode Kios Aktif")}
             </span>
             <span className="mx-2 text-slate-500">|</span>
             <span className="text-slate-300">
-              Perangkat Bersama (Tanpa Rekam Jejak / Auto-Purge dalam 3 Menit)
+              {t("kiosk.sharedDeviceNotice", "Perangkat Bersama (Tanpa Rekam Jejak / Auto-Purge dalam 3 Menit)")}
             </span>
           </div>
         </div>
@@ -50,7 +52,7 @@ export const KioskSessionBar: React.FC<KioskSessionBarProps> = ({
               className={`w-3.5 h-3.5 ${isLow ? "text-rose-400 animate-spin" : "text-teal-400"}`}
             />
             <span className="font-mono font-bold text-xs">
-              Sisa Waktu: {String(minutes).padStart(2, "0")}:
+              {t("kiosk.timeLeft", "Sisa Waktu:")} {String(minutes).padStart(2, "0")}:
               {String(seconds).padStart(2, "0")}
             </span>
             <div className="w-16 h-1.5 bg-slate-700 rounded-full overflow-hidden ml-1">
@@ -65,22 +67,22 @@ export const KioskSessionBar: React.FC<KioskSessionBarProps> = ({
           <button
             id="kiosk-extend-timer-btn"
             onClick={onResetTimer}
-            title="Tambah Waktu Sesi (+3 Menit)"
+            title={t("kiosk.extendTitle", "Tambah Waktu Sesi (+3 Menit)")}
             className="flex items-center gap-1 px-2.5 py-1 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs font-semibold transition-colors"
           >
             <RefreshCw className="w-3 h-3" />
-            <span>+3 Mnt</span>
+            <span>{t("kiosk.extend", "+3 Mnt")}</span>
           </button>
 
           {/* End Session & Wipe */}
           <button
             id="kiosk-end-session-btn"
             onClick={onEndKioskSession}
-            title="Akhiri Sesi Sekarang & Hapus Semua Cache"
+            title={t("kiosk.endTitle", "Akhiri Sesi Sekarang & Hapus Semua Cache")}
             className="flex items-center gap-1 px-3 py-1 rounded-md bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition-colors shadow-xs"
           >
             <Trash2 className="w-3 h-3" />
-            <span>Selesai & Bersihkan</span>
+            <span>{t("kiosk.endAndWipe", "Selesai & Bersihkan")}</span>
           </button>
         </div>
       </div>
