@@ -24,6 +24,7 @@ interface TicketStatusAndChatProps {
   tickets: ReportTicket[];
   initialTicketId?: string;
   onSendMessage: (ticketId: string, messageText: string) => void;
+  onTicketUpdated?: (updatedTicket: ReportTicket) => void;
 }
 
 const STATUS_STEPS: { key: ReportStatus; label: string; desc: string }[] = [
@@ -68,6 +69,7 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
   tickets,
   initialTicketId = "",
   onSendMessage,
+  onTicketUpdated,
 }) => {
   const [searchQuery, setSearchQuery] = useState<string>(initialTicketId);
   const [activeTicket, setActiveTicket] = useState<ReportTicket | null>(
@@ -208,6 +210,9 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
         studentFeedback.trim() || undefined,
       );
       setActiveTicket(updated);
+      if (onTicketUpdated) {
+        onTicketUpdated(updated);
+      }
       setConfirmNotification(
         isSatisfied
           ? "Terima kasih! Anda telah mengonfirmasi masalah selesai. Kasus resmi ditutup."
@@ -217,12 +222,16 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
     } catch (err) {
       console.error("Gagal mengonfirmasi:", err);
       // Local fallback update
-      setActiveTicket({
+      const fallbackUpdated: ReportTicket = {
         ...activeTicket,
         status: isSatisfied ? "ditutup" : "tindakan",
         isEscalatedToDinas: !isSatisfied,
         escalatedTo: isSatisfied ? undefined : "Keduanya",
-      });
+      };
+      setActiveTicket(fallbackUpdated);
+      if (onTicketUpdated) {
+        onTicketUpdated(fallbackUpdated);
+      }
     } finally {
       setIsSubmittingConfirm(false);
     }

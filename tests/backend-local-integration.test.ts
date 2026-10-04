@@ -450,6 +450,48 @@ async function run() {
     assert.ok("kioskTimeout" in cfg);
   });
 
+  await test("GET /school-profile returns school & satgas metadata", async () => {
+    const res = await fetch(`${BASE_URL}/school-profile`);
+    assert.equal(res.status, 200);
+    const profile = await res.json();
+    assert.ok(profile.schoolName);
+    assert.ok(profile.satgasSkNumber);
+  });
+
+  await test("PUT /school-profile updates profile and creates audit trail", async () => {
+    const res = await fetch(`${BASE_URL}/school-profile`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        schoolName: "SMA Negeri 1 Jakarta",
+        satgasSkNumber: "SK-PPKSP/2026/088-SYNC",
+        satgasLeaderName: "Dra. Nurhayati, M.Pd",
+        hotlineNumber: "081299887766",
+        submittedBy: "Dra. Nurhayati, M.Pd",
+      }),
+    });
+    assert.equal(res.status, 200);
+    const updated = await res.json();
+    assert.equal(updated.satgasSkNumber, "SK-PPKSP/2026/088-SYNC");
+  });
+
+  await test("POST /supervision-notices sends Dinas notice and records audit log", async () => {
+    const res = await fetch(`${BASE_URL}/supervision-notices`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        schoolId: "sch-01",
+        schoolName: "SMA Negeri 1 Jakarta",
+        message: "Percepatan tindak lanjut kasus mediasi",
+        officerName: "Drs. H. Hendra Setiawan, M.Pd",
+      }),
+    });
+    assert.equal(res.status, 201);
+    const data = await res.json();
+    assert.ok(data.id);
+    assert.equal(data.schoolId, "sch-01");
+  });
+
   console.log("\n=================================================");
   console.log(`📊 INTEGRATION RESULTS: ${passed} PASSED | ${failed} FAILED`);
   console.log("=================================================");

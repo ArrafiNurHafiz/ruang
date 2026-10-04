@@ -177,6 +177,27 @@ const INITIAL_DATA = {
       province: "DKI Jakarta",
     },
   ],
+  school_profile: {
+    schoolName: "SMA Negeri 1 Jakarta",
+    npsn: "20100192",
+    district: "Jakarta Pusat",
+    province: "DKI Jakarta",
+    address: "Jl. Budi Utomo No. 7, Pasar Baru, Sawah Besar, Jakarta Pusat 10710",
+    phone: "(021) 3865001",
+    email: "satgas.ppksp@sman1jakarta.sch.id",
+    website: "https://sman1jakarta.sch.id",
+    principalName: "Drs. H. Mulyadi, M.M",
+    principalNip: "19680315 199303 1 004",
+    satgasLeaderName: "Ahmad Fauzi, S.Pd",
+    satgasLeaderNip: "19840719 200902 1 003",
+    counselorCoordinatorName: "Dra. Hj. Nurjanah, M.Pd",
+    counselorCoordinatorNip: "19780412 200501 2 003",
+    hotlineNumber: "0821-9988-7711",
+    emergencyPin: "9911",
+    satgasSkNumber: "SK-PPKSP/046/SMAN1/2024",
+    satgasSkDate: "15 Januari 2024",
+    updatedAt: new Date().toISOString(),
+  },
 };
 
 // Database Helper
@@ -185,7 +206,11 @@ const getDB = () => {
     fs.writeFileSync(DB_PATH, JSON.stringify(INITIAL_DATA, null, 2));
     return INITIAL_DATA;
   }
-  return JSON.parse(fs.readFileSync(DB_PATH, "utf8"));
+  const data = JSON.parse(fs.readFileSync(DB_PATH, "utf8"));
+  if (!data.school_profile) {
+    data.school_profile = INITIAL_DATA.school_profile;
+  }
+  return data;
 };
 
 const saveDB = (data) => {
@@ -197,7 +222,11 @@ const saveDB = (data) => {
 // Tickets
 app.get("/api/tickets", (req, res) => {
   const db = getDB();
-  res.json(db.tickets);
+  const safeTickets = (db.tickets || []).map((t) => {
+    const { recovery_code, recoveryCode, secret_pin, secretPin, ...safe } = t;
+    return safe;
+  });
+  res.json(safeTickets);
 });
 
 app.post("/api/tickets", (req, res) => {
@@ -234,6 +263,9 @@ app.post("/api/tickets", (req, res) => {
     ],
   };
   db.tickets.push(newTicket);
+
+  const sch = (db.regional_schools || []).find((s) => s.id === "sch-01");
+  if (sch) sch.totalReports = (sch.totalReports || 0) + 1;
 
   // Add Audit Log
   db.audit_logs.push({
@@ -405,13 +437,62 @@ app.put("/api/tickets/:id", (req, res) => {
   const index = db.tickets.findIndex((t) => t.id === req.params.id);
   if (index === -1) return res.status(404).json({ error: "Ticket not found" });
 
+  const prevStatus = db.tickets[index].status;
   db.tickets[index] = {
     ...db.tickets[index],
     ...req.body,
     updated_at: new Date().toISOString(),
   };
+
+  // Sync audit log on status change
+  if (req.body.status && req.body.status !== prevStatus) {
+    if (!db.audit_logs) db.audit_logs = [];
+    db.audit_logs.push({
+      id: crypto.randomUUID(),
+      school_id: db.tickets[index].school_id || "default-school",
+      action: `Status Tiket: ${req.body.status}`,
+      actor_role: "Guru BK",
+      actor_name: "Konselor Sekolah",
+      details: `Status tiket #${db.tickets[index].ticket_number || db.tickets[index].id} diubah dari "${prevStatus}" menjadi "${req.body.status}"`,
+      zkp_proof_status: "Tervalidasi",
+      created_at: new Date().toISOString(),
+    });
+    if (req.body.status === "ditutup") {
+      const sch = (db.regional_schools || []).find((s) => s.id === "sch-01");
+      if (sch) sch.resolvedReports = (sch.resolvedReports || 0) + 1;
+    }
+  }
+
   saveDB(db);
   res.json(db.tickets[index]);
+});
+
+// School Profile
+app.get("/api/school-profile", (req, res) => {
+  const db = getDB();
+  res.json(db.school_profile || INITIAL_DATA.school_profile);
+});
+
+app.put("/api/school-profile", (req, res) => {
+  const db = getDB();
+  db.school_profile = {
+    ...(db.school_profile || INITIAL_DATA.school_profile),
+    ...req.body,
+    updatedAt: new Date().toISOString(),
+  };
+  if (!db.audit_logs) db.audit_logs = [];
+  db.audit_logs.push({
+    id: crypto.randomUUID(),
+    school_id: "default-school",
+    action: "Profil Sekolah Diperbarui",
+    actor_role: "Guru BK",
+    actor_name: req.body.submittedBy || "Admin Sekolah",
+    details: `Profil Satgas & Sekolah diperbarui: ${db.school_profile.schoolName} (NPSN: ${db.school_profile.npsn})`,
+    zkp_proof_status: "Tervalidasi",
+    created_at: new Date().toISOString(),
+  });
+  saveDB(db);
+  res.json(db.school_profile);
 });
 
 // Messages
@@ -721,7 +802,11 @@ app.post("/api/login", (req, res) => {
 // Users
 app.get("/api/users", (req, res) => {
   const db = getDB();
-  res.json(db.users);
+  const safeUsers = (db.users || []).map((u) => {
+    const { password_hash, ...safe } = u;
+    return safe;
+  });
+  res.json(safeUsers);
 });
 
 app.post("/api/users", (req, res) => {

@@ -5,6 +5,7 @@ import {
   AuditLog,
   ProtectionIntervention,
   SchoolRegionalData,
+  SchoolProfile,
 } from "../types";
 
 const isLocalhost =
@@ -704,6 +705,26 @@ export const api = {
   async getFAQs(): Promise<any[]> {
     const response = await fetchWithTimeout(`${API_URL}/faqs`);
     if (!response.ok) return [];
+    return response.json();
+  },
+
+  async getSchoolProfile(): Promise<SchoolProfile | null> {
+    try {
+      const response = await fetchWithTimeout(`${API_URL}/school-profile`);
+      if (!response.ok) return null;
+      return response.json();
+    } catch {
+      return null;
+    }
+  },
+
+  async updateSchoolProfile(profile: Partial<SchoolProfile>): Promise<SchoolProfile> {
+    const response = await fetchWithTimeout(`${API_URL}/school-profile`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(profile),
+    });
+    if (!response.ok) throw new Error("Failed to update school profile");
     return response.json();
   },
 

@@ -7,9 +7,16 @@ import {
   Search,
   Sparkles,
   X,
+  UserCheck,
+  Home,
+  Plus,
+  ArrowRight,
+  Clock,
+  AlertTriangle,
+  Send,
+  Lock,
 } from "lucide-react";
 import { ProtectionIntervention, ReportTicket } from "../types";
-import { api } from "../lib/api";
 
 interface DinasPerlindunganDashboardProps {
   interventions: ProtectionIntervention[];
@@ -41,25 +48,16 @@ export const DinasPerlindunganDashboard: React.FC<
   skipLogin = false,
 }) => {
   const [activeTab, setActiveTab] = useState<"intervensi" | "eskalasi">("intervensi");
-  const [selectedIntervention, setSelectedIntervention] = useState<ProtectionIntervention | null>(
-    interventions[0] || null,
+  const [selectedInterventionId, setSelectedInterventionId] = useState<string | null>(
+    interventions[0]?.id || null,
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [newNote, setNewNote] = useState("");
-  const [selectedStage, setSelectedStage] =
-    useState<ProtectionIntervention["stage"]>("Asesmen Awal");
-
-  // Assign expert modal
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [assignedPsychologist, setAssignedPsychologist] = useState(
     "Dr. Maria Ulfah, M.Psi., Psikolog",
   );
   const [assignedLegal, setAssignedLegal] = useState("LBH Advokat Ramah Anak");
-
-  // Critical Ticket Detail Modal
-  const [selectedCriticalTicket, setSelectedCriticalTicket] = useState<ReportTicket | null>(null);
-
-  // Login State
   const [isLoggedIn, setIsLoggedIn] = useState(skipLogin);
 
   useEffect(() => {
@@ -83,6 +81,9 @@ export const DinasPerlindunganDashboard: React.FC<
     );
   });
 
+  const selectedIntervention =
+    interventions.find((i) => i.id === selectedInterventionId) || interventions[0] || null;
+
   const criticalTickets = (tickets || []).filter(
     (t) =>
       t.urgency === "Kritis" ||
@@ -91,20 +92,15 @@ export const DinasPerlindunganDashboard: React.FC<
       Boolean(t.category && (t.category.includes("Seksual") || t.category.includes("Fisik"))),
   );
 
+  const handleStageClick = (stage: ProtectionIntervention["stage"]) => {
+    if (!selectedIntervention) return;
+    onUpdateInterventionStage(selectedIntervention.id, stage);
+  };
+
   const handleAddNote = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!selectedIntervention) return;
-    onUpdateInterventionStage(selectedIntervention.id, selectedStage, newNote);
-
-    setSelectedIntervention((prev) => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        stage: selectedStage,
-        notes: newNote ? [...prev.notes, newNote] : prev.notes,
-        updatedAt: new Date().toISOString(),
-      };
-    });
+    if (!selectedIntervention || !newNote.trim()) return;
+    onUpdateInterventionStage(selectedIntervention.id, selectedIntervention.stage, newNote);
     setNewNote("");
   };
 
@@ -112,303 +108,288 @@ export const DinasPerlindunganDashboard: React.FC<
     e.preventDefault();
     if (!selectedIntervention) return;
     onAssignExpert(selectedIntervention.id, assignedPsychologist, assignedLegal);
-
-    setSelectedIntervention((prev) => {
-      if (!prev) return null;
-      return {
-        ...prev,
-        assignedPsychologist,
-        assignedLegalAid: assignedLegal,
-        updatedAt: new Date().toISOString(),
-      };
-    });
     setShowAssignModal(false);
   };
 
-  // UNAUTHENTICATED
-  if (!isLoggedIn) {
-    return (
-      <div className="max-w-md mx-auto py-16 px-4 animate-fadeIn">
-        <div className="bg-white rounded-3xl p-8 border border-slate-200/80 shadow-sm text-center space-y-4">
-          <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
-            <HeartHandshake className="w-6 h-6" />
-          </div>
-          <div>
-            <h2 className="text-xl font-bold text-slate-900">Portal UPTD PPA</h2>
-            <p className="text-xs text-slate-500 mt-1">Perlindungan Perempuan &amp; Anak</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setIsLoggedIn(true)}
-            className="w-full py-3 px-4 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold text-xs cursor-pointer flex items-center justify-center gap-2"
-          >
-            <Sparkles className="w-4 h-4 text-amber-300" />
-            <span>Masuk Langsung (Sri Rahayu)</span>
-          </button>
-        </div>
-      </div>
-    );
-  }
+  const shelterRequiredCount = interventions.filter((i) => i.shelterRequired).length;
 
-  // LOGGED IN CLEAN SAAS DASHBOARD
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 space-y-4 animate-fadeIn">
-      {/* Top Status Bar (No dark jumbotron!) */}
-      <div className="bg-white rounded-2xl p-4 border border-slate-200/80 shadow-xs flex flex-wrap items-center justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center font-bold text-sm shrink-0">
-            PPA
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 space-y-6 animate-fadeIn">
+      {/* 1. TOP HEADER & STATS */}
+      <div className="bg-card border border-border rounded-2xl p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex items-center gap-3.5">
+          <div className="w-11 h-11 rounded-xl bg-danger text-primary-foreground flex items-center justify-center font-bold text-lg shadow-md shadow-danger/20 shrink-0">
+            <HeartHandshake size={24} />
           </div>
           <div>
-            <h2 className="text-sm font-bold text-slate-900 leading-none">
-              UPTD Perlindungan Perempuan &amp; Anak (PPA)
-            </h2>
-            <p className="text-[11px] text-slate-400 mt-1">
-              Satlak: {officerName} • {interventions.length} Kasus Aktif ({criticalTickets.length} Eskalasi Darurat)
+            <div className="flex items-center gap-2">
+              <h1 className="text-lg font-bold text-ink leading-tight">
+                Portal Intervensi Khusus UPTD PPA
+              </h1>
+              <span className="px-2 py-0.5 rounded-full bg-danger/10 text-danger text-[10px] font-bold">
+                Perlindungan Perempuan &amp; Anak
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Kepala Satuan Pelaksana: <strong>{officerName}</strong> • Penanganan Terpadu Korban Anak
             </p>
           </div>
         </div>
 
-        <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-50 border border-rose-200/70 text-rose-700 text-xs font-medium">
-            <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-            <span>UPTD PPA Siaga</span>
-          </span>
+        {/* Quick Metrics */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="px-3.5 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-bold flex items-center gap-1.5">
+            <UserCheck size={13} />
+            <span>{interventions.length} Kasus Rujukan</span>
+          </div>
+          <div className="px-3.5 py-1.5 rounded-xl bg-danger/10 border border-danger/20 text-danger text-xs font-bold flex items-center gap-1.5">
+            <Home size={13} />
+            <span>{shelterRequiredCount} Butuh Safehouse</span>
+          </div>
+          <div className="px-3.5 py-1.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-xs font-bold flex items-center gap-1.5">
+            <Scale size={13} />
+            <span>Pendampingan LBH Aktif</span>
+          </div>
         </div>
       </div>
 
-      {/* 2 Clean Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 text-xs font-semibold">
+      {/* 2. TABS */}
+      <div className="flex items-center gap-2 border-b border-border pb-1">
         <button
           type="button"
           onClick={() => setActiveTab("intervensi")}
-          className={`pb-2.5 px-3 transition cursor-pointer border-b-2 flex items-center gap-1.5 ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
             activeTab === "intervensi"
-              ? "border-rose-600 text-rose-600"
-              : "border-transparent text-slate-500 hover:text-slate-800"
+              ? "bg-primary text-primary-foreground shadow-sm shadow-primary/30"
+              : "text-muted-foreground hover:bg-muted"
           }`}
         >
-          <HeartHandshake className="w-3.5 h-3.5" />
-          <span>Intervensi Korban ({interventions.length})</span>
+          <ShieldAlert size={15} />
+          <span>Pipeline Intervensi Korban ({interventions.length})</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab("eskalasi")}
-          className={`pb-2.5 px-3 transition cursor-pointer border-b-2 flex items-center gap-1.5 ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
             activeTab === "eskalasi"
-              ? "border-rose-600 text-rose-600"
-              : "border-transparent text-slate-500 hover:text-slate-800"
+              ? "bg-primary text-primary-foreground shadow-sm shadow-primary/30"
+              : "text-muted-foreground hover:bg-muted"
           }`}
         >
-          <ShieldAlert className="w-3.5 h-3.5" />
-          <span>Eskalasi Kasus Sekolah</span>
-          {criticalTickets.length > 0 && (
-            <span className="px-1.5 py-0.2 rounded-full bg-rose-100 text-rose-800 text-[10px]">
-              {criticalTickets.length}
-            </span>
-          )}
+          <AlertTriangle size={15} />
+          <span>Rujukan Kasus Kritis Sekolah ({criticalTickets.length})</span>
         </button>
       </div>
 
-      {/* TAB 1: INTERVENSI KORBAN */}
+      {/* 3. TAB 1: INTERVENSI PIPELINE (2 Columns) */}
       {activeTab === "intervensi" && (
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 items-start">
-          {/* List (5 cols) */}
-          <div className="lg:col-span-5 bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-            <div className="p-3 border-b border-slate-100">
-              <div className="relative">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-2.5 text-slate-400" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Cari korban atau sekolah..."
-                  className="w-full pl-8 pr-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-hidden focus:ring-1 focus:ring-rose-600"
-                />
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* LEFT: INTERVENTION LIST (4 Cols) */}
+          <div className="lg:col-span-4 bg-card border border-border rounded-2xl p-4 shadow-xs space-y-3">
+            <div className="relative">
+              <Search size={14} className="absolute left-3 top-2.5 text-muted-foreground" />
+              <input
+                type="text"
+                placeholder="Cari nama inisial / sekolah..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-9 pr-3 py-2 bg-background border border-border rounded-xl text-xs text-ink placeholder:text-muted-foreground focus:outline-none focus:border-primary"
+              />
             </div>
 
-            <div className="divide-y divide-slate-100 max-h-[580px] overflow-y-auto">
+            <div className="space-y-2 max-h-[600px] overflow-y-auto">
               {filteredInterventions.map((item) => {
                 const isSelected = selectedIntervention?.id === item.id;
                 return (
                   <div
                     key={item.id}
-                    onClick={() => setSelectedIntervention(item)}
-                    className={`p-3.5 transition cursor-pointer text-xs border-l-4 ${
+                    onClick={() => setSelectedInterventionId(item.id)}
+                    className={`p-3.5 rounded-xl border transition cursor-pointer text-left space-y-1.5 ${
                       isSelected
-                        ? "bg-rose-50/60 border-l-rose-600"
-                        : "hover:bg-slate-50 border-l-transparent"
+                        ? "border-primary bg-primary/5 shadow-xs"
+                        : "border-border bg-card hover:bg-muted/40"
                     }`}
                   >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="font-mono font-bold text-slate-900">{item.id}</span>
-                      <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-rose-100 text-rose-800">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-bold text-xs text-ink">{item.victimAlias || "Ananda Korban"}</span>
+                      <span className="px-2 py-0.5 rounded-full bg-primary/10 text-primary text-[10px] font-bold">
                         {item.stage}
                       </span>
                     </div>
-                    <p className="font-semibold text-slate-800 truncate mb-0.5">{item.victimAlias}</p>
-                    <p className="text-[11px] text-slate-500">{item.schoolOrigin}</p>
+
+                    <p className="text-[11px] text-muted-foreground line-clamp-1">{item.schoolOrigin}</p>
+
+                    <div className="flex items-center justify-between text-[10px] text-muted-foreground pt-1 border-t border-border/60">
+                      <span>Kategori: {item.category}</span>
+                      {item.shelterRequired && (
+                        <span className="text-danger font-bold">Butuh Safehouse</span>
+                      )}
+                    </div>
                   </div>
                 );
               })}
             </div>
           </div>
 
-          {/* Detail (7 cols) */}
-          <div className="lg:col-span-7 bg-white rounded-2xl border border-slate-200/80 shadow-xs p-4 sm:p-5 space-y-4">
+          {/* RIGHT: INTERVENTION DETAIL & STAGES (8 Cols) */}
+          <div className="lg:col-span-8 bg-card border border-border rounded-2xl p-6 shadow-xs space-y-6">
             {selectedIntervention ? (
-              <div className="space-y-4 text-xs">
-                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 pb-3">
+              <>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-border">
                   <div>
-                    <h3 className="font-bold text-base text-slate-900">
-                      {selectedIntervention.victimAlias}
-                    </h3>
-                    <p className="text-slate-500 text-[11px]">
-                      {selectedIntervention.schoolOrigin} • Kasus: {selectedIntervention.category}
+                    <h2 className="text-base font-bold text-ink">
+                      {selectedIntervention.victimAlias || "Ananda Korban"} ({selectedIntervention.id})
+                    </h2>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      Asal: {selectedIntervention.schoolOrigin} • Kasus: {selectedIntervention.category} ({selectedIntervention.urgency})
                     </p>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => setShowAssignModal(true)}
-                    className="px-3 py-1.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-semibold cursor-pointer shadow-xs flex items-center gap-1"
+                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs shadow-xs hover:opacity-90 transition cursor-pointer"
                   >
-                    <Scale className="w-3.5 h-3.5" />
-                    <span>Tugaskan Ahli</span>
+                    <UserCheck size={14} />
+                    <span>Tugaskan Psikolog &amp; LBH</span>
                   </button>
                 </div>
 
-                {/* Tahapan Progres */}
-                <div>
-                  <span className="text-slate-400 font-bold uppercase text-[10px] block mb-1.5">
-                    Tahapan Intervensi:
-                  </span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {stages.map((stg) => (
-                      <span
-                        key={stg}
-                        className={`px-2.5 py-1 rounded-lg text-[11px] font-semibold ${
-                          selectedIntervention.stage === stg
-                            ? "bg-rose-600 text-white shadow-xs"
-                            : "bg-slate-100 text-slate-600"
-                        }`}
-                      >
-                        {stg}
-                      </span>
-                    ))}
+                {/* 5-STAGE PIPELINE STEPPER */}
+                <div className="space-y-2">
+                  <label className="text-xs font-bold text-ink block">
+                    Tahapan Intervensi Perlindungan (Klik untuk update progress):
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                    {stages.map((stg, idx) => {
+                      const isCurrent = selectedIntervention.stage === stg;
+                      const currentIndex = stages.indexOf(selectedIntervention.stage);
+                      const isPast = currentIndex >= idx;
+
+                      return (
+                        <button
+                          key={stg}
+                          type="button"
+                          onClick={() => handleStageClick(stg)}
+                          className={`p-2.5 rounded-xl border text-center transition cursor-pointer flex flex-col items-center gap-1 ${
+                            isCurrent
+                              ? "bg-primary text-primary-foreground border-primary shadow-xs font-bold"
+                              : isPast
+                              ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-700 font-semibold"
+                              : "bg-background border-border text-muted-foreground hover:bg-muted"
+                          }`}
+                        >
+                          <span className="text-[10px] opacity-75">Tahap {idx + 1}</span>
+                          <span className="text-[11px] leading-tight">{stg}</span>
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
 
-                {/* Tenaga Pendamping */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-0.5">
-                    <span className="text-[10px] text-slate-400 font-bold block">Psikolog Klinis:</span>
-                    <p className="font-semibold text-slate-800">
-                      {selectedIntervention.assignedPsychologist || "Belum ditugaskan"}
-                    </p>
+                {/* Assigned Experts Info */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 p-4 bg-muted/40 border border-border rounded-xl text-xs">
+                  <div>
+                    <span className="font-bold text-ink block mb-0.5">Psikolog Klinis Anak:</span>
+                    <p className="text-muted-foreground">{selectedIntervention.assignedPsychologist || "Belum ditugaskan"}</p>
                   </div>
-                  <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-0.5">
-                    <span className="text-[10px] text-slate-400 font-bold block">Bantuan Hukum (LBH):</span>
-                    <p className="font-semibold text-slate-800">
-                      {selectedIntervention.assignedLegalAid || "Belum ditugaskan"}
-                    </p>
+                  <div>
+                    <span className="font-bold text-ink block mb-0.5">Pendamping Hukum (LBH):</span>
+                    <p className="text-muted-foreground">{selectedIntervention.assignedLegalAid || "Belum ditugaskan"}</p>
                   </div>
                 </div>
 
-                {/* Catatan Intervensi */}
-                <div className="space-y-2 pt-2 border-t border-slate-100">
-                  <span className="text-slate-400 font-bold uppercase text-[10px] block">
-                    Catatan Perkembangan Pemulihan:
-                  </span>
-                  <div className="space-y-1 max-h-36 overflow-y-auto">
-                    {(selectedIntervention.notes || []).map((n, idx) => (
-                      <div key={idx} className="p-2 rounded-lg bg-slate-50 text-slate-700 text-[11px]">
-                        • {n}
-                      </div>
-                    ))}
+                {/* Notes History & Add Note */}
+                <div className="space-y-3 pt-2">
+                  <label className="text-xs font-bold text-ink block">
+                    Catatan Perkembangan Pemulihan Anak:
+                  </label>
+
+                  <div className="space-y-2 max-h-48 overflow-y-auto">
+                    {selectedIntervention.notes && selectedIntervention.notes.length > 0 ? (
+                      selectedIntervention.notes.map((n, i) => (
+                        <div key={i} className="p-3 bg-background border border-border rounded-xl text-xs text-foreground">
+                          • {n}
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-xs text-muted-foreground italic">Belum ada catatan intervensi.</p>
+                    )}
                   </div>
 
-                  <form onSubmit={handleAddNote} className="flex gap-2 pt-1">
-                    <select
-                      value={selectedStage}
-                      onChange={(e) => setSelectedStage(e.target.value as any)}
-                      className="p-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs"
-                    >
-                      {stages.map((s) => (
-                        <option key={s} value={s}>{s}</option>
-                      ))}
-                    </select>
+                  <form onSubmit={handleAddNote} className="flex gap-2">
                     <input
                       type="text"
+                      placeholder="Tuliskan hasil asesmen psikologi atau pendampingan hukum..."
                       value={newNote}
                       onChange={(e) => setNewNote(e.target.value)}
-                      placeholder="Tambah catatan perkembangan..."
-                      className="flex-1 px-3 py-1.5 bg-slate-50 border border-slate-200 rounded-xl text-xs focus:bg-white focus:outline-hidden"
+                      className="flex-1 px-4 py-2 bg-background border border-border rounded-xl text-xs text-ink placeholder:text-muted-foreground focus:outline-none focus:border-primary"
                     />
                     <button
                       type="submit"
-                      className="px-3.5 py-1.5 bg-slate-900 hover:bg-slate-800 text-white rounded-xl font-semibold cursor-pointer"
+                      className="px-4 py-2 bg-ink text-primary-foreground font-bold text-xs rounded-xl hover:opacity-90 transition cursor-pointer flex items-center gap-1.5"
                     >
-                      Simpan
+                      <Send size={13} />
+                      <span>Simpan Catatan</span>
                     </button>
                   </form>
                 </div>
-              </div>
+              </>
             ) : (
-              <div className="p-16 text-center text-slate-400 text-xs">
-                Pilih kasus di panel kiri untuk membuka intervensi.
+              <div className="text-center py-20 text-muted-foreground text-xs">
+                Pilih kasus rujukan di sebelah kiri untuk melihat detail intervensi.
               </div>
             )}
           </div>
         </div>
       )}
 
-      {/* TAB 2: RADAR ESKALASI */}
+      {/* 4. TAB 2: KASUS KRITIS ESKALASI */}
       {activeTab === "eskalasi" && (
-        <div className="bg-white rounded-2xl border border-slate-200/80 shadow-xs overflow-hidden">
-          <div className="p-3 border-b border-slate-100 text-xs text-slate-500">
-            Laporan kekerasan kritis dan darurat dari sekolah yang membutuhkan pendampingan medis, psikologis, atau hukum UPTD PPA.
+        <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-4">
+          <div>
+            <h2 className="text-sm font-bold text-ink">Kasus Kritis &amp; Rujukan Baru dari Satgas Sekolah</h2>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              Daftar insiden dengan urgensi Kritis/Tinggi yang memerlukan perlindungan terpadu UPTD PPA.
+            </p>
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-xs">
-              <thead>
-                <tr className="border-b border-slate-100 text-slate-400 text-[10px] uppercase font-semibold">
-                  <th className="py-2.5 px-3">ID Tiket</th>
-                  <th className="py-2.5 px-3">Kategori</th>
-                  <th className="py-2.5 px-3">Urgensi</th>
-                  <th className="py-2.5 px-3">Lokasi</th>
-                  <th className="py-2.5 px-3 text-right">Aksi</th>
+          <div className="border border-border rounded-xl overflow-hidden">
+            <table className="w-full text-xs text-left">
+              <thead className="bg-muted text-muted-foreground font-bold border-b border-border">
+                <tr>
+                  <th className="p-3">ID Tiket</th>
+                  <th className="p-3">Kategori</th>
+                  <th className="p-3">Urgensi</th>
+                  <th className="p-3">Kronologi / Laporan</th>
+                  <th className="p-3 text-right">Status Penanganan</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100 text-slate-700">
+              <tbody className="divide-y divide-border">
                 {criticalTickets.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="p-8 text-center text-slate-400">
-                      Tidak ada laporan eskalasi darurat.
+                    <td colSpan={5} className="p-8 text-center text-muted-foreground">
+                      Tidak ada rujukan kasus kritis baru saat ini.
                     </td>
                   </tr>
                 ) : (
                   criticalTickets.map((t) => (
-                    <tr key={t.id} className="hover:bg-slate-50">
-                      <td className="py-2.5 px-3 font-mono font-bold text-slate-900">{t.id}</td>
-                      <td className="py-2.5 px-3 font-semibold text-slate-800">{t.category}</td>
-                      <td className="py-2.5 px-3">
-                        <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-100 text-rose-800">
+                    <tr key={t.id} className="hover:bg-muted/40 transition">
+                      <td className="p-3 font-mono font-bold text-ink">{t.ticketNumber || t.id.slice(0, 8)}</td>
+                      <td className="p-3 font-bold text-ink">{t.category}</td>
+                      <td className="p-3">
+                        <span className="px-2 py-0.5 rounded-full bg-danger/10 text-danger font-bold text-[10px]">
                           {t.urgency}
                         </span>
                       </td>
-                      <td className="py-2.5 px-3 text-slate-600">{t.location}</td>
-                      <td className="py-2.5 px-3 text-right">
-                        <button
-                          type="button"
-                          onClick={() => setSelectedCriticalTicket(t)}
-                          className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 rounded-lg text-xs font-semibold cursor-pointer"
-                        >
-                          Tinjau Laporan
-                        </button>
+                      <td className="p-3 text-muted-foreground max-w-sm line-clamp-2">
+                        {t.redactedStory || t.story}
+                      </td>
+                      <td className="p-3 text-right">
+                        <span className="px-2.5 py-0.5 rounded-full bg-primary/10 text-primary font-bold text-[10px] capitalize">
+                          {t.status.replace("_", " ")}
+                        </span>
                       </td>
                     </tr>
                   ))
@@ -419,35 +400,41 @@ export const DinasPerlindunganDashboard: React.FC<
         </div>
       )}
 
-      {/* Modal Assign Expert */}
-      {showAssignModal && selectedIntervention && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-5 max-w-sm w-full shadow-xl space-y-3.5 text-xs animate-scaleUp">
-            <h3 className="font-bold text-sm text-slate-900">
-              Tugaskan Ahli: {selectedIntervention.victimAlias}
-            </h3>
-            <form onSubmit={handleSaveExpert} className="space-y-3">
+      {/* 5. MODAL TUGASKAN AHLI */}
+      {showAssignModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-ink/50 backdrop-blur-xs animate-fadeIn">
+          <div className="bg-card border border-border rounded-2xl p-6 max-w-md w-full space-y-4 shadow-xl">
+            <div className="flex items-center justify-between border-b border-border pb-3">
+              <h3 className="text-sm font-bold text-ink">Penugasan Tim Ahli UPTD PPA</h3>
+              <button onClick={() => setShowAssignModal(false)} className="text-muted-foreground hover:text-ink cursor-pointer">
+                <X size={16} />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveExpert} className="space-y-3 text-xs">
               <div>
-                <label className="font-semibold block mb-1">Psikolog Klinis:</label>
+                <label className="font-bold text-ink block mb-1">Psikolog Klinis Anak:</label>
                 <select
                   value={assignedPsychologist}
                   onChange={(e) => setAssignedPsychologist(e.target.value)}
-                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl"
+                  className="w-full p-2.5 bg-background border border-border rounded-xl text-ink font-semibold"
                 >
-                  <option value="Dr. Maria Ulfah, M.Psi., Psikolog">Dr. Maria Ulfah, M.Psi., Psikolog</option>
-                  <option value="Ahmad Fauzi, S.Psi., M.A.">Ahmad Fauzi, S.Psi., M.A.</option>
+                  <option value="Dr. Maria Ulfah, M.Psi., Psikolog">Dr. Maria Ulfah, M.Psi., Psikolog (Spesialis Trauma Anak)</option>
+                  <option value="Farhan Maulana, S.Psi., M.Psi">Farhan Maulana, S.Psi., M.Psi (Konselor Remaja)</option>
+                  <option value="Hj. Nuraini, M.Psi., Psikolog">Hj. Nuraini, M.Psi., Psikolog (Asosiasi Psikologi Forensik)</option>
                 </select>
               </div>
 
               <div>
-                <label className="font-semibold block mb-1">Pendamping Hukum (LBH):</label>
+                <label className="font-bold text-ink block mb-1">Lembaga Bantuan Hukum (LBH):</label>
                 <select
                   value={assignedLegal}
                   onChange={(e) => setAssignedLegal(e.target.value)}
-                  className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl"
+                  className="w-full p-2.5 bg-background border border-border rounded-xl text-ink font-semibold"
                 >
-                  <option value="LBH Advokat Ramah Anak">LBH Advokat Ramah Anak</option>
-                  <option value="LBH APIK">LBH APIK</option>
+                  <option value="LBH Advokat Ramah Anak">LBH Advokat Ramah Anak Indonesia</option>
+                  <option value="Pusat Bantuan Hukum Peradi PPPA">Pusat Bantuan Hukum Peradi PPPA</option>
+                  <option value="Yayasan Pendampingan Hak Anak">Yayasan Pendampingan Hak Anak</option>
                 </select>
               </div>
 
@@ -455,44 +442,18 @@ export const DinasPerlindunganDashboard: React.FC<
                 <button
                   type="button"
                   onClick={() => setShowAssignModal(false)}
-                  className="px-3 py-1.5 font-semibold hover:bg-slate-100 rounded-xl"
+                  className="px-4 py-2 border border-border rounded-xl font-bold hover:bg-muted cursor-pointer"
                 >
                   Batal
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-1.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl"
+                  className="px-4 py-2 bg-primary text-primary-foreground font-bold rounded-xl hover:opacity-90 cursor-pointer"
                 >
-                  Tetapkan
+                  Simpan Penugasan
                 </button>
               </div>
             </form>
-          </div>
-        </div>
-      )}
-
-      {/* Modal Detail Eskalasi */}
-      {selectedCriticalTicket && (
-        <div className="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl p-5 max-w-md w-full shadow-xl space-y-3 text-xs animate-scaleUp">
-            <div className="flex items-center justify-between">
-              <h3 className="font-bold text-sm text-slate-900">Laporan #{selectedCriticalTicket.id}</h3>
-              <button type="button" onClick={() => setSelectedCriticalTicket(null)} className="text-slate-400 hover:text-slate-700">
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-            <p className="text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-xl border border-slate-100">
-              {selectedCriticalTicket.redactedStory}
-            </p>
-            <div className="flex justify-end pt-2">
-              <button
-                type="button"
-                onClick={() => setSelectedCriticalTicket(null)}
-                className="px-4 py-1.5 bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-xl"
-              >
-                Tutup
-              </button>
-            </div>
           </div>
         </div>
       )}

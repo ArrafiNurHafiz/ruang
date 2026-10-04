@@ -128,7 +128,7 @@ async function runFullE2ESuite() {
     console.log("\n📌 [TAHAP 3] Alur Pelaporan Siswa: Verifikasi Akses, Redaksi PII, & Submit Tiket");
 
     // Navigasi ke menu Lapor
-    await page.click("#nav-link-lapor");
+    await page.click("#nav-lapor-btn, #nav-link-lapor, button:has-text('Lapor Anonim')");
     await page.waitForTimeout(600);
 
     // Periksa apakah gerbang verifikasi siswa aktif

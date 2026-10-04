@@ -85,6 +85,7 @@ import {
 } from "./data/mockData";
 import { api } from "./lib/api";
 import { supabase, isSupabaseEnabled } from "./lib/supabase";
+import { StorageEngine } from "./utils/storage";
 
 const SCHOOL_ID = "default-school";
 
@@ -120,22 +121,28 @@ export default function App() {
   const kioskTimerRef = useRef<any>(null);
 
   // Data Stores
-  const [tickets, setTickets] = useState<ReportTicket[]>([]);
+  const [tickets, setTickets] = useState<ReportTicket[]>(() => {
+    return StorageEngine.getTickets();
+  });
   const [activatedTokens, setActivatedTokens] = useState<SchoolToken[]>([]);
   const [loggedCounselor, setLoggedCounselor] = useState<CounselorUser | null>(
     null,
   );
   const [usersList, setUsersList] = useState<UserAccount[]>([]);
-  const [auditLogs, setAuditLogs] = useState<AuditLog[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLog[]>(() => {
+    return StorageEngine.getAuditLogs();
+  });
   const [regionalSchools, setRegionalSchools] = useState<SchoolRegionalData[]>(
     [],
   );
   const [interventions, setInterventions] = useState<ProtectionIntervention[]>(
-    [],
+    () => {
+      return StorageEngine.getInterventions();
+    },
   );
-  const [schoolProfile, setSchoolProfile] = useState<SchoolProfile>(
-    DEFAULT_SCHOOL_PROFILE,
-  );
+  const [schoolProfile, setSchoolProfile] = useState<SchoolProfile>(() => {
+    return StorageEngine.getSchoolProfile();
+  });
 
   // Load data on mount
   useEffect(() => {
@@ -149,25 +156,50 @@ export default function App() {
           api.getAuditLogs(),
           api.getRegionalSchools(),
           api.getInterventions(),
+          api.getSchoolProfile(),
         ]);
 
         const get = <T,>(r: PromiseSettledResult<T>, fallback: T): T =>
           r.status === "fulfilled" ? r.value : fallback;
 
-        const fetchedTokens = get(results[1], []);
+        const fetchedTickets = get<ReportTicket[]>(results[0], []);
+        if (fetchedTickets && fetchedTickets.length > 0) {
+          setTickets(fetchedTickets);
+          StorageEngine.saveTickets(fetchedTickets);
+        }
+
+        const fetchedTokens = get<SchoolToken[]>(results[1], []);
         setTokensList(
           fetchedTokens && fetchedTokens.length > 0
             ? fetchedTokens
             : INITIAL_TOKENS,
         );
-        setUsersList(get(results[2], []));
-        setAuditLogs(get(results[3], []));
-        setRegionalSchools(get(results[4], []));
-        setInterventions(get(results[5], []));
 
-        const usersData = get(results[2], []);
+        const usersData = get<UserAccount[]>(results[2], []);
+        setUsersList(usersData);
         if (!currentUserAccount && usersData.length > 0) {
           setCurrentUserAccount(usersData[0]);
+        }
+
+        const fetchedLogs = get<AuditLog[]>(results[3], []);
+        if (fetchedLogs && fetchedLogs.length > 0) {
+          setAuditLogs(fetchedLogs);
+          StorageEngine.saveAuditLogs(fetchedLogs);
+        }
+
+        const fetchedSchools = get<SchoolRegionalData[]>(results[4], []);
+        setRegionalSchools(fetchedSchools);
+
+        const fetchedInterventions = get<ProtectionIntervention[]>(results[5], []);
+        if (fetchedInterventions && fetchedInterventions.length > 0) {
+          setInterventions(fetchedInterventions);
+          StorageEngine.saveInterventions(fetchedInterventions);
+        }
+
+        const fetchedProfile = get<SchoolProfile | null>(results[6], null);
+        if (fetchedProfile && fetchedProfile.schoolName) {
+          setSchoolProfile(fetchedProfile);
+          StorageEngine.saveSchoolProfile(fetchedProfile);
         }
       } catch (err) {
         console.error("Failed to load data:", err);
@@ -199,12 +231,10 @@ export default function App() {
             }),
             isEncrypted: m.is_encrypted ?? true,
           };
-          setTickets((prev) =>
-            prev.map((t) => {
+          setTickets((prev) => {
+            const next = prev.map((t) => {
               if (t.id === m.ticket_id) {
-                const exists = (t.messages ?? []).some(
-                  (msg) => msg.id === m.id,
-                );
+                const exists = (t.messages ?? []).some((msg) => msg.id === m.id);
                 if (exists) return t;
                 return {
                   ...t,
@@ -212,8 +242,10 @@ export default function App() {
                 };
               }
               return t;
-            }),
-          );
+            });
+            StorageEngine.saveTickets(next);
+            return next;
+          });
         },
       )
       .on(
@@ -221,8 +253,8 @@ export default function App() {
         { event: "UPDATE", schema: "public", table: "tickets" },
         (payload) => {
           const updated = payload.new as any;
-          setTickets((prev) =>
-            prev.map((t) => {
+          setTickets((prev) => {
+            const next = prev.map((t) => {
               if (t.id === updated.id) {
                 return {
                   ...t,
@@ -231,8 +263,10 @@ export default function App() {
                 };
               }
               return t;
-            }),
-          );
+            });
+            StorageEngine.saveTickets(next);
+            return next;
+          });
         },
       )
       .subscribe();
@@ -242,25 +276,130 @@ export default function App() {
     };
   }, []);
 
-  // Polling fallback: refresh tickets every 8 seconds
-  useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        const fresh = await api.getAllTickets();
+  // Multi-Entity Background Synchronization Engine (Snappy 4s Polling)
+  const syncAllData = async () => {
+    try {
+      const results = await Promise.allSettled([
+        api.getAllTickets(),
+        api.getAuditLogs(),
+        api.getInterventions(),
+        api.getRegionalSchools(),
+        api.getSchoolProfile(),
+      ]);
+
+      const get = <T,>(r: PromiseSettledResult<T>, fallback: T): T =>
+        r.status === "fulfilled" ? r.value : fallback;
+
+      const freshTickets = get<ReportTicket[] | null>(results[0], null);
+      if (freshTickets && Array.isArray(freshTickets)) {
         setTickets((prev) => {
-          const prevIds = new Set(prev.map((t) => t.id));
-          const newOnes = fresh.filter((t) => !prevIds.has(t.id));
-          return [
-            ...newOnes,
-            ...prev.map((t) => {
-              const updated = fresh.find((f) => f.id === t.id);
-              return updated || t;
-            }),
-          ];
+          const prevMap = new Map<string, ReportTicket>(prev.map((t) => [t.id, t]));
+          let hasDiff = freshTickets.length !== prev.length;
+          const merged = freshTickets.map((ft) => {
+            const existing = prevMap.get(ft.id);
+            if (!existing) {
+              hasDiff = true;
+              return ft;
+            }
+            if (
+              existing.status !== ft.status ||
+              existing.updatedAt !== ft.updatedAt ||
+              (existing.messages?.length || 0) !== (ft.messages?.length || 0) ||
+              existing.isEscalatedToDinas !== ft.isEscalatedToDinas ||
+              Boolean(existing.resolutionEvidence) !== Boolean(ft.resolutionEvidence)
+            ) {
+              hasDiff = true;
+              return { ...existing, ...ft };
+            }
+            return existing;
+          });
+          if (hasDiff) {
+            StorageEngine.saveTickets(merged);
+            return merged;
+          }
+          return prev;
         });
-      } catch {}
-    }, 8000);
-    return () => clearInterval(interval);
+      }
+
+      const freshLogs = get<AuditLog[] | null>(results[1], null);
+      if (freshLogs && Array.isArray(freshLogs) && freshLogs.length > 0) {
+        setAuditLogs((prev) => {
+          if (freshLogs.length !== prev.length) {
+            StorageEngine.saveAuditLogs(freshLogs);
+            return freshLogs;
+          }
+          return prev;
+        });
+      }
+
+      const freshInterventions = get<ProtectionIntervention[] | null>(results[2], null);
+      if (freshInterventions && Array.isArray(freshInterventions)) {
+        setInterventions((prev) => {
+          if (freshInterventions.length !== prev.length) {
+            StorageEngine.saveInterventions(freshInterventions);
+            return freshInterventions;
+          }
+          return prev;
+        });
+      }
+
+      const freshSchools = get<SchoolRegionalData[] | null>(results[3], null);
+      if (freshSchools && Array.isArray(freshSchools) && freshSchools.length > 0) {
+        setRegionalSchools(freshSchools);
+      }
+
+      const freshProfile = get<SchoolProfile | null>(results[4], null);
+      if (freshProfile && freshProfile.schoolName) {
+        setSchoolProfile((prev) => {
+          if (prev.updatedAt !== freshProfile.updatedAt) {
+            StorageEngine.saveSchoolProfile(freshProfile);
+            return freshProfile;
+          }
+          return prev;
+        });
+      }
+    } catch (e) {
+      // background sync fail-safe
+    }
+  };
+
+  useEffect(() => {
+    const interval = setInterval(syncAllData, 4000);
+    const handleFocus = () => {
+      syncAllData();
+    };
+    window.addEventListener("focus", handleFocus);
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("focus", handleFocus);
+    };
+  }, []);
+
+  // Cross-Tab & Cross-Window Instant Sync via Storage Events
+  useEffect(() => {
+    const handleStorageEvent = (e: StorageEvent) => {
+      if (!e.newValue) return;
+      try {
+        if (e.key === "ruangaman_school_profile" || e.key === "tameng_school_profile") {
+          const parsed = JSON.parse(e.newValue);
+          setSchoolProfile(parsed);
+        } else if (e.key === "ruangaman_tickets" || e.key === "tameng_tickets") {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setTickets(parsed);
+        } else if (e.key === "ruangaman_audit_logs" || e.key === "tameng_audit_logs") {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setAuditLogs(parsed);
+        } else if (e.key === "ruangaman_interventions" || e.key === "tameng_interventions") {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setInterventions(parsed);
+        }
+      } catch (err) {
+        console.error("Storage event parse error:", err);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageEvent);
+    return () => window.removeEventListener("storage", handleStorageEvent);
   }, []);
 
   // ESC Shortcut Listener for Quick Exit / Disguise toggle
@@ -381,17 +520,25 @@ export default function App() {
         schoolId: SCHOOL_ID,
         isKiosk: newTicket.isKioskSubmission,
       });
-      setTickets((prev) => [created, ...prev]);
+      const nextTickets = [created, ...tickets];
+      setTickets(nextTickets);
+      StorageEngine.saveTickets(nextTickets);
+
+      setRegionalSchools((prev) =>
+        prev.map((s) => (s.id === "sch-01" ? { ...s, totalReports: (s.totalReports || 0) + 1 } : s)),
+      );
 
       // Update audit logs from backend
       const logs = await api.getAuditLogs();
       setAuditLogs(logs);
+      StorageEngine.saveAuditLogs(logs);
 
       return created;
     } catch (err) {
       console.error("Failed to submit report:", err);
-      // Fallback to local state if server fails (not ideal for "Production Ready" but good for resilience)
-      setTickets((prev) => [newTicket, ...prev]);
+      const nextTickets = [newTicket, ...tickets];
+      setTickets(nextTickets);
+      StorageEngine.saveTickets(nextTickets);
     }
   };
 
@@ -408,8 +555,8 @@ export default function App() {
         isEncrypted: true,
       });
 
-      setTickets((prev) =>
-        prev.map((t) => {
+      setTickets((prev) => {
+        const next = prev.map((t) => {
           if (t.id === ticketId) {
             const formattedMsg = {
               id: newMessage.id,
@@ -431,8 +578,10 @@ export default function App() {
             };
           }
           return t;
-        }),
-      );
+        });
+        StorageEngine.saveTickets(next);
+        return next;
+      });
     } catch (err) {
       console.error("Failed to send message:", err);
     }
@@ -447,8 +596,8 @@ export default function App() {
         isEncrypted: true,
       });
 
-      setTickets((prev) =>
-        prev.map((t) => {
+      setTickets((prev) => {
+        const next = prev.map((t) => {
           if (t.id === ticketId) {
             const formattedMsg = {
               id: newMessage.id,
@@ -471,8 +620,10 @@ export default function App() {
             };
           }
           return t;
-        }),
-      );
+        });
+        StorageEngine.saveTickets(next);
+        return next;
+      });
     } catch (err) {
       console.error("Failed to send counselor reply:", err);
     }
@@ -486,8 +637,8 @@ export default function App() {
     try {
       await api.updateTicketStatus(ticketId, status, actionSummary);
 
-      setTickets((prev) =>
-        prev.map((t) => {
+      setTickets((prev) => {
+        const next = prev.map((t) => {
           if (t.id === ticketId) {
             return {
               ...t,
@@ -497,12 +648,21 @@ export default function App() {
             };
           }
           return t;
-        }),
-      );
+        });
+        StorageEngine.saveTickets(next);
+        return next;
+      });
+
+      if (status === "ditutup") {
+        setRegionalSchools((prev) =>
+          prev.map((s) => (s.id === "sch-01" ? { ...s, resolvedReports: (s.resolvedReports || 0) + 1 } : s)),
+        );
+      }
 
       // Refresh audit logs
       const logs = await api.getAuditLogs();
       setAuditLogs(logs);
+      StorageEngine.saveAuditLogs(logs);
     } catch (err) {
       console.error("Failed to update status:", err);
     }
@@ -519,21 +679,24 @@ export default function App() {
   ) => {
     try {
       const updated = await api.submitResolutionEvidence(ticketId, evidence);
-      setTickets((prev) =>
-        prev.map((t) =>
+      setTickets((prev) => {
+        const next = prev.map((t) =>
           t.id === ticketId
             ? {
                 ...t,
                 ...updated,
-                status: "menunggu_siswa",
+                status: "menunggu_siswa" as const,
                 resolutionEvidence: updated.resolutionEvidence || updated.resolution_evidence,
                 updatedAt: new Date().toISOString(),
               }
             : t,
-        ),
-      );
+        );
+        StorageEngine.saveTickets(next);
+        return next;
+      });
       const logs = await api.getAuditLogs();
       setAuditLogs(logs);
+      StorageEngine.saveAuditLogs(logs);
     } catch (err) {
       console.error("Failed to submit resolution evidence:", err);
       throw err;
@@ -543,8 +706,8 @@ export default function App() {
   const handleAddCounselorNote = async (ticketId: string, note: string) => {
     try {
       await api.addCounselorNote(ticketId, note);
-      setTickets((prev) =>
-        prev.map((t) => {
+      setTickets((prev) => {
+        const next = prev.map((t) => {
           if (t.id === ticketId) {
             return {
               ...t,
@@ -553,8 +716,10 @@ export default function App() {
             };
           }
           return t;
-        }),
-      );
+        });
+        StorageEngine.saveTickets(next);
+        return next;
+      });
     } catch (err) {
       console.error("Failed to add note:", err);
     }
@@ -671,11 +836,11 @@ export default function App() {
         const newIntervention: Partial<ProtectionIntervention> = {
           ticketId: targetTicket.id,
           victimAlias: `Ananda (Korban #${targetTicket.id})`,
-          schoolOrigin: "SMA Negeri 1 Jakarta",
+          schoolOrigin: schoolProfile.schoolName || "SMA Negeri 1 Jakarta",
           category: targetTicket.category,
           urgency: targetTicket.urgency,
           stage: "Asesmen Awal",
-          shelterRequired: targetTicket.urgency.includes("Kritis"),
+          shelterRequired: (targetTicket.urgency || "").includes("Kritis"),
           assignedPsychologist: "Dr. Maria Ulfah, M.Psi., Psikolog",
           assignedLegalAid: "LBH Advokat Ramah Anak",
           notes: [
@@ -684,7 +849,11 @@ export default function App() {
           ],
         };
         const created = await api.createIntervention(newIntervention);
-        setInterventions((prev) => [created, ...prev]);
+        setInterventions((prev) => {
+          const next = [created, ...prev];
+          StorageEngine.saveInterventions(next);
+          return next;
+        });
       }
 
       // 2. Add system reply in the ticket
@@ -703,12 +872,18 @@ export default function App() {
 
       await api.updateTicketStatus(ticketId, "tindakan");
 
-      setTickets((prev) =>
-        prev.map((t) => {
+      setTickets((prev) => {
+        const next = prev.map((t) => {
           if (t.id === ticketId) {
             return {
               ...t,
-              status: "tindakan",
+              status: "tindakan" as const,
+              isEscalatedToDinas: true,
+              is_escalated_to_dinas: true,
+              escalatedTo: target as any,
+              escalated_to: target as any,
+              escalationReason: reason,
+              escalation_reason: reason,
               messages: [
                 ...(t.messages ?? []),
                 {
@@ -722,12 +897,15 @@ export default function App() {
             };
           }
           return t;
-        }),
-      );
+        });
+        StorageEngine.saveTickets(next);
+        return next;
+      });
 
       // 3. Refresh audit logs
       const logs = await api.getAuditLogs();
       setAuditLogs(logs);
+      StorageEngine.saveAuditLogs(logs);
     } catch (err) {
       console.error("Failed to escalate ticket:", err);
     }
@@ -828,8 +1006,18 @@ export default function App() {
     }
   };
 
-  const handleUpdateSchoolProfile = (profile: SchoolProfile) => {
-    setSchoolProfile({ ...profile, updatedAt: new Date().toISOString() });
+  const handleUpdateSchoolProfile = async (profile: SchoolProfile) => {
+    const updated = { ...profile, updatedAt: new Date().toISOString() };
+    setSchoolProfile(updated);
+    StorageEngine.saveSchoolProfile(updated);
+    try {
+      await api.updateSchoolProfile(updated);
+      const logs = await api.getAuditLogs();
+      setAuditLogs(logs);
+      StorageEngine.saveAuditLogs(logs);
+    } catch (err) {
+      console.error("Failed to update school profile on server:", err);
+    }
   };
 
   const handleExportBackup = () => {
@@ -894,7 +1082,7 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col selection:bg-indigo-500 selection:text-white">
+    <div className="min-h-screen bg-background text-foreground flex flex-col selection:bg-primary selection:text-primary-foreground">
       {/* Top Emergency Hotline Banner */}
       <EmergencyBanner onOpenModal={() => setIsEmergencyModalOpen(true)} />
 
@@ -924,7 +1112,7 @@ export default function App() {
       )}
 
       {/* Main Content Areas for All 5 Roles */}
-      <main className="flex-1 bg-gradient-to-b from-white via-slate-50 to-slate-50">
+      <main className="flex-1 bg-background">
         {/* ROLE 1: SISWA / PELAPOR ANONIM VIEWS */}
         {currentTab === "beranda" && (
           <DesktopLandingHero
@@ -994,6 +1182,45 @@ export default function App() {
             tickets={tickets}
             initialTicketId={activeChatTicketId}
             onSendMessage={handleSendMessage}
+            onTicketUpdated={(updated) => {
+              const updatedTickets = tickets.map((t) => (t.id === updated.id ? { ...t, ...updated } : t));
+              setTickets(updatedTickets);
+              StorageEngine.saveTickets(updatedTickets);
+
+              if (updated.status === "ditutup") {
+                setRegionalSchools((prev) =>
+                  prev.map((s) => (s.id === "sch-01" ? { ...s, resolvedReports: (s.resolvedReports || 0) + 1 } : s)),
+                );
+              }
+              if (updated.isEscalatedToDinas) {
+                const newIntervention: Partial<ProtectionIntervention> = {
+                  ticketId: updated.id,
+                  victimAlias: `Ananda (Korban #${updated.id})`,
+                  schoolOrigin: schoolProfile.schoolName || "SMA Negeri 1 Jakarta",
+                  category: updated.category,
+                  urgency: updated.urgency,
+                  stage: "Asesmen Awal",
+                  shelterRequired: (updated.urgency || "").includes("Kritis"),
+                  assignedPsychologist: "Dr. Maria Ulfah, M.Psi., Psikolog",
+                  assignedLegalAid: "LBH Advokat Ramah Anak",
+                  notes: [
+                    `Eskalasi oleh Siswa Pelapor. Alasan: ${updated.escalationReason || "Penanganan belum tuntas"}`,
+                    "Pemberian perlindungan & supervisi khusus UPTD PPA.",
+                  ],
+                };
+                api.createIntervention(newIntervention).then((created) => {
+                  setInterventions((prev) => {
+                    const next = [created, ...prev];
+                    StorageEngine.saveInterventions(next);
+                    return next;
+                  });
+                }).catch(() => {});
+              }
+              api.getAuditLogs().then((logs) => {
+                setAuditLogs(logs);
+                StorageEngine.saveAuditLogs(logs);
+              }).catch(() => {});
+            }}
           />
         )}
 
@@ -1016,6 +1243,7 @@ export default function App() {
             onEscalateTicket={handleEscalateTicket}
             onSubmitResolutionEvidence={handleSubmitResolutionEvidence}
             schoolProfile={schoolProfile}
+            onUpdateSchoolProfile={handleUpdateSchoolProfile}
             tokens={tokensList}
             onGenerateBatchTokens={handleGenerateBatchTokens}
             onToggleTokenStatus={handleToggleTokenStatus}
@@ -1048,6 +1276,16 @@ export default function App() {
             tickets={tickets}
             onLogout={() => handleSelectRole("siswa")}
             skipLogin={activeRole === "dinas-pendidikan"}
+            onSupervisionSent={async (schoolId, message, officerName) => {
+              const logs = await api.getAuditLogs().catch(() => []);
+              if (logs.length) {
+                setAuditLogs(logs);
+                StorageEngine.saveAuditLogs(logs);
+              }
+              setRegionalSchools((prev) =>
+                prev.map((s) => (s.id === schoolId ? { ...s, lastActive: "Baru saja disupervisi" } : s)),
+              );
+            }}
           />
         )}
 
@@ -1154,19 +1392,67 @@ export default function App() {
       </nav>
 
       {/* Footer */}
-      <footer className="bg-white border-t border-slate-100 mb-14 sm:mb-0">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400">
-          <div className="flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-            <span className="font-medium text-slate-500">Ruang Aman</span>
-            <span>— Platform Pelaporan & Konseling Siswa</span>
-          </div>
-          <div>
-            <span>
-              Platform ini dihibahkan untuk satuan pendidikan Indonesia.
-            </span>
-          </div>
+      <footer className="site-footer mb-14 sm:mb-0 border-t border-border bg-card">
+        <div
+          onClick={() => setCurrentTab("beranda")}
+          className="flex items-center gap-3 cursor-pointer select-none"
+        >
+          <span className="brand-mark">
+            <ShieldCheck size={22} strokeWidth={2.5} />
+          </span>
+          <span className="leading-tight text-left">
+            <strong className="block text-[16px] text-ink font-bold">
+              Ruang Aman
+            </strong>
+            <small className="text-[11px] text-muted-foreground">
+              PPKSP • Suara Siswa
+            </small>
+          </span>
         </div>
+
+        <nav aria-label="Footer Navigasi">
+          <button
+            type="button"
+            onClick={() => setCurrentTab("beranda")}
+            className="hover:text-primary transition cursor-pointer text-xs font-semibold"
+          >
+            Beranda
+          </button>
+          <button
+            type="button"
+            onClick={() => setCurrentTab("tentang")}
+            className="hover:text-primary transition cursor-pointer text-xs font-semibold"
+          >
+            Tentang
+          </button>
+          <button
+            type="button"
+            onClick={() => setCurrentTab("cara-kerja")}
+            className="hover:text-primary transition cursor-pointer text-xs font-semibold"
+          >
+            Cara Melapor
+          </button>
+          <button
+            type="button"
+            onClick={() => setCurrentTab("bantuan")}
+            className="hover:text-primary transition cursor-pointer text-xs font-semibold"
+          >
+            FAQ
+          </button>
+          <button
+            type="button"
+            onClick={() => setCurrentTab("kontak")}
+            className="hover:text-primary transition cursor-pointer text-xs font-semibold"
+          >
+            Kontak
+          </button>
+        </nav>
+
+        <p>
+          Platform Nasional PPKSP
+          <br />
+          Sesuai Permendikbudristek No. 46/2023
+        </p>
       </footer>
 
       {/* Emergency Modal Pop-up */}
