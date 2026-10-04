@@ -6,8 +6,6 @@ import {
   HelpCircle,
   LogOut,
   EyeOff,
-  Menu,
-  X,
   UserCheck,
   Info,
   FileCheck2,
@@ -57,11 +55,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   activeRole = "siswa",
 }) => {
   const { lang, setLang, t } = useLanguage();
-  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
 
   const handleNavClick = (id: string) => {
     onSelectTab(id);
-    setMobileMenuOpen(false);
   };
 
   return (
@@ -241,144 +237,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </button>
         )}
 
-        {/* Mobile Hamburger Toggle */}
-        <button
-          type="button"
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="icon-button lg:hidden"
-          aria-label="Toggle menu"
-          id="mobile-menu-toggle"
-        >
-          {mobileMenuOpen ? <X size={19} /> : <Menu size={19} />}
-        </button>
       </div>
-
-      {/* Mobile Menu Overlay Drawer */}
-      {mobileMenuOpen && (
-        <div className="lg:hidden fixed top-[76px] left-0 right-0 bg-card border-b border-border p-4 shadow-xl z-50 flex flex-col gap-2 animate-in slide-in-from-top-2 duration-200">
-          <div className="flex items-center justify-between pb-2 mb-1 border-b border-border">
-            <span className="text-xs font-bold text-muted-foreground uppercase">Language / Bahasa</span>
-            <div className="inline-flex items-center bg-muted p-0.5 rounded-lg border border-border text-xs font-bold">
-              <button
-                type="button"
-                onClick={() => setLang("en")}
-                className={`px-3 py-1 rounded-md text-xs font-bold ${lang === "en" ? "bg-card text-primary shadow-xs" : "text-muted-foreground"}`}
-              >
-                English
-              </button>
-              <button
-                type="button"
-                onClick={() => setLang("id")}
-                className={`px-3 py-1 rounded-md text-xs font-bold ${lang === "id" ? "bg-card text-primary shadow-xs" : "text-muted-foreground"}`}
-              >
-                Indonesia
-              </button>
-            </div>
-          </div>
-
-          <button
-            type="button"
-            onClick={() => handleNavClick("beranda")}
-            className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold transition ${
-              currentTab === "beranda"
-                ? "bg-primary text-primary-foreground"
-                : "text-foreground hover:bg-muted"
-            }`}
-          >
-            {t("nav.home")}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleNavClick("lapor")}
-            className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition ${
-              currentTab === "lapor"
-                ? "bg-primary text-primary-foreground"
-                : "bg-muted text-primary hover:bg-muted/80"
-            }`}
-          >
-            <Send size={15} />
-            <span>{t("nav.reportAnonymous")}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleNavClick("status")}
-            className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition ${
-              currentTab === "status"
-                ? "bg-primary text-primary-foreground"
-                : "text-foreground hover:bg-muted"
-            }`}
-          >
-            <Search size={15} />
-            <span>{t("nav.track")}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleNavClick("tentang")}
-            className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold transition ${
-              currentTab === "tentang"
-                ? "bg-primary text-primary-foreground"
-                : "text-foreground hover:bg-muted"
-            }`}
-          >
-            {t("nav.about")}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleNavClick("cara-kerja")}
-            className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold transition ${
-              currentTab === "cara-kerja"
-                ? "bg-primary text-primary-foreground"
-                : "text-foreground hover:bg-muted"
-            }`}
-          >
-            {t("nav.howItWorks")}
-          </button>
-
-          <button
-            type="button"
-            onClick={() => handleNavClick("bantuan")}
-            className={`w-full text-left px-4 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition ${
-              currentTab === "bantuan"
-                ? "bg-primary text-primary-foreground"
-                : "text-foreground hover:bg-muted"
-            }`}
-          >
-            <HelpCircle size={15} />
-            <span>{t("nav.help")}</span>
-          </button>
-
-          <div className="pt-2 border-t border-border mt-1">
-            {activeRole !== "siswa" ? (
-              <button
-                type="button"
-                onClick={() => {
-                  setMobileMenuOpen(false);
-                  if (onLogoutRole) onLogoutRole();
-                  else if (onCounselorLogout) onCounselorLogout();
-                }}
-                className="w-full py-2.5 px-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-sm font-bold flex items-center justify-center gap-2"
-              >
-                <LogOut size={15} />
-                <span>{t("nav.logout")}</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => handleNavClick("login")}
-                className="w-full py-2.5 px-4 rounded-xl border border-border bg-muted text-foreground text-sm font-bold flex items-center justify-center gap-2"
-              >
-                <UserCheck size={15} />
-                <span>{t("nav.staffLogin")}</span>
-              </button>
-            )}
-          </div>
-        </div>
-      )}
-
     </header>
   );
 };
