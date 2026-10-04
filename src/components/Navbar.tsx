@@ -182,12 +182,13 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             type="button"
             onClick={() => handleNavClick("lapor")}
-            className="primary-pill hidden sm:inline-flex"
+            className="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-blue-500 text-primary-foreground shadow-md shadow-primary/25 grid place-items-center cursor-pointer transition-all hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/35 active:translate-y-0"
             id="nav-lapor-btn"
             data-testid="nav-link-lapor"
+            title={t("nav.reportAnonymous")}
+            aria-label={t("nav.reportAnonymous")}
           >
-            <Send size={15} />
-            <span>{t("nav.reportAnonymous")}</span>
+            <Send size={18} />
           </button>
         )}
 
@@ -207,6 +208,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             type="button"
             onClick={onToggleDisguise}
             className="icon-button"
+            id="nav-disguise-mode-btn"
             title={t("nav.disguiseTooltip")}
             aria-label={t("nav.disguiseTooltip")}
           >
@@ -221,6 +223,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             onClick={onLogoutRole || onCounselorLogout}
             className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 text-xs font-bold transition cursor-pointer"
             id="nav-logout-btn"
+            title={t("nav.logout")}
+            aria-label={t("nav.logout")}
           >
             <LogOut size={14} />
             <span>{t("nav.logout")}</span>
@@ -229,11 +233,12 @@ export const Navbar: React.FC<NavbarProps> = ({
           <button
             type="button"
             onClick={() => handleNavClick("login")}
-            className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl border border-border bg-card text-foreground hover:bg-muted text-xs font-bold transition cursor-pointer"
+            className="icon-button"
             id="nav-login-btn"
+            title={t("nav.staffLogin")}
+            aria-label={t("nav.staffLogin")}
           >
-            <UserCheck size={15} className="text-muted-foreground" />
-            <span>{t("nav.staffLogin")}</span>
+            <UserCheck size={18} className="text-muted-foreground" />
           </button>
         )}
 
