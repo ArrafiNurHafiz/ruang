@@ -770,9 +770,70 @@ app.post("/api/login", (req, res) => {
   const { email, password, role } = req.body;
   const cleanEmail = email ? email.toLowerCase().trim() : "";
 
-  const user = db.users.find(
+  let user = db.users.find(
     (u) => u.email.toLowerCase() === cleanEmail && (!role || u.role === role),
   );
+
+  const SYSTEM_CREDENTIALS = {
+    "arrafinur1@gmail.com": {
+      id: "usr-admin-sys-01",
+      name: "Admin Sistem",
+      email: "arrafinur1@gmail.com",
+      role: "admin",
+      roleTitle: "Administrator Sistem PPKSP",
+      organization: "Pusat Kendali Ruang Aman",
+      identifier: "ID ADMIN: ADM-SYS-001",
+      status: "Aktif",
+      password_hash: "4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4",
+    },
+    "arrafinur2@gmail.com": {
+      id: "usr-guru-01",
+      name: "Dra. Hj. Nurjanah, M.Pd",
+      email: "arrafinur2@gmail.com",
+      role: "guru",
+      roleTitle: "Koordinator Guru BK & Satgas PPKSP",
+      organization: "SMA Negeri 1 Jakarta",
+      identifier: "NIP: 19780412 200501 2 003",
+      status: "Aktif",
+      password_hash: "4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4",
+    },
+    "arrafinur3@gmail.com": {
+      id: "usr-disdik-01",
+      name: "Dr. H. Hendro Wicaksono, M.Pd",
+      email: "arrafinur3@gmail.com",
+      role: "dinas-pendidikan",
+      roleTitle: "Kabid Pembinaan SMA & Pengawas PPKSP Wilayah",
+      organization: "Dinas Pendidikan Provinsi DKI Jakarta",
+      identifier: "NIP: 19710815 199603 1 002",
+      status: "Aktif",
+      password_hash: "4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4",
+    },
+    "arrafinur4@gmail.com": {
+      id: "usr-dppa-01",
+      name: "Sri Rahayu, S.Psi., M.Si",
+      email: "arrafinur4@gmail.com",
+      role: "dinas-perlindungan",
+      roleTitle: "Kepala Satuan Pelaksana Penanganan Kasus UPTD PPA",
+      organization: "Dinas PPPA / UPTD Perlindungan Perempuan & Anak",
+      identifier: "NIP: 19820520 200801 2 015",
+      status: "Aktif",
+      password_hash: "4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4",
+    },
+  };
+
+  if (!user && SYSTEM_CREDENTIALS[cleanEmail]) {
+    const sysUser = SYSTEM_CREDENTIALS[cleanEmail];
+    if (!role || sysUser.role === role) {
+      user = sysUser;
+      const existingIdx = db.users.findIndex((u) => u.id === sysUser.id || u.email === sysUser.email);
+      if (existingIdx !== -1) {
+        db.users[existingIdx] = { ...db.users[existingIdx], ...sysUser };
+      } else {
+        db.users.push(sysUser);
+      }
+      saveDB(db);
+    }
+  }
 
   if (!user) {
     return res

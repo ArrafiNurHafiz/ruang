@@ -428,7 +428,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ('usr-guru-01', 'Dra. Hj. Nurjanah, M.Pd', 'arrafinur2@gmail.com', 'guru', 'Koordinator Guru BK & Satgas PPKSP', 'SMA Negeri 1 Jakarta', 'NIP: 19780412 200501 2 003', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=200&q=80', '{"Triage Laporan","Chat Siswa","Catatan Rahasia","Eskalasi Kasus"}', 'Aktif', '4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4'),
         ('usr-disdik-01', 'Dr. H. Hendro Wicaksono, M.Pd', 'arrafinur3@gmail.com', 'dinas-pendidikan', 'Kabid Pembinaan SMA & Pengawas PPKSP Wilayah', 'Dinas Pendidikan Provinsi DKI Jakarta', 'NIP: 19710815 199603 1 002', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=200&q=80', '{"Pengawasan Wilayah","Monitoring Respon Sekolah","Indeks Kerawanan","Pemberian Supervisi"}', 'Aktif', '4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4'),
         ('usr-dppa-01', 'Sri Rahayu, S.Psi., M.Si', 'arrafinur4@gmail.com', 'dinas-perlindungan', 'Kepala Satuan Pelaksana Penanganan Kasus UPTD PPA', 'Dinas PPPA / UPTD Perlindungan Perempuan & Anak', 'NIP: 19820520 200801 2 015', 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=200&q=80', '{"Intervensi Kritis","Disposisi Psikolog","Layanan Rumah Aman","Pendampingan Hukum"}', 'Aktif', '4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4')
-        on conflict (email) do update set password_hash = excluded.password_hash, role = excluded.role, name = excluded.name
+        on conflict (id) do update set
+          email = excluded.email,
+          password_hash = excluded.password_hash,
+          role = excluded.role,
+          name = excluded.name,
+          status = 'Aktif'
       `;
 
       await sql`
@@ -470,7 +475,77 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
           LIMIT 1
         `;
       }
-      const user = rows[0];
+      let user = rows[0];
+
+      // Auto-fallback & synchronize predefined system roles
+      const SYSTEM_CREDENTIALS: Record<string, any> = {
+        "arrafinur1@gmail.com": {
+          id: "usr-admin-sys-01",
+          name: "Admin Sistem",
+          email: "arrafinur1@gmail.com",
+          role: "admin",
+          role_title: "Administrator Sistem PPKSP",
+          organization: "Pusat Kendali Ruang Aman",
+          identifier: "ID ADMIN: ADM-SYS-001",
+          status: "Aktif",
+          password_hash: "4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4",
+        },
+        "arrafinur2@gmail.com": {
+          id: "usr-guru-01",
+          name: "Dra. Hj. Nurjanah, M.Pd",
+          email: "arrafinur2@gmail.com",
+          role: "guru",
+          role_title: "Koordinator Guru BK & Satgas PPKSP",
+          organization: "SMA Negeri 1 Jakarta",
+          identifier: "NIP: 19780412 200501 2 003",
+          status: "Aktif",
+          password_hash: "4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4",
+        },
+        "arrafinur3@gmail.com": {
+          id: "usr-disdik-01",
+          name: "Dr. H. Hendro Wicaksono, M.Pd",
+          email: "arrafinur3@gmail.com",
+          role: "dinas-pendidikan",
+          role_title: "Kabid Pembinaan SMA & Pengawas PPKSP Wilayah",
+          organization: "Dinas Pendidikan Provinsi DKI Jakarta",
+          identifier: "NIP: 19710815 199603 1 002",
+          status: "Aktif",
+          password_hash: "4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4",
+        },
+        "arrafinur4@gmail.com": {
+          id: "usr-dppa-01",
+          name: "Sri Rahayu, S.Psi., M.Si",
+          email: "arrafinur4@gmail.com",
+          role: "dinas-perlindungan",
+          role_title: "Kepala Satuan Pelaksana Penanganan Kasus UPTD PPA",
+          organization: "Dinas PPPA / UPTD Perlindungan Perempuan & Anak",
+          identifier: "NIP: 19820520 200801 2 015",
+          status: "Aktif",
+          password_hash: "4f9f10b304cfe9b2b11fcb1387f694e18f08ea358c7e9f567434d3ad6cbd7fc4",
+        },
+      };
+
+      if (!user && SYSTEM_CREDENTIALS[cleanEmail]) {
+        const sysUser = SYSTEM_CREDENTIALS[cleanEmail];
+        if (!role || sysUser.role === role) {
+          user = sysUser;
+          // Synchronize/upsert to PostgreSQL so future queries find it immediately
+          try {
+            await sql`
+              INSERT INTO users (id, name, email, role, role_title, organization, identifier, status, password_hash)
+              VALUES (${sysUser.id}, ${sysUser.name}, ${sysUser.email}, ${sysUser.role}, ${sysUser.role_title}, ${sysUser.organization}, ${sysUser.identifier}, 'Aktif', ${sysUser.password_hash})
+              ON CONFLICT (id) DO UPDATE SET
+                email = EXCLUDED.email,
+                password_hash = EXCLUDED.password_hash,
+                role = EXCLUDED.role,
+                name = EXCLUDED.name,
+                status = 'Aktif'
+            `;
+          } catch {
+            // Ignore insert race condition
+          }
+        }
+      }
 
       if (!user) {
         return res
