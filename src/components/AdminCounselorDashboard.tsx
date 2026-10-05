@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   ShieldAlert,
   ShieldCheck,
@@ -42,6 +42,21 @@ import {
 import { formatBytes } from "../utils/crypto";
 import { OfficialCaseReportModal } from "./OfficialCaseReportModal";
 import { PrintTokenSlipsModal } from "./PrintTokenSlipsModal";
+
+const formatSafeTime = (raw: any): string => {
+  if (!raw) return "";
+  if (
+    typeof raw === "string" &&
+    (raw.includes(":") || raw.includes(".")) &&
+    !raw.includes("T") &&
+    !raw.includes("-")
+  ) {
+    return raw;
+  }
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) return typeof raw === "string" ? raw : "";
+  return d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+};
 
 interface AdminCounselorDashboardProps {
   tickets: ReportTicket[];
@@ -111,6 +126,8 @@ export const AdminCounselorDashboard: React.FC<AdminCounselorDashboardProps> = (
 
   // Active subtab inside selected case: 'detail' | 'chat' | 'resolution'
   const [caseSubTab, setCaseSubTab] = useState<"detail" | "chat" | "resolution">("detail");
+  const counselorChatEndRef = useRef<HTMLDivElement | null>(null);
+
 
   // Chat message input & Counselor private note input
   const [replyText, setReplyText] = useState("");
@@ -152,6 +169,12 @@ export const AdminCounselorDashboard: React.FC<AdminCounselorDashboardProps> = (
   }, [schoolProfile]);
 
   const selectedTicket = tickets.find((t) => t.id === selectedTicketId) || tickets[0] || null;
+
+  useEffect(() => {
+    if (caseSubTab === "chat") {
+      counselorChatEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [caseSubTab, selectedTicket?.messages]);
 
   // Filtered tickets
   const filteredTickets = tickets.filter((t) => {
@@ -491,7 +514,7 @@ export const AdminCounselorDashboard: React.FC<AdminCounselorDashboardProps> = (
                       <div className="flex items-center justify-between text-[10px] text-muted-foreground mt-2 pt-2 border-t border-border/60">
                         <span>{ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString("id-ID") : "Baru saja"}</span>
                         <span className="font-semibold text-primary">
-                          {ticket.chatMessages?.length || 0} pesan
+                          {(ticket.messages ?? (ticket as any).chatMessages ?? []).length} pesan
                         </span>
                       </div>
                     </div>
@@ -566,7 +589,7 @@ export const AdminCounselorDashboard: React.FC<AdminCounselorDashboardProps> = (
                     }`}
                   >
                     <MessageSquare size={13} />
-                    <span>Chat Konseling ({selectedTicket.chatMessages?.length || 0})</span>
+                    <span>Chat Konseling ({(selectedTicket.messages ?? (selectedTicket as any).chatMessages ?? []).length})</span>
                   </button>
 
                   <button
@@ -670,14 +693,31 @@ export const AdminCounselorDashboard: React.FC<AdminCounselorDashboardProps> = (
                   <div className="space-y-3">
                     {/* Chat Messages Log */}
                     <div className="border border-border rounded-xl p-4 bg-background max-h-80 overflow-y-auto space-y-3">
-                      {(!selectedTicket.chatMessages || selectedTicket.chatMessages.length === 0) ? (
+                      {((selectedTicket.messages ?? (selectedTicket as any).chatMessages ?? []).length === 0) ? (
                         <div className="p-6 text-center text-muted-foreground text-xs">
                           <MessageSquare size={24} className="mx-auto mb-1.5 opacity-40" />
                           <p>Belum ada percakapan konseling. Kirim pesan pertama untuk menyapa pelapor secara rahasia.</p>
                         </div>
                       ) : (
-                        selectedTicket.chatMessages.map((msg) => {
-                          const isCounselor = msg.sender === "counselor" || msg.senderRole === "counselor";
+                        (selectedTicket.messages ?? (selectedTicket as any).chatMessages ?? []).map((msg: any) => {
+                          const senderVal = (msg.sender || msg.sender_type || "").toString().toLowerCase();
+                          const isCounselor =
+                            senderVal === "counselor" ||
+                            senderVal === "konselor" ||
+                            senderVal === "guru" ||
+                            msg.senderRole === "counselor";
+                          const isSystem = senderVal === "system";
+                          const textContent = msg.text || msg.message_text || "";
+
+                          if (isSystem) {
+                            return (
+                              <div key={msg.id} className="flex justify-center my-1.5">
+                                <div className="bg-muted text-muted-foreground text-[10px] px-3 py-1 rounded-full text-center max-w-sm font-medium">
+                                  {textContent}
+                                </div>
+                              </div>
+                            );
+                          }
 
                           return (
                             <div
@@ -687,22 +727,25 @@ export const AdminCounselorDashboard: React.FC<AdminCounselorDashboardProps> = (
                               <div
                                 className={`p-3 rounded-2xl max-w-md text-xs ${
                                   isCounselor
-                                    ? "bg-primary text-primary-foreground rounded-tr-xs"
-                                    : "bg-muted text-ink rounded-tl-xs"
+                                    ? "bg-primary text-primary-foreground rounded-tr-xs shadow-xs"
+                                    : "bg-muted text-ink rounded-tl-xs shadow-xs"
                                 }`}
                               >
                                 <p className="font-bold text-[10px] mb-0.5 opacity-80">
-                                  {isCounselor ? "Guru BK / Satgas" : "Siswa Pelapor"}
+                                  {isCounselor
+                                    ? (msg.senderTitle || msg.sender_title || "Guru BK / Satgas")
+                                    : "Siswa Pelapor"}
                                 </p>
-                                <p className="whitespace-pre-wrap leading-relaxed">{msg.text}</p>
+                                <p className="whitespace-pre-wrap leading-relaxed">{textContent}</p>
                               </div>
                               <span className="text-[10px] text-muted-foreground mt-0.5 px-1 font-mono">
-                                {msg.timestamp ? new Date(msg.timestamp).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : ""}
+                                {formatSafeTime(msg.timestamp || msg.created_at)}
                               </span>
                             </div>
                           );
                         })
                       )}
+                      <div ref={counselorChatEndRef} />
                     </div>
 
                     {/* Chat Input */}

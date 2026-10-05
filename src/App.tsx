@@ -672,44 +672,65 @@ export default function App() {
   };
 
   const handleCounselorReply = async (ticketId: string, text: string) => {
+    const counselorName = loggedCounselor?.name || "Guru BK / Satgas PPKSP";
+    const nowIso = new Date().toISOString();
+    const formattedTime = new Date().toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+
+    const tempMsg = {
+      id: `counselor-msg-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      sender: "counselor" as const,
+      senderTitle: counselorName,
+      text,
+      timestamp: formattedTime,
+      isEncrypted: true,
+    };
+
+    // 1. Optimistic update to tickets state & storage immediately
+    setTickets((prev) => {
+      const next = prev.map((t) => {
+        if (t.id === ticketId) {
+          return {
+            ...t,
+            messages: [...(t.messages ?? []), tempMsg],
+            updatedAt: nowIso,
+          };
+        }
+        return t;
+      });
+      StorageEngine.saveTickets(next);
+      return next;
+    });
+
+    // 2. Persist to API
     try {
       const newMessage = await api.sendMessage(ticketId, {
         sender: "counselor",
-        senderTitle: loggedCounselor?.name || "Guru BK",
+        senderTitle: counselorName,
         text,
         isEncrypted: true,
       });
 
-      setTickets((prev) => {
-        const next = prev.map((t) => {
-          if (t.id === ticketId) {
-            const formattedMsg = {
-              id: newMessage.id,
-              sender: "counselor" as const,
-              senderTitle: newMessage.sender_title,
-              text: newMessage.message_text,
-              timestamp: new Date(newMessage.created_at).toLocaleTimeString(
-                "id-ID",
-                {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                },
-              ),
-              isEncrypted: true,
-            };
-            return {
-              ...t,
-              messages: [...(t.messages ?? []), formattedMsg],
-              updatedAt: new Date().toISOString(),
-            };
-          }
-          return t;
+      // 3. Reconcile with server response if ID differed
+      if (newMessage && newMessage.id) {
+        setTickets((prev) => {
+          const next = prev.map((t) => {
+            if (t.id === ticketId) {
+              const msgs = (t.messages ?? []).map((m) =>
+                m.id === tempMsg.id ? { ...m, id: newMessage.id } : m
+              );
+              return { ...t, messages: msgs };
+            }
+            return t;
+          });
+          StorageEngine.saveTickets(next);
+          return next;
         });
-        StorageEngine.saveTickets(next);
-        return next;
-      });
+      }
     } catch (err) {
-      console.error("Failed to send counselor reply:", err);
+      console.error("Failed to persist counselor reply to backend:", err);
     }
   };
 

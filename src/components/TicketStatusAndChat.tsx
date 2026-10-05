@@ -27,6 +27,21 @@ import {
   getUrgencyLabel,
 } from "../lib/i18n";
 
+const formatMessageTime = (raw: any): string => {
+  if (!raw) return new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+  if (
+    typeof raw === "string" &&
+    (raw.includes(":") || raw.includes(".")) &&
+    !raw.includes("T") &&
+    !raw.includes("-")
+  ) {
+    return raw;
+  }
+  const d = new Date(raw);
+  if (isNaN(d.getTime())) return typeof raw === "string" ? raw : new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+};
+
 interface TicketStatusAndChatProps {
   tickets: ReportTicket[];
   initialTicketId?: string;
@@ -128,10 +143,7 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
             sender: m.sender_type || m.sender,
             senderTitle: m.sender_title || m.senderTitle,
             text: m.message_text || m.text,
-            timestamp: new Date(m.created_at || m.timestamp).toLocaleTimeString("id-ID", {
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
+            timestamp: formatMessageTime(m.created_at || m.timestamp),
             isEncrypted: m.is_encrypted ?? m.isEncrypted,
           })) || found.messages || [],
       };
@@ -678,7 +690,7 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
                             : msg.senderTitle || (msg as any).sender_title || (lang === "en" ? "School Counselor" : "Guru BK")}
                         </span>
                         <span className="text-[10px] opacity-75 font-mono">
-                          {msg.timestamp}
+                          {formatMessageTime(msg.timestamp)}
                         </span>
                       </div>
 

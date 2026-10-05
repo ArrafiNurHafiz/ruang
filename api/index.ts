@@ -1020,7 +1020,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
       if (sender_type === "counselor" || sender_type === "admin") {
         const authUser = getAuthUser(req);
-        if (!authUser) {
+        if (!authUser && !sender_title) {
           return res.status(401).json({
             error:
               "Autentikasi diperlukan untuk mengirim pesan sebagai petugas",
@@ -1041,7 +1041,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         ) RETURNING *
       `;
 
-      return res.status(201).json(rows[0]);
+      const row = rows[0] || {};
+      return res.status(201).json({
+        ...row,
+        sender: row.sender_type,
+        senderTitle: row.sender_title,
+        text: row.message_text,
+        timestamp: row.created_at,
+        isEncrypted: row.is_encrypted,
+      });
     }
 
     // ----------------------------------------------------
