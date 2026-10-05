@@ -425,8 +425,12 @@ app.post("/api/tickets/verify-access", (req, res) => {
 
 app.get("/api/tickets/:recoveryCode", (req, res) => {
   const db = getDB();
+  const param = req.params.recoveryCode;
   const ticket = db.tickets.find(
-    (t) => t.recovery_code === req.params.recoveryCode,
+    (t) =>
+      t.recovery_code === param ||
+      t.id === param ||
+      (t.ticket_number && t.ticket_number === param),
   );
   if (!ticket) return res.status(404).json({ error: "Ticket not found" });
   res.json(ticket);
@@ -467,6 +471,20 @@ app.put("/api/tickets/:id", (req, res) => {
   res.json(db.tickets[index]);
 });
 
+app.delete("/api/tickets/:id", (req, res) => {
+  const db = getDB();
+  const index = db.tickets.findIndex((t) => t.id === req.params.id);
+  if (index === -1) {
+    return res.status(404).json({ error: "Tiket tidak ditemukan" });
+  }
+  db.tickets.splice(index, 1);
+  if (db.ticket_messages) {
+    db.ticket_messages = db.ticket_messages.filter((m) => m.ticket_id !== req.params.id);
+  }
+  saveDB(db);
+  res.json({ success: true, message: "Tiket berhasil dihapus", id: req.params.id });
+});
+
 // School Profile
 app.get("/api/school-profile", (req, res) => {
   const db = getDB();
@@ -501,9 +519,16 @@ app.post("/api/tickets/:id/messages", (req, res) => {
   const index = db.tickets.findIndex((t) => t.id === req.params.id);
   if (index === -1) return res.status(404).json({ error: "Ticket not found" });
 
+  const textVal = req.body.text || req.body.message_text || "";
+  const senderVal = req.body.sender || req.body.sender_type || "pelapor";
+
   const newMessage = {
     id: crypto.randomUUID(),
     ...req.body,
+    sender: senderVal,
+    sender_type: senderVal,
+    text: textVal,
+    message_text: textVal,
     created_at: new Date().toISOString(),
   };
 
@@ -548,6 +573,19 @@ app.post("/api/tokens/batch", (req, res) => {
   }
 
   db.tokens.push(...newTokens);
+
+  if (!db.audit_logs) db.audit_logs = [];
+  db.audit_logs.push({
+    id: crypto.randomUUID(),
+    school_id: schoolId || "default-school",
+    action: "Batch Token Dibuat",
+    actor_role: "Guru BK",
+    actor_name: notes || "Admin Sekolah",
+    details: `Membangkitkan ${count} token anonim untuk ${studentLevel} (Prefix: ${prefix})`,
+    zkp_proof_status: "Tervalidasi",
+    created_at: new Date().toISOString(),
+  });
+
   saveDB(db);
   res.status(201).json(newTokens);
 });

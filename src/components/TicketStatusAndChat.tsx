@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Search,
   ShieldCheck,
@@ -80,6 +80,14 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
   const [isSubmittingConfirm, setIsSubmittingConfirm] = useState<boolean>(false);
   const [confirmNotification, setConfirmNotification] = useState<string>("");
 
+  const chatMessagesEndRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (activeTicket?.messages && activeTicket.messages.length > 0) {
+      chatMessagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [activeTicket?.messages?.length]);
+
   useEffect(() => {
     if (initialTicketId) {
       setSearchQuery(initialTicketId);
@@ -128,6 +136,9 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
           })) || found.messages || [],
       };
       setActiveTicket(mappedFound);
+      if (onTicketUpdated) {
+        onTicketUpdated(mappedFound);
+      }
     } catch (err) {
       const found = tickets.find(
         (t) =>
@@ -136,6 +147,9 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
       );
       if (found) {
         setActiveTicket(found);
+        if (onTicketUpdated) {
+          onTicketUpdated(found);
+        }
       } else {
         setSearchError("Nomor Tiket atau Kunci Pemulihan tidak ditemukan. Pastikan kodenya benar.");
       }
@@ -155,6 +169,9 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
     try {
       const found = await api.recoverTicketByPin(recoveryCategory, pin);
       setActiveTicket(found);
+      if (onTicketUpdated) {
+        onTicketUpdated(found);
+      }
       setSearchQuery(found.id);
       setShowRecoveryModal(false);
       setRecoveryPin("");
@@ -167,6 +184,9 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
       );
       if (localFound) {
         setActiveTicket(localFound);
+        if (onTicketUpdated) {
+          onTicketUpdated(localFound);
+        }
         setSearchQuery(localFound.id);
         setShowRecoveryModal(false);
         setRecoveryPin("");
@@ -184,8 +204,33 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
     e.preventDefault();
     if (!chatInput.trim() || !activeTicket) return;
 
-    onSendMessage(activeTicket.id, chatInput.trim());
+    const textToSend = chatInput.trim();
     setChatInput("");
+
+    const clientMsg = {
+      id: `client-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      sender: "pelapor" as const,
+      text: textToSend,
+      timestamp: new Date().toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      isEncrypted: true,
+    };
+
+    // Optimistically append message to activeTicket state so it appears instantly
+    const updatedTicket: ReportTicket = {
+      ...activeTicket,
+      messages: [...(activeTicket.messages ?? []), clientMsg],
+      updatedAt: new Date().toISOString(),
+    };
+    setActiveTicket(updatedTicket);
+
+    if (onTicketUpdated) {
+      onTicketUpdated(updatedTicket);
+    }
+
+    onSendMessage(activeTicket.id, textToSend);
   };
 
   const handleStudentDecision = async (isSatisfied: boolean) => {
@@ -597,14 +642,16 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
               )}
 
               {(activeTicket.messages ?? []).map((msg) => {
-                const isPelapor = msg.sender === "pelapor";
-                const isSystem = msg.sender === "system";
+                const senderVal = (msg.sender || (msg as any).sender_type || "").toString();
+                const isPelapor = senderVal === "pelapor";
+                const isSystem = senderVal === "system";
+                const textContent = msg.text || (msg as any).message_text || "";
 
                 if (isSystem) {
                   return (
                     <div key={msg.id} className="flex justify-center my-1.5">
                       <div className="bg-slate-200 text-slate-700 text-[11px] px-3.5 py-1 rounded-full text-center max-w-sm font-medium">
-                        {msg.text}
+                        {textContent}
                       </div>
                     </div>
                   );
@@ -624,7 +671,11 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
                     >
                       <div className="flex items-center justify-between gap-3 text-[11px] opacity-80 border-b pb-1 border-black/5">
                         <span className="font-semibold">
-                          {isPelapor ? (lang === "en" ? "You (Reporter)" : "Anda (Pelapor)") : msg.senderTitle || (lang === "en" ? "School Counselor" : "Guru BK")}
+                          {isPelapor
+                            ? lang === "en"
+                              ? "You (Reporter)"
+                              : "Anda (Pelapor)"
+                            : msg.senderTitle || (msg as any).sender_title || (lang === "en" ? "School Counselor" : "Guru BK")}
                         </span>
                         <span className="text-[10px] opacity-75 font-mono">
                           {msg.timestamp}
@@ -632,12 +683,13 @@ export const TicketStatusAndChat: React.FC<TicketStatusAndChatProps> = ({
                       </div>
 
                       <p className="text-xs sm:text-sm leading-relaxed whitespace-pre-line">
-                        {msg.text}
+                        {textContent}
                       </p>
                     </div>
                   </div>
                 );
               })}
+              <div ref={chatMessagesEndRef} />
             </div>
 
             {/* Chat Input Bar */}

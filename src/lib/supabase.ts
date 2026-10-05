@@ -9,9 +9,15 @@ if (!supabaseUrl || !supabaseAnonKey) {
   );
 }
 
-export const supabase =
-  supabaseUrl && supabaseAnonKey
-    ? createClient(supabaseUrl, supabaseAnonKey)
-    : null;
+// Supabase realtime is optional; Neon PostgreSQL is the primary database.
+// Only initialize if explicitly enabled with an active URL.
+const isExplicitlyEnabled =
+  import.meta.env.VITE_ENABLE_SUPABASE === "true" &&
+  Boolean(supabaseUrl && supabaseAnonKey && !supabaseUrl.includes("kwvkpsvlmgpdjuubrnop"));
+
+export const supabase = isExplicitlyEnabled
+  ? createClient(supabaseUrl, supabaseAnonKey)
+  : null;
 
 export const isSupabaseEnabled = !!supabase;
+

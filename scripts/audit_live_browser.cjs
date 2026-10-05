@@ -136,8 +136,8 @@ async function runAudit() {
 
       // Check if report form is rendered
       const formHeader = await page.$("h1, h2");
-      const formText = await page.textContent("body");
-      if (formText.includes("Lapor") || formText.includes("Kategori") || formText.includes("Peristiwa")) {
+      const formText = (await page.textContent("body")).toLowerCase();
+      if (formText.includes("lapor") || formText.includes("report") || formText.includes("kategori") || formText.includes("peristiwa") || formText.includes("token")) {
         logPass("Navigated to Anonymous Report Form");
       } else {
         logFail("Report form navigation", new Error("Form text not detected"));

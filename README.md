@@ -12,6 +12,16 @@
 
 ---
 
+## 📚 Dokumen Acuan & Sumber Presentasi
+
+Untuk persiapan presentasi, pengujian dewan juri, dan bedah teknis, proyek ini telah dilengkapi dengan dokumentasi resmi:
+* 📖 **[Master Dokumentasi & Ensiklopedia Sumber Q&A (Lengkap)](DOKUMENTASI_LENGKAP_DAN_SUMBER_QA.md)**: Sumber acuan terlengkap untuk menjawab seluruh pertanyaan dewan juri, spesifikasi matematis ZKP, benchmark hardware, unit economics (RAB), dan kepatuhan hukum.
+* 📊 **[Panduan Presentasi Slide PPT](PANDUAN_PRESENTASI_PPT_RUANG_AMAN.md)**: Acuan struktur 19 slide presentasi kompetisi beserta narasi *speaker notes*.
+* 🎬 **[Naskah Skenario Demo Web](SCRIPT_DEMO_WEB.md)**: Panduan langkah demi langkah saat mendemonstrasikan prototipe langsung di hadapan juri.
+* 🔬 **[Naskah Jurnal Ilmiah SINTA 3](jurnal/NASKAH_JURNAL_SINTA3_ZKP.md)**: Paper akademis tentang implementasi protokol Semaphore ZKP pada pengaduan siswa.
+
+---
+
 ## 📌 Gambaran Umum Proyek
 
 **RUANG AMAN** adalah platform *Progressive Web Application (PWA)* berkinerja tinggi yang dirancang untuk mengatasi krisis perundungan dan kekerasan anak di sekolah sesuai mandat **Permendikbudristek No. 46 Tahun 2023** dan **UU Pelindungan Data Pribadi (UU No. 27/2022)**.

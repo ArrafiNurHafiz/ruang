@@ -7,13 +7,13 @@ import {
   Eye,
   EyeOff,
 } from "lucide-react";
-import { AppUserRole, CounselorUser } from "../types";
+import { AppUserRole, CounselorUser, UserAccount } from "../types";
 import { MOCK_USERS } from "../data/mockData";
 import { api } from "../lib/api";
 import { useLanguage } from "../lib/i18n";
 
 interface UnifiedLoginPageProps {
-  onLogin: (role: AppUserRole, counselor?: CounselorUser) => void;
+  onLogin: (role: AppUserRole, counselor?: CounselorUser, userAccount?: UserAccount) => void;
 }
 
 export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({
@@ -82,7 +82,21 @@ export const UnifiedLoginPage: React.FC<UnifiedLoginPageProps> = ({
             }
           : undefined;
 
-      onLogin(userRole, counselor);
+      const userAccountObj: UserAccount | undefined = authData?.user
+        ? {
+            id: authData.user.id,
+            name: authData.user.name,
+            email: authData.user.email,
+            role: userRole,
+            roleTitle: authData.user.role_title || authData.user.roleTitle || "",
+            organization: authData.user.organization || userOrg,
+            identifier: authData.user.identifier || "",
+            avatar: userAvatar,
+            permissions: authData.user.permissions || [],
+          }
+        : undefined;
+
+      onLogin(userRole, counselor, userAccountObj);
     } catch (err) {
       setError(lang === "en" ? "An error occurred during login. Please try again." : "Terjadi kesalahan saat masuk. Silakan coba lagi.");
     } finally {

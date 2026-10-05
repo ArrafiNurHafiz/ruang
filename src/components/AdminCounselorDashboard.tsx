@@ -141,6 +141,7 @@ export const AdminCounselorDashboard: React.FC<AdminCounselorDashboardProps> = (
   const [copiedToken, setCopiedToken] = useState<string | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [tokenSuccessMsg, setTokenSuccessMsg] = useState("");
+  const [tokenErrorMsg, setTokenErrorMsg] = useState("");
 
   // School Profile (Admin Sekolah) State
   const [profileForm, setProfileForm] = useState<SchoolProfile>(schoolProfile);
@@ -228,11 +229,14 @@ export const AdminCounselorDashboard: React.FC<AdminCounselorDashboardProps> = (
     if (!onGenerateBatchTokens) return;
     try {
       setIsGenerating(true);
+      setTokenErrorMsg("");
       await onGenerateBatchTokens(batchCount, customPrefix, selectedStudentLevel);
       setTokenSuccessMsg(`Berhasil membuat ${batchCount} token untuk ${selectedStudentLevel}`);
       setTimeout(() => setTokenSuccessMsg(""), 3500);
     } catch (err: any) {
       console.error(err);
+      setTokenErrorMsg(err.message || "Gagal membuat token. Silakan periksa koneksi.");
+      setTimeout(() => setTokenErrorMsg(""), 3500);
     } finally {
       setIsGenerating(false);
     }
@@ -790,6 +794,12 @@ export const AdminCounselorDashboard: React.FC<AdminCounselorDashboardProps> = (
             {tokenSuccessMsg && (
               <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 text-xs font-bold">
                 {tokenSuccessMsg}
+              </div>
+            )}
+
+            {tokenErrorMsg && (
+              <div className="p-3 rounded-xl bg-danger/10 border border-danger/20 text-danger text-xs font-bold">
+                {tokenErrorMsg}
               </div>
             )}
 

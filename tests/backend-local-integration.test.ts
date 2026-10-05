@@ -1,9 +1,41 @@
 import assert from "node:assert/strict";
+import { spawn, ChildProcess } from "node:child_process";
 
 const BASE_URL = "http://localhost:3001/api";
 
 let passed = 0;
 let failed = 0;
+let serverProcess: ChildProcess | null = null;
+
+async function ensureServerRunning() {
+  try {
+    const res = await fetch(`${BASE_URL}/dashboard/stats`, { signal: AbortSignal.timeout(1000) });
+    if (res.ok) return;
+  } catch {
+    // Server not running, spawn it
+  }
+
+  console.log("🚀 Spawning local server (node server.cjs)...");
+  serverProcess = spawn("node", ["server.cjs"], {
+    cwd: process.cwd(),
+    stdio: "ignore",
+  });
+
+  // Wait for server to be responsive
+  for (let i = 0; i < 30; i++) {
+    await new Promise((r) => setTimeout(r, 200));
+    try {
+      const res = await fetch(`${BASE_URL}/dashboard/stats`, { signal: AbortSignal.timeout(500) });
+      if (res.ok) {
+        console.log("✅ Local server is ready!\n");
+        return;
+      }
+    } catch {
+      // keep polling
+    }
+  }
+  throw new Error("Failed to start local server within 6 seconds");
+}
 
 async function test(name: string, fn: () => Promise<void>) {
   try {
@@ -18,6 +50,8 @@ async function test(name: string, fn: () => Promise<void>) {
 }
 
 async function run() {
+  await ensureServerRunning();
+
   console.log("=================================================");
   console.log("🧪 RUANG AMAN LOCAL BACKEND INTEGRATION TEST SUITE");
   console.log("=================================================\n");
@@ -492,14 +526,34 @@ async function run() {
     assert.equal(data.schoolId, "sch-01");
   });
 
+  await test("DELETE /tickets/:id deletes test ticket cleanly", async () => {
+    if (!createdTicket) return;
+    const res = await fetch(`${BASE_URL}/tickets/${createdTicket.id}`, {
+      method: "DELETE",
+    });
+    assert.equal(res.status, 200);
+    const data = await res.json();
+    assert.equal(data.success, true);
+
+    // Verify it is gone
+    const verifyRes = await fetch(`${BASE_URL}/tickets/${sampleRecoveryCode}`);
+    assert.equal(verifyRes.status, 404);
+  });
+
   console.log("\n=================================================");
   console.log(`📊 INTEGRATION RESULTS: ${passed} PASSED | ${failed} FAILED`);
   console.log("=================================================");
+
+  if (serverProcess) {
+    console.log("🛑 Stopping spawned local server process...");
+    serverProcess.kill();
+  }
 
   if (failed > 0) process.exit(1);
 }
 
 run().catch((err) => {
+  if (serverProcess) serverProcess.kill();
   console.error("Runner crash:", err);
   process.exit(1);
 });

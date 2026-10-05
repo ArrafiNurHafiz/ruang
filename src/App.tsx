@@ -83,7 +83,7 @@ import {
   MOCK_USERS,
   INITIAL_TOKENS,
 } from "./data/mockData";
-import { api } from "./lib/api";
+import { api, getAuthToken, setAuthToken } from "./lib/api";
 import { supabase, isSupabaseEnabled } from "./lib/supabase";
 import { StorageEngine } from "./utils/storage";
 import { useLanguage } from "./lib/i18n";
@@ -98,7 +98,9 @@ export default function App() {
     useState<UserAccount | null>(null);
 
   // Student Access Token & Anti-Infiltrator Session
-  const [tokensList, setTokensList] = useState<SchoolToken[]>([]);
+  const [tokensList, setTokensList] = useState<SchoolToken[]>(() =>
+    StorageEngine.getTokens(),
+  );
   const [studentSession, setStudentSession] = useState<StudentSession | null>(
     null,
   );
@@ -146,211 +148,181 @@ export default function App() {
     return StorageEngine.getSchoolProfile();
   });
 
-  // Load data on mount
+  // Load data on mount (Only public data for unauthenticated guests)
   useEffect(() => {
-    const loadData = async () => {
+    const loadPublicData = async () => {
       setIsLoadingData(true);
       try {
-        const results = await Promise.allSettled([
-          api.getAllTickets(),
-          api.getTokensBySchool(SCHOOL_ID),
-          api.getUsers(),
-          api.getAuditLogs(),
+        const [schoolsRes, profileRes] = await Promise.allSettled([
           api.getRegionalSchools(),
-          api.getInterventions(),
           api.getSchoolProfile(),
         ]);
 
-        const get = <T,>(r: PromiseSettledResult<T>, fallback: T): T =>
-          r.status === "fulfilled" ? r.value : fallback;
-
-        const fetchedTickets = get<ReportTicket[]>(results[0], []);
-        if (fetchedTickets && fetchedTickets.length > 0) {
-          setTickets(fetchedTickets);
-          StorageEngine.saveTickets(fetchedTickets);
+        if (schoolsRes.status === "fulfilled" && schoolsRes.value) {
+          setRegionalSchools(schoolsRes.value);
         }
 
-        const fetchedTokens = get<SchoolToken[]>(results[1], []);
-        setTokensList(
-          fetchedTokens && fetchedTokens.length > 0
-            ? fetchedTokens
-            : INITIAL_TOKENS,
-        );
-
-        const usersData = get<UserAccount[]>(results[2], []);
-        setUsersList(usersData);
-        if (!currentUserAccount && usersData.length > 0) {
-          setCurrentUserAccount(usersData[0]);
+        if (profileRes.status === "fulfilled" && profileRes.value && profileRes.value.schoolName) {
+          setSchoolProfile(profileRes.value);
+          StorageEngine.saveSchoolProfile(profileRes.value);
         }
 
-        const fetchedLogs = get<AuditLog[]>(results[3], []);
-        if (fetchedLogs && fetchedLogs.length > 0) {
-          setAuditLogs(fetchedLogs);
-          StorageEngine.saveAuditLogs(fetchedLogs);
-        }
+        // Only load protected staff data if an auth token is present
+        const token = getAuthToken();
+        if (token) {
+          const staffResults = await Promise.allSettled([
+            api.getAllTickets(),
+            api.getTokensBySchool(SCHOOL_ID),
+            api.getUsers(),
+            api.getAuditLogs(),
+            api.getInterventions(),
+          ]);
 
-        const fetchedSchools = get<SchoolRegionalData[]>(results[4], []);
-        setRegionalSchools(fetchedSchools);
+          const get = <T,>(r: PromiseSettledResult<T>, fallback: T): T =>
+            r.status === "fulfilled" ? r.value : fallback;
 
-        const fetchedInterventions = get<ProtectionIntervention[]>(results[5], []);
-        if (fetchedInterventions && fetchedInterventions.length > 0) {
-          setInterventions(fetchedInterventions);
-          StorageEngine.saveInterventions(fetchedInterventions);
-        }
+          const fetchedTickets = get<ReportTicket[]>(staffResults[0], []);
+          if (fetchedTickets && fetchedTickets.length > 0) {
+            setTickets(fetchedTickets);
+            StorageEngine.saveTickets(fetchedTickets);
+          }
 
-        const fetchedProfile = get<SchoolProfile | null>(results[6], null);
-        if (fetchedProfile && fetchedProfile.schoolName) {
-          setSchoolProfile(fetchedProfile);
-          StorageEngine.saveSchoolProfile(fetchedProfile);
+          const fetchedTokens = get<SchoolToken[]>(staffResults[1], []);
+          if (fetchedTokens && fetchedTokens.length > 0) {
+            setTokensList(fetchedTokens);
+            StorageEngine.saveTokens(fetchedTokens);
+          }
+
+          const usersData = get<UserAccount[]>(staffResults[2], []);
+          if (usersData && usersData.length > 0) {
+            setUsersList(usersData);
+          }
+
+          const fetchedLogs = get<AuditLog[]>(staffResults[3], []);
+          if (fetchedLogs && fetchedLogs.length > 0) {
+            setAuditLogs(fetchedLogs);
+            StorageEngine.saveAuditLogs(fetchedLogs);
+          }
+
+          const fetchedInterventions = get<ProtectionIntervention[]>(staffResults[4], []);
+          if (fetchedInterventions && fetchedInterventions.length > 0) {
+            setInterventions(fetchedInterventions);
+            StorageEngine.saveInterventions(fetchedInterventions);
+          }
         }
       } catch (err) {
-        console.error("Failed to load data:", err);
+        console.error("Failed to load initial data:", err);
       } finally {
         setIsLoadingData(false);
       }
     };
-    loadData();
+    loadPublicData();
   }, []);
 
-  // Real-time subscription for ticket_messages
+  // Real-time subscription for ticket_messages (only if Supabase is explicitly configured)
   useEffect(() => {
-    if (!supabase) return;
-    const channel = supabase
-      .channel("ticket-messages-rt")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "ticket_messages" },
-        (payload) => {
-          const m = payload.new as any;
-          const formattedMsg = {
-            id: m.id,
-            sender: m.sender_type,
-            senderTitle: m.sender_title,
-            text: m.message_text,
-            timestamp: new Date(m.created_at).toLocaleTimeString("id-ID", {
-              hour: "2-digit",
-              minute: "2-digit",
-            }),
-            isEncrypted: m.is_encrypted ?? true,
-          };
-          setTickets((prev) => {
-            const next = prev.map((t) => {
-              if (t.id === m.ticket_id) {
-                const exists = (t.messages ?? []).some((msg) => msg.id === m.id);
-                if (exists) return t;
-                return {
-                  ...t,
-                  messages: [...(t.messages ?? []), formattedMsg],
-                };
-              }
-              return t;
+    if (!supabase || !isSupabaseEnabled) return;
+    try {
+      const channel = supabase
+        .channel("ticket-messages-rt")
+        .on(
+          "postgres_changes",
+          { event: "INSERT", schema: "public", table: "ticket_messages" },
+          (payload) => {
+            const m = payload.new as any;
+            const formattedMsg = {
+              id: m.id,
+              sender: m.sender_type,
+              senderTitle: m.sender_title,
+              text: m.message_text,
+              timestamp: new Date(m.created_at).toLocaleTimeString("id-ID", {
+                hour: "2-digit",
+                minute: "2-digit",
+              }),
+              isEncrypted: m.is_encrypted ?? true,
+            };
+            setTickets((prev) => {
+              const next = prev.map((t) => {
+                if (t.id === m.ticket_id) {
+                  const exists = (t.messages ?? []).some((msg) => msg.id === m.id);
+                  if (exists) return t;
+                  return {
+                    ...t,
+                    messages: [...(t.messages ?? []), formattedMsg],
+                  };
+                }
+                return t;
+              });
+              StorageEngine.saveTickets(next);
+              return next;
             });
-            StorageEngine.saveTickets(next);
-            return next;
-          });
-        },
-      )
-      .on(
-        "postgres_changes",
-        { event: "UPDATE", schema: "public", table: "tickets" },
-        (payload) => {
-          const updated = payload.new as any;
-          setTickets((prev) => {
-            const next = prev.map((t) => {
-              if (t.id === updated.id) {
-                return {
-                  ...t,
-                  status: updated.status,
-                  updatedAt: updated.updated_at,
-                };
-              }
-              return t;
+          },
+        )
+        .on(
+          "postgres_changes",
+          { event: "UPDATE", schema: "public", table: "tickets" },
+          (payload) => {
+            const updated = payload.new as any;
+            setTickets((prev) => {
+              const next = prev.map((t) => {
+                if (t.id === updated.id) {
+                  return {
+                    ...t,
+                    status: updated.status,
+                    updatedAt: updated.updated_at,
+                  };
+                }
+                return t;
+              });
+              StorageEngine.saveTickets(next);
+              return next;
             });
-            StorageEngine.saveTickets(next);
-            return next;
-          });
-        },
-      )
-      .subscribe();
+          },
+        )
+        .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+      return () => {
+        try {
+          supabase.removeChannel(channel);
+        } catch {}
+      };
+    } catch (e) {
+      console.warn("Supabase realtime subscription skipped:", e);
+    }
   }, []);
 
-  // Multi-Entity Background Synchronization Engine (Snappy 4s Polling)
+  // Multi-Entity Background Synchronization Engine (Role-Aware)
   const syncAllData = async () => {
     try {
-      const results = await Promise.allSettled([
-        api.getAllTickets(),
-        api.getAuditLogs(),
-        api.getInterventions(),
+      const hasAuth = Boolean(getAuthToken());
+
+      // Public endpoints always synced
+      const publicPromises: Promise<any>[] = [
         api.getRegionalSchools(),
         api.getSchoolProfile(),
-      ]);
+      ];
+
+      // Staff endpoints only synced if authenticated
+      if (hasAuth && (activeRole === "guru" || activeRole === "admin")) {
+        publicPromises.push(api.getAllTickets());
+        publicPromises.push(api.getAuditLogs());
+        publicPromises.push(api.getTokensBySchool(SCHOOL_ID));
+      }
+      if (hasAuth && activeRole === "dinas-perlindungan") {
+        publicPromises.push(api.getInterventions());
+      }
+
+      const results = await Promise.allSettled(publicPromises);
 
       const get = <T,>(r: PromiseSettledResult<T>, fallback: T): T =>
-        r.status === "fulfilled" ? r.value : fallback;
+        r && r.status === "fulfilled" ? r.value : fallback;
 
-      const freshTickets = get<ReportTicket[] | null>(results[0], null);
-      if (freshTickets && Array.isArray(freshTickets)) {
-        setTickets((prev) => {
-          const prevMap = new Map<string, ReportTicket>(prev.map((t) => [t.id, t]));
-          let hasDiff = freshTickets.length !== prev.length;
-          const merged = freshTickets.map((ft) => {
-            const existing = prevMap.get(ft.id);
-            if (!existing) {
-              hasDiff = true;
-              return ft;
-            }
-            if (
-              existing.status !== ft.status ||
-              existing.updatedAt !== ft.updatedAt ||
-              (existing.messages?.length || 0) !== (ft.messages?.length || 0) ||
-              existing.isEscalatedToDinas !== ft.isEscalatedToDinas ||
-              Boolean(existing.resolutionEvidence) !== Boolean(ft.resolutionEvidence)
-            ) {
-              hasDiff = true;
-              return { ...existing, ...ft };
-            }
-            return existing;
-          });
-          if (hasDiff) {
-            StorageEngine.saveTickets(merged);
-            return merged;
-          }
-          return prev;
-        });
-      }
-
-      const freshLogs = get<AuditLog[] | null>(results[1], null);
-      if (freshLogs && Array.isArray(freshLogs) && freshLogs.length > 0) {
-        setAuditLogs((prev) => {
-          if (freshLogs.length !== prev.length) {
-            StorageEngine.saveAuditLogs(freshLogs);
-            return freshLogs;
-          }
-          return prev;
-        });
-      }
-
-      const freshInterventions = get<ProtectionIntervention[] | null>(results[2], null);
-      if (freshInterventions && Array.isArray(freshInterventions)) {
-        setInterventions((prev) => {
-          if (freshInterventions.length !== prev.length) {
-            StorageEngine.saveInterventions(freshInterventions);
-            return freshInterventions;
-          }
-          return prev;
-        });
-      }
-
-      const freshSchools = get<SchoolRegionalData[] | null>(results[3], null);
+      const freshSchools = get<SchoolRegionalData[] | null>(results[0], null);
       if (freshSchools && Array.isArray(freshSchools) && freshSchools.length > 0) {
         setRegionalSchools(freshSchools);
       }
 
-      const freshProfile = get<SchoolProfile | null>(results[4], null);
+      const freshProfile = get<SchoolProfile | null>(results[1], null);
       if (freshProfile && freshProfile.schoolName) {
         setSchoolProfile((prev) => {
           if (prev.updatedAt !== freshProfile.updatedAt) {
@@ -360,13 +332,73 @@ export default function App() {
           return prev;
         });
       }
-    } catch (e) {
+
+      if (hasAuth && results.length > 2) {
+        const freshTickets = get<ReportTicket[] | null>(results[2], null);
+        if (freshTickets && Array.isArray(freshTickets)) {
+          setTickets((prev) => {
+            const prevMap = new Map<string, ReportTicket>(prev.map((t) => [t.id, t]));
+            let hasDiff = freshTickets.length !== prev.length;
+            const merged = freshTickets.map((ft) => {
+              const existing = prevMap.get(ft.id);
+              if (!existing) {
+                hasDiff = true;
+                return ft;
+              }
+              if (
+                existing.status !== ft.status ||
+                existing.updatedAt !== ft.updatedAt ||
+                (existing.messages?.length || 0) !== (ft.messages?.length || 0) ||
+                existing.isEscalatedToDinas !== ft.isEscalatedToDinas ||
+                Boolean(existing.resolutionEvidence) !== Boolean(ft.resolutionEvidence)
+              ) {
+                hasDiff = true;
+                return { ...existing, ...ft };
+              }
+              return existing;
+            });
+            if (hasDiff) {
+              StorageEngine.saveTickets(merged);
+              return merged;
+            }
+            return prev;
+          });
+        }
+
+        const freshLogs = get<AuditLog[] | null>(results[3], null);
+        if (freshLogs && Array.isArray(freshLogs) && freshLogs.length > 0) {
+          setAuditLogs((prev) => {
+            if (freshLogs.length !== prev.length) {
+              StorageEngine.saveAuditLogs(freshLogs);
+              return freshLogs;
+            }
+            return prev;
+          });
+        }
+
+        if (results.length > 4) {
+          const freshTokens = get<SchoolToken[] | null>(results[4], null);
+          if (freshTokens && Array.isArray(freshTokens) && freshTokens.length > 0) {
+            setTokensList((prev) => {
+              const hasDiff =
+                freshTokens.length !== prev.length ||
+                (freshTokens[0] && prev[0] && (freshTokens[0].tokenCode || (freshTokens[0] as any).token_code) !== (prev[0].tokenCode || (prev[0] as any).token_code));
+              if (hasDiff) {
+                StorageEngine.saveTokens(freshTokens);
+                return freshTokens;
+              }
+              return prev;
+            });
+          }
+        }
+      }
+    } catch {
       // background sync fail-safe
     }
   };
 
   useEffect(() => {
-    const interval = setInterval(syncAllData, 4000);
+    const interval = setInterval(syncAllData, 12000);
     const handleFocus = () => {
       syncAllData();
     };
@@ -375,7 +407,7 @@ export default function App() {
       clearInterval(interval);
       window.removeEventListener("focus", handleFocus);
     };
-  }, []);
+  }, [activeRole]);
 
   // Cross-Tab & Cross-Window Instant Sync via Storage Events
   useEffect(() => {
@@ -394,6 +426,9 @@ export default function App() {
         } else if (e.key === "ruangaman_interventions" || e.key === "tameng_interventions") {
           const parsed = JSON.parse(e.newValue);
           if (Array.isArray(parsed)) setInterventions(parsed);
+        } else if (e.key === "ruangaman_tokens" || e.key === "tameng_tokens") {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) setTokensList(parsed);
         }
       } catch (err) {
         console.error("Storage event parse error:", err);
@@ -404,16 +439,23 @@ export default function App() {
     return () => window.removeEventListener("storage", handleStorageEvent);
   }, []);
 
-  // ESC Shortcut Listener for Quick Exit / Disguise toggle
+  // ESC Shortcut Listener for Camouflage Mode toggle (< 500ms double ESC)
   const lastEscPressRef = useRef<number>(0);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
+        // If disguise is currently active, one ESC press exits disguise
+        if (isDisguiseActive) {
+          setIsDisguiseActive(false);
+          return;
+        }
+
         const now = Date.now();
-        // If pressed twice within 600ms, trigger quick exit
-        if (now - lastEscPressRef.current < 600) {
-          handleQuickExit();
+        // If pressed twice within 500ms, toggle camouflage mode
+        if (now - lastEscPressRef.current < 500) {
+          setIsDisguiseActive(true);
+          lastEscPressRef.current = 0;
         } else {
           lastEscPressRef.current = now;
         }
@@ -422,7 +464,7 @@ export default function App() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [isDisguiseActive]);
 
   // Kiosk Inactivity Watchdog (3 minutes = 180s)
   useEffect(() => {
@@ -504,6 +546,8 @@ export default function App() {
 
   useEffect(() => {
     (window as any).__switchRole = handleSelectRole;
+    (window as any).__setTab = setCurrentTab;
+    (window as any).__handleNavigateToChat = handleNavigateToChat;
     (window as any).__toggleDisguise = (active: boolean) => setIsDisguiseActive(active);
   }, [handleSelectRole]);
 
@@ -521,6 +565,7 @@ export default function App() {
         detectedPII: newTicket.detectedPII,
         schoolId: SCHOOL_ID,
         isKiosk: newTicket.isKioskSubmission,
+        secretPin: newTicket.secretPin,
       });
       const nextTickets = [created, ...tickets];
       setTickets(nextTickets);
@@ -530,10 +575,14 @@ export default function App() {
         prev.map((s) => (s.id === "sch-01" ? { ...s, totalReports: (s.totalReports || 0) + 1 } : s)),
       );
 
-      // Update audit logs from backend
-      const logs = await api.getAuditLogs();
-      setAuditLogs(logs);
-      StorageEngine.saveAuditLogs(logs);
+      // Update audit logs from backend if staff token is present
+      if (getAuthToken()) {
+        try {
+          const logs = await api.getAuditLogs();
+          setAuditLogs(logs);
+          StorageEngine.saveAuditLogs(logs);
+        } catch {}
+      }
 
       return created;
     } catch (err) {
@@ -541,6 +590,7 @@ export default function App() {
       const nextTickets = [newTicket, ...tickets];
       setTickets(nextTickets);
       StorageEngine.saveTickets(nextTickets);
+      return newTicket;
     }
   };
 
@@ -550,29 +600,23 @@ export default function App() {
   };
 
   const handleSendMessage = async (ticketId: string, messageText: string) => {
-    try {
-      const newMessage = await api.sendMessage(ticketId, {
-        sender: "pelapor",
-        text: messageText,
-        isEncrypted: true,
-      });
+    const formattedMsg = {
+      id: `msg-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
+      sender: "pelapor" as const,
+      text: messageText,
+      timestamp: new Date().toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      isEncrypted: true,
+    };
 
-      setTickets((prev) => {
+    // 1. Optimistic update into tickets state & storage
+    setTickets((prev) => {
+      const exists = prev.some((t) => t.id === ticketId);
+      if (exists) {
         const next = prev.map((t) => {
           if (t.id === ticketId) {
-            const formattedMsg = {
-              id: newMessage.id,
-              sender: "pelapor" as const,
-              text: newMessage.message_text,
-              timestamp: new Date(newMessage.created_at).toLocaleTimeString(
-                "id-ID",
-                {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                },
-              ),
-              isEncrypted: true,
-            };
             return {
               ...t,
               messages: [...(t.messages ?? []), formattedMsg],
@@ -583,9 +627,47 @@ export default function App() {
         });
         StorageEngine.saveTickets(next);
         return next;
+      }
+      return prev;
+    });
+
+    try {
+      // 2. Call API
+      const newMessage = await api.sendMessage(ticketId, {
+        sender: "pelapor",
+        text: messageText,
+        isEncrypted: true,
       });
+
+      // 3. Reconcile with server response
+      if (newMessage && newMessage.id) {
+        setTickets((prev) => {
+          const exists = prev.some((t) => t.id === ticketId);
+          if (exists) {
+            const next = prev.map((t) => {
+              if (t.id === ticketId) {
+                const msgs = (t.messages ?? []).map((m) =>
+                  m.id === formattedMsg.id
+                    ? {
+                        ...m,
+                        id: newMessage.id,
+                        text: newMessage.text || newMessage.message_text || m.text,
+                      }
+                    : m,
+                );
+                return { ...t, messages: msgs };
+              }
+              return t;
+            });
+            StorageEngine.saveTickets(next);
+            return next;
+          }
+          return prev;
+        });
+      }
+      return newMessage;
     } catch (err) {
-      console.error("Failed to send message:", err);
+      console.error("Failed to send message to server:", err);
     }
   };
 
@@ -769,21 +851,55 @@ export default function App() {
     studentLevel?: string,
     notes?: string,
   ) => {
+    let generated: SchoolToken[] = [];
     try {
-      const newTokens = await api.generateTokens(
+      generated = await api.generateTokens(
         count,
         prefix,
         studentLevel || "Semua Kelas",
-        notes || "Dibuat oleh Admin",
+        notes || "Dibuat oleh Guru BK / Admin Sekolah",
         SCHOOL_ID,
       );
-      setTokensList((prev) => [...newTokens, ...prev]);
-
-      const logs = await api.getAuditLogs();
-      setAuditLogs(logs);
-    } catch (err) {
-      console.error("Failed to generate tokens:", err);
+    } catch (apiErr) {
+      console.warn(
+        "Backend token generation failed or offline. Generating client-side tokens:",
+        apiErr,
+      );
+      const batchId = `BATCH-${Date.now()}`;
+      for (let i = 0; i < count; i++) {
+        const randHex = Math.random().toString(36).substring(2, 6).toUpperCase();
+        const randNum = Math.floor(1000 + Math.random() * 9000);
+        generated.push({
+          tokenCode: `${prefix}-${randHex}-${randNum}`,
+          schoolName: schoolProfile?.schoolName || "SMA Negeri 1 Jakarta",
+          studentLevel: studentLevel || "Semua Kelas",
+          batchId,
+          isActivated: false,
+          isUsedForReport: false,
+          status: "Tersedia",
+          notes: notes || "Dibuat oleh Guru BK / Admin Sekolah",
+          createdAt: new Date().toISOString(),
+        });
+      }
     }
+
+    if (generated && generated.length > 0) {
+      setTokensList((prev) => {
+        const next = [...generated, ...prev];
+        StorageEngine.saveTokens(next);
+        return next;
+      });
+
+      try {
+        const logs = await api.getAuditLogs();
+        if (logs && logs.length > 0) {
+          setAuditLogs(logs);
+          StorageEngine.saveAuditLogs(logs);
+        }
+      } catch {}
+    }
+
+    return generated;
   };
 
   const handleToggleTokenStatus = async (tokenCode: string) => {
@@ -797,16 +913,15 @@ export default function App() {
         body: JSON.stringify({ status: nextStatus }),
       });
     } catch (err) {
-      console.error("Failed to toggle token status:", err);
+      console.error("Failed to toggle token status on server:", err);
     }
-    setTokensList((prev) =>
-      prev.map((t) => {
-        if (t.tokenCode === tokenCode) {
-          return { ...t, status: nextStatus };
-        }
-        return t;
-      }),
-    );
+    setTokensList((prev) => {
+      const next = prev.map((t) =>
+        t.tokenCode === tokenCode ? { ...t, status: nextStatus } : t,
+      );
+      StorageEngine.saveTokens(next);
+      return next;
+    });
   };
 
   const handleDeleteToken = async (tokenCode: string) => {
@@ -815,9 +930,15 @@ export default function App() {
         method: "DELETE",
       });
     } catch (err) {
-      console.error("Failed to delete token:", err);
+      console.error("Failed to delete token on server:", err);
     }
-    setTokensList((prev) => prev.filter((t) => t.tokenCode !== tokenCode));
+    setTokensList((prev) => {
+      const next = prev.filter(
+        (t) => t.tokenCode !== tokenCode && (t as any).id !== tokenCode,
+      );
+      StorageEngine.saveTokens(next);
+      return next;
+    });
   };
 
   // Escalation Handler from Counselor to Dinas / UPTD PPA
@@ -1185,9 +1306,14 @@ export default function App() {
             initialTicketId={activeChatTicketId}
             onSendMessage={handleSendMessage}
             onTicketUpdated={(updated) => {
-              const updatedTickets = tickets.map((t) => (t.id === updated.id ? { ...t, ...updated } : t));
-              setTickets(updatedTickets);
-              StorageEngine.saveTickets(updatedTickets);
+              setTickets((prev) => {
+                const exists = prev.some((t) => t.id === updated.id);
+                const next = exists
+                  ? prev.map((t) => (t.id === updated.id ? { ...t, ...updated } : t))
+                  : [updated, ...prev];
+                StorageEngine.saveTickets(next);
+                return next;
+              });
 
               if (updated.status === "ditutup") {
                 setRegionalSchools((prev) =>
@@ -1306,12 +1432,16 @@ export default function App() {
         {/* UNIFIED LOGIN PAGE */}
         {currentTab === "login" && (
           <UnifiedLoginPage
-            onLogin={(role, counselor) => {
+            onLogin={(role, counselor, userAccount) => {
               setActiveRole(role);
               if (counselor) setLoggedCounselor(counselor);
-              const matchedUser =
-                usersList.find((u) => u.role === role) || null;
-              setCurrentUserAccount(matchedUser);
+              if (userAccount) {
+                setCurrentUserAccount(userAccount);
+              } else {
+                const matchedUser =
+                  usersList.find((u) => u.role === role) || null;
+                setCurrentUserAccount(matchedUser);
+              }
               const roleTabMap: Record<string, string> = {
                 guru: "admin",
                 admin: "admin-system",
@@ -1319,6 +1449,8 @@ export default function App() {
                 "dinas-perlindungan": "dinas-pppa",
               };
               setCurrentTab(roleTabMap[role] || "beranda");
+              // Trigger sync with newly acquired credentials
+              setTimeout(() => syncAllData(), 100);
             }}
           />
         )}

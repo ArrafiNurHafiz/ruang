@@ -299,7 +299,21 @@ export const api = {
       },
     );
     if (!response.ok) throw new Error("Failed to send message");
-    return response.json();
+    const data = await response.json();
+    return {
+      ...data,
+      id: data.id || crypto.randomUUID(),
+      sender: data.sender || data.sender_type || message.sender,
+      senderTitle: data.sender_title || data.senderTitle || message.senderTitle,
+      text: data.text || data.message_text || message.text,
+      message_text: data.message_text || data.text || message.text,
+      created_at: data.created_at || new Date().toISOString(),
+      timestamp: new Date(data.created_at || Date.now()).toLocaleTimeString("id-ID", {
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+      isEncrypted: data.is_encrypted ?? data.isEncrypted ?? true,
+    };
   },
 
   async getAllTickets(): Promise<ReportTicket[]> {
@@ -355,6 +369,14 @@ export const api = {
       },
     );
     if (!response.ok) throw new Error("Failed to add note");
+    return response.json();
+  },
+
+  async deleteTicket(ticketId: string) {
+    const response = await fetchWithTimeout(`${API_URL}/tickets/${ticketId}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) throw new Error("Failed to delete ticket");
     return response.json();
   },
 
