@@ -6,6 +6,7 @@ import {
   AuditLog,
   ProtectionIntervention,
   DatabaseBackupPayload,
+  SchoolRegionalData,
 } from "../types";
 import {
   INITIAL_TICKETS,
@@ -44,6 +45,7 @@ const STORAGE_KEYS = {
   USERS: "ruangaman_users",
   AUDIT_LOGS: "ruangaman_audit_logs",
   INTERVENTIONS: "ruangaman_interventions",
+  REGIONAL_SCHOOLS: "ruangaman_regional_schools",
 };
 
 // Safe JSON parse helper with backwards compatibility fallback
@@ -117,6 +119,13 @@ export const StorageEngine = {
   },
   saveInterventions(interventions: ProtectionIntervention[]): void {
     safeSet(STORAGE_KEYS.INTERVENTIONS, interventions);
+  },
+
+  getRegionalSchools(): SchoolRegionalData[] {
+    return safeGet<SchoolRegionalData[]>(STORAGE_KEYS.REGIONAL_SCHOOLS, []);
+  },
+  saveRegionalSchools(schools: SchoolRegionalData[]): void {
+    safeSet(STORAGE_KEYS.REGIONAL_SCHOOLS, schools);
   },
 
   // Export full database to JSON file

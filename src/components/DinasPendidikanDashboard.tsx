@@ -60,8 +60,18 @@ export const DinasPendidikanDashboard: React.FC<
     return (Date.now() - created) / (1000 * 60 * 60) >= 24;
   };
 
+  const isEscalatedCase = (t: ReportTicket) => {
+    const isEscalated = Boolean(t.isEscalatedToDinas || (t as any).is_escalated_to_dinas);
+    const target = (t.escalatedTo || (t as any).escalated_to || "").toLowerCase();
+    const action = (t.actionSummary || (t as any).action_summary || "").toLowerCase();
+    if (isEscalated) return true;
+    if (target.includes("pendidikan") || target.includes("keduanya") || target.includes("dinas")) return true;
+    if (action.includes("eskalasi") && (action.includes("pendidikan") || action.includes("dinas") || action.includes("keduanya"))) return true;
+    return false;
+  };
+
   const delayedTickets = (tickets || []).filter(
-    (t) => isDelayedResponse(t) || t.urgency === "Kritis" || Boolean(t.isEscalatedToDinas),
+    (t) => isDelayedResponse(t) || t.urgency === "Kritis" || isEscalatedCase(t),
   );
 
   const districts = Array.from(new Set(regionalSchools.map((s) => s.district))).filter(Boolean);
@@ -127,10 +137,14 @@ export const DinasPendidikanDashboard: React.FC<
             <CheckCircle2 size={13} />
             <span>94% Kepatuhan Satgas</span>
           </div>
-          <div className="px-3.5 py-1.5 rounded-xl bg-danger/10 border border-danger/20 text-danger text-xs font-bold flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() => setActiveTab("supervisi")}
+            className="px-3.5 py-1.5 rounded-xl bg-danger/10 border border-danger/20 text-danger text-xs font-bold flex items-center gap-1.5 hover:bg-danger/20 transition cursor-pointer"
+          >
             <AlertTriangle size={13} />
             <span>{delayedTickets.length} Perlu Supervisi</span>
-          </div>
+          </button>
           <div className="px-3.5 py-1.5 rounded-xl bg-primary/10 border border-primary/20 text-primary text-xs font-bold flex items-center gap-1.5">
             <Clock size={13} />
             <span>Respon Rata-rata 1.8 Jam</span>
@@ -156,7 +170,7 @@ export const DinasPendidikanDashboard: React.FC<
         <button
           type="button"
           onClick={() => setActiveTab("supervisi")}
-          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition cursor-pointer relative ${
             activeTab === "supervisi"
               ? "bg-primary text-primary-foreground shadow-sm shadow-primary/30"
               : "text-muted-foreground hover:bg-muted"
@@ -164,12 +178,37 @@ export const DinasPendidikanDashboard: React.FC<
         >
           <ShieldAlert size={15} />
           <span>Kasus Eskalasi &amp; Respon Lambat ({delayedTickets.length})</span>
+          {delayedTickets.length > 0 && (
+            <span className="w-2 h-2 rounded-full bg-danger animate-pulse" />
+          )}
         </button>
       </div>
 
       {/* 3. TAB 1: DAFTAR SEKOLAH BINAAN */}
       {activeTab === "sekolah" && (
         <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-4">
+          {/* Alert Notification Banner for Pending Escalations */}
+          {delayedTickets.length > 0 && (
+            <div className="p-4 rounded-xl bg-danger/10 border border-danger/25 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs animate-fadeIn">
+              <div className="flex items-center gap-2.5 text-danger font-semibold">
+                <AlertTriangle size={18} className="shrink-0 text-danger" />
+                <span>
+                  <strong>Perhatian Pengawas:</strong> Terdapat {delayedTickets.length} kasus memerlukan supervisi/arahan dinas
+                  {delayedTickets.filter(isEscalatedCase).length > 0
+                    ? ` (${delayedTickets.filter(isEscalatedCase).length} kasus rujukan resmi ke Dinas Pendidikan).`
+                    : " (kasus respon kritis/melebihi batas waktu SLA)."}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setActiveTab("supervisi")}
+                className="px-3.5 py-1.5 bg-danger text-white rounded-lg font-bold hover:bg-danger/90 transition shrink-0 cursor-pointer text-[11px] shadow-sm"
+              >
+                Buka Kasus Eskalasi ({delayedTickets.length}) &rarr;
+              </button>
+            </div>
+          )}
+
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="relative flex-1 max-w-sm">
               <Search size={14} className="absolute left-3 top-2.5 text-muted-foreground" />
@@ -211,32 +250,43 @@ export const DinasPendidikanDashboard: React.FC<
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {filteredSchools.map((sch) => (
-                  <tr key={sch.id} className="hover:bg-muted/40 transition">
-                    <td className="p-3">
-                      <p className="font-bold text-ink">{sch.schoolName}</p>
-                      <p className="text-[11px] text-muted-foreground font-mono">NPSN: {sch.npsn}</p>
-                    </td>
-                    <td className="p-3 text-muted-foreground">{sch.district}</td>
-                    <td className="p-3 text-center font-bold text-ink">{sch.activeSatgasCount} Org</td>
-                    <td className="p-3 text-center font-bold text-ink">{sch.totalReports}</td>
-                    <td className="p-3 text-center font-bold text-emerald-600">{sch.resolvedReports}</td>
-                    <td className="p-3">
-                      <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold">
-                        {sch.complianceStatus || "Patuh (A)"}
-                      </span>
-                    </td>
-                    <td className="p-3 text-right">
-                      <button
-                        type="button"
-                        onClick={() => setSelectedSchoolModal(sch)}
-                        className="px-3 py-1 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 font-bold text-[11px] rounded-lg transition cursor-pointer"
-                      >
-                        Kirim Supervisi
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                {filteredSchools.map((sch) => {
+                  const hasEscalated = delayedTickets.some(
+                    (t) => (t.schoolName && t.schoolName === sch.schoolName) || isEscalatedCase(t),
+                  );
+                  return (
+                    <tr key={sch.id} className="hover:bg-muted/40 transition">
+                      <td className="p-3">
+                        <p className="font-bold text-ink">{sch.schoolName}</p>
+                        <p className="text-[11px] text-muted-foreground font-mono">NPSN: {sch.npsn}</p>
+                      </td>
+                      <td className="p-3 text-muted-foreground">{sch.district}</td>
+                      <td className="p-3 text-center font-bold text-ink">{sch.activeSatgasCount} Org</td>
+                      <td className="p-3 text-center font-bold text-ink">{sch.totalReports}</td>
+                      <td className="p-3 text-center font-bold text-emerald-600">{sch.resolvedReports}</td>
+                      <td className="p-3">
+                        {sch.complianceStatus === "Perlu Supervisi" || (hasEscalated && sch.id === "sch-01") ? (
+                          <span className="px-2.5 py-0.5 rounded-full bg-danger/10 text-danger border border-danger/20 text-[10px] font-bold">
+                            Perlu Supervisi (Kasus Dieskalasi)
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-[10px] font-bold">
+                            {sch.complianceStatus || "Patuh (A)"}
+                          </span>
+                        )}
+                      </td>
+                      <td className="p-3 text-right">
+                        <button
+                          type="button"
+                          onClick={() => setSelectedSchoolModal(sch)}
+                          className="px-3 py-1 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 font-bold text-[11px] rounded-lg transition cursor-pointer"
+                        >
+                          Kirim Supervisi
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
@@ -246,11 +296,16 @@ export const DinasPendidikanDashboard: React.FC<
       {/* 4. TAB 2: KASUS ESKALASI & TERLAMBAT */}
       {activeTab === "supervisi" && (
         <div className="bg-card border border-border rounded-2xl p-5 shadow-xs space-y-4">
-          <div>
-            <h2 className="text-sm font-bold text-ink">Daftar Kasus Kritis &amp; Rujukan Resmi ke Dinas</h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              Kasus yang membutuhkan intervensi lintas sektoral atau memerlukan peringatan percepatan penanganan.
-            </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <h2 className="text-sm font-bold text-ink">Daftar Kasus Kritis &amp; Rujukan Resmi ke Dinas</h2>
+              <p className="text-xs text-muted-foreground mt-0.5">
+                Kasus yang membutuhkan supervisi pengawas dinas atau eskalasi rujukan penanganan lintas sektoral.
+              </p>
+            </div>
+            <span className="px-3 py-1 rounded-xl bg-danger/10 text-danger border border-danger/20 font-bold text-xs self-start sm:self-auto">
+              {delayedTickets.length} Kasus Memerlukan Tindakan
+            </span>
           </div>
 
           <div className="border border-border rounded-xl overflow-hidden">
@@ -259,9 +314,9 @@ export const DinasPendidikanDashboard: React.FC<
                 <tr>
                   <th className="p-3">ID Tiket</th>
                   <th className="p-3">Kategori &amp; Urgensi</th>
-                  <th className="p-3">Alasan Eskalasi / Status</th>
+                  <th className="p-3">Instansi Rujukan / Alasan Eskalasi</th>
                   <th className="p-3">Waktu Masuk</th>
-                  <th className="p-3 text-right">Status Penanganan</th>
+                  <th className="p-3 text-right">Status &amp; Tindakan</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
@@ -272,28 +327,67 @@ export const DinasPendidikanDashboard: React.FC<
                     </td>
                   </tr>
                 ) : (
-                  delayedTickets.map((t) => (
-                    <tr key={t.id} className="hover:bg-muted/40 transition">
-                      <td className="p-3 font-mono font-bold text-ink">{t.ticketNumber || t.id.slice(0, 8)}</td>
-                      <td className="p-3">
-                        <p className="font-bold text-ink">{t.category}</p>
-                        <span className="inline-block text-[10px] font-bold px-2 py-0.5 rounded-full bg-danger/10 text-danger mt-0.5">
-                          {t.urgency}
-                        </span>
-                      </td>
-                      <td className="p-3 text-muted-foreground max-w-sm line-clamp-2">
-                        {t.escalationReason || t.redactedStory || t.story}
-                      </td>
-                      <td className="p-3 text-muted-foreground font-mono text-[11px] whitespace-nowrap">
-                        {t.createdAt ? new Date(t.createdAt).toLocaleDateString("id-ID") : "Hari ini"}
-                      </td>
-                      <td className="p-3 text-right">
-                        <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 font-bold text-[10px] capitalize">
-                          {t.status.replace("_", " ")}
-                        </span>
-                      </td>
-                    </tr>
-                  ))
+                  delayedTickets.map((t) => {
+                    const isEsc = isEscalatedCase(t);
+                    const escTarget = t.escalatedTo || (t as any).escalated_to || "Dinas Pendidikan";
+                    const escReason = t.escalationReason || (t as any).escalation_reason || "";
+                    const originSchool =
+                      regionalSchools.find((s) => s.id === (t.schoolId || "sch-01")) ||
+                      regionalSchools[0];
+
+                    return (
+                      <tr key={t.id} className={`hover:bg-muted/40 transition ${isEsc ? "bg-danger/5" : ""}`}>
+                        <td className="p-3">
+                          <p className="font-mono font-bold text-ink">{t.ticketNumber || t.id.slice(0, 8)}</p>
+                          <p className="text-[10px] text-muted-foreground">{t.schoolName || originSchool?.schoolName || "SMA Negeri 1 Jakarta"}</p>
+                        </td>
+                        <td className="p-3">
+                          <p className="font-bold text-ink">{t.category}</p>
+                          <span className={`inline-block text-[10px] font-bold px-2 py-0.5 rounded-full mt-0.5 ${
+                            t.urgency === "Kritis" ? "bg-danger/10 text-danger" : "bg-amber-500/10 text-amber-600"
+                          }`}>
+                            {t.urgency}
+                          </span>
+                        </td>
+                        <td className="p-3 max-w-md">
+                          {isEsc ? (
+                            <div className="space-y-1">
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-danger text-white text-[10px] font-bold">
+                                <ShieldAlert size={10} />
+                                Rujukan: {escTarget}
+                              </span>
+                              {escReason && (
+                                <p className="text-[11px] text-ink italic bg-background/80 p-2 rounded-lg border border-border">
+                                  &ldquo;{escReason}&rdquo;
+                                </p>
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-muted-foreground line-clamp-2">
+                              {t.redactedStory || t.story || "Kasus melebihi batas waktu respon SLA 24 jam"}
+                            </p>
+                          )}
+                        </td>
+                        <td className="p-3 text-muted-foreground font-mono text-[11px] whitespace-nowrap">
+                          {t.createdAt ? new Date(t.createdAt).toLocaleDateString("id-ID") : "Hari ini"}
+                        </td>
+                        <td className="p-3 text-right space-y-1.5">
+                          <span className="inline-block px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-600 font-bold text-[10px] capitalize">
+                            {t.status.replace("_", " ")}
+                          </span>
+                          <div>
+                            <button
+                              type="button"
+                              onClick={() => setSelectedSchoolModal(originSchool)}
+                              className="px-2.5 py-1 bg-primary text-primary-foreground font-bold text-[10px] rounded-lg shadow-xs hover:opacity-95 transition cursor-pointer"
+                            >
+                              Kirim Supervisi
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
                 )}
               </tbody>
             </table>

@@ -931,12 +931,41 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       }
 
       const id = path.split("/")[1];
-      const { status, action_summary } = req.body || {};
+      const {
+        status,
+        action_summary,
+        is_escalated_to_dinas,
+        isEscalatedToDinas,
+        escalated_to,
+        escalatedTo,
+        escalation_reason,
+        escalationReason,
+        protection_stage,
+        protectionStage,
+        assigned_expert,
+        assignedExpert,
+      } = req.body || {};
+
+      const finalEscalated =
+        is_escalated_to_dinas !== undefined
+          ? Boolean(is_escalated_to_dinas)
+          : isEscalatedToDinas !== undefined
+          ? Boolean(isEscalatedToDinas)
+          : null;
+      const finalEscalatedTo = escalated_to || escalatedTo || null;
+      const finalEscalationReason = escalation_reason || escalationReason || null;
+      const finalProtectionStage = protection_stage || protectionStage || null;
+      const finalAssignedExpert = assigned_expert || assignedExpert || null;
 
       const rows = await sql`
         UPDATE tickets
         SET status = COALESCE(${status}, status),
             action_summary = COALESCE(${action_summary}, action_summary),
+            is_escalated_to_dinas = COALESCE(${finalEscalated}, is_escalated_to_dinas),
+            escalated_to = COALESCE(${finalEscalatedTo}, escalated_to),
+            escalation_reason = COALESCE(${finalEscalationReason}, escalation_reason),
+            protection_stage = COALESCE(${finalProtectionStage}, protection_stage),
+            assigned_expert = COALESCE(${finalAssignedExpert}, assigned_expert),
             updated_at = NOW()
         WHERE id = ${id}
         RETURNING *
@@ -949,15 +978,22 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       const data = rows[0];
 
       // Audit Log
+      const actionName = finalEscalated
+        ? `Eskalasi Kasus ke ${finalEscalatedTo || "Dinas"}`
+        : `Status Tiket Diubah: ${status || "Diperbarui"}`;
+      const actionDetails = finalEscalated
+        ? `Kasus ID ${id} dieskalasi ke ${finalEscalatedTo || "Dinas"}. Alasan: ${finalEscalationReason || "-"}`
+        : `Perubahan status tiket ID ${id}`;
+
       await sql`
         INSERT INTO audit_logs (id, school_id, action, actor_role, actor_name, details, zkp_proof_status)
         VALUES (
           ${crypto.randomUUID()},
           ${authUser.school_id || "default-school"},
-          ${`Status Tiket Diubah: ${status}`},
+          ${actionName},
           ${authUser.role},
           ${authUser.email},
-          ${`Perubahan status tiket ID ${id}`},
+          ${actionDetails},
           'Tercatat'
         )
       `;

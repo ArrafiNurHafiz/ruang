@@ -442,11 +442,58 @@ app.put("/api/tickets/:id", (req, res) => {
   if (index === -1) return res.status(404).json({ error: "Ticket not found" });
 
   const prevStatus = db.tickets[index].status;
+  const isEscalated =
+    req.body.is_escalated_to_dinas !== undefined
+      ? Boolean(req.body.is_escalated_to_dinas)
+      : req.body.isEscalatedToDinas !== undefined
+      ? Boolean(req.body.isEscalatedToDinas)
+      : db.tickets[index].is_escalated_to_dinas ?? db.tickets[index].isEscalatedToDinas;
+
+  const escalatedTo =
+    req.body.escalated_to ||
+    req.body.escalatedTo ||
+    db.tickets[index].escalated_to ||
+    db.tickets[index].escalatedTo;
+
+  const escalationReason =
+    req.body.escalation_reason ||
+    req.body.escalationReason ||
+    db.tickets[index].escalation_reason ||
+    db.tickets[index].escalationReason;
+
   db.tickets[index] = {
     ...db.tickets[index],
     ...req.body,
+    is_escalated_to_dinas: isEscalated,
+    isEscalatedToDinas: isEscalated,
+    escalated_to: escalatedTo,
+    escalatedTo: escalatedTo,
+    escalation_reason: escalationReason,
+    escalationReason: escalationReason,
     updated_at: new Date().toISOString(),
   };
+
+  // Sync audit log on escalation
+  if (isEscalated && !db.tickets[index].was_escalated_logged) {
+    db.tickets[index].was_escalated_logged = true;
+    if (!db.audit_logs) db.audit_logs = [];
+    db.audit_logs.push({
+      id: crypto.randomUUID(),
+      school_id: db.tickets[index].school_id || "default-school",
+      action: `Eskalasi Kasus: ${escalatedTo || "Dinas"}`,
+      actor_role: "Guru BK",
+      actor_name: "Konselor Sekolah",
+      details: `Kasus #${db.tickets[index].ticket_number || db.tickets[index].id} dieskalasi ke ${escalatedTo || "Dinas"}. Alasan: ${escalationReason || "-"}`,
+      zkp_proof_status: "Tervalidasi",
+      created_at: new Date().toISOString(),
+    });
+
+    const sch = (db.regional_schools || []).find((s) => s.id === (db.tickets[index].school_id || "sch-01"));
+    if (sch) {
+      sch.complianceStatus = "Perlu Supervisi";
+      sch.lastActive = "Kasus baru dieskalasi ke Dinas";
+    }
+  }
 
   // Sync audit log on status change
   if (req.body.status && req.body.status !== prevStatus) {

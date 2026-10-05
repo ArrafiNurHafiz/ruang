@@ -273,6 +273,13 @@ export const api = {
         ),
         isEncrypted: m.is_encrypted ?? m.isEncrypted,
       })),
+      resolutionEvidence: data.resolution_evidence ?? data.resolutionEvidence,
+      studentConfirmation: data.student_confirmation ?? data.studentConfirmation,
+      isEscalatedToDinas: Boolean(data.is_escalated_to_dinas ?? data.isEscalatedToDinas),
+      escalatedTo: data.escalated_to ?? data.escalatedTo,
+      escalationReason: data.escalation_reason ?? data.escalationReason,
+      protectionStage: data.protection_stage ?? data.protectionStage,
+      assignedExpert: data.assigned_expert ?? data.assignedExpert,
     };
   },
 
@@ -324,13 +331,21 @@ export const api = {
       const rawMessages = t.ticket_messages ?? t.messages ?? [];
       return {
         ...t,
-        reporterRole: t.reporter_role,
-        incidentDate: t.incident_date,
-        redactedStory: t.redacted_story,
-        detectedPII: t.detected_pii,
-        recoveryCode: t.recovery_code,
-        hashZKP: t.hash_zkp,
-        isKioskSubmission: t.is_kiosk_submission,
+        reporterRole: t.reporter_role ?? t.reporterRole,
+        incidentDate: t.incident_date ?? t.incidentDate,
+        redactedStory: t.redacted_story ?? t.redactedStory,
+        detectedPII: t.detected_pii ?? t.detectedPII,
+        recoveryCode: t.recovery_code ?? t.recoveryCode,
+        secretPin: t.secret_pin ?? t.secretPin,
+        hashZKP: t.hash_zkp ?? t.hashZKP,
+        isKioskSubmission: t.is_kiosk_submission ?? t.isKioskSubmission,
+        isEscalatedToDinas: Boolean(t.is_escalated_to_dinas ?? t.isEscalatedToDinas),
+        escalatedTo: t.escalated_to ?? t.escalatedTo,
+        escalationReason: t.escalation_reason ?? t.escalationReason,
+        protectionStage: t.protection_stage ?? t.protectionStage,
+        assignedExpert: t.assigned_expert ?? t.assignedExpert,
+        resolutionEvidence: t.resolution_evidence ?? t.resolutionEvidence,
+        studentConfirmation: t.student_confirmation ?? t.studentConfirmation,
         messages: rawMessages.map((m: any) => ({
           id: m.id,
           sender: m.sender_type ?? m.sender,
@@ -349,11 +364,59 @@ export const api = {
     ticketId: string,
     status: string,
     actionSummary?: string,
+    extraUpdates?: {
+      isEscalatedToDinas?: boolean;
+      is_escalated_to_dinas?: boolean;
+      escalatedTo?: string;
+      escalated_to?: string;
+      escalationReason?: string;
+      escalation_reason?: string;
+      protectionStage?: string;
+      protection_stage?: string;
+      assignedExpert?: string;
+      assigned_expert?: string;
+      [key: string]: any;
+    },
   ) {
+    const payload: any = {
+      status,
+      action_summary: actionSummary,
+    };
+    if (extraUpdates) {
+      const isEscalated =
+        extraUpdates.isEscalatedToDinas !== undefined
+          ? extraUpdates.isEscalatedToDinas
+          : extraUpdates.is_escalated_to_dinas;
+      if (isEscalated !== undefined) {
+        payload.is_escalated_to_dinas = Boolean(isEscalated);
+        payload.isEscalatedToDinas = Boolean(isEscalated);
+      }
+      const escTo = extraUpdates.escalatedTo || extraUpdates.escalated_to;
+      if (escTo) {
+        payload.escalated_to = escTo;
+        payload.escalatedTo = escTo;
+      }
+      const escReason = extraUpdates.escalationReason || extraUpdates.escalation_reason;
+      if (escReason) {
+        payload.escalation_reason = escReason;
+        payload.escalationReason = escReason;
+      }
+      const protStage = extraUpdates.protectionStage || extraUpdates.protection_stage;
+      if (protStage) {
+        payload.protection_stage = protStage;
+        payload.protectionStage = protStage;
+      }
+      const expert = extraUpdates.assignedExpert || extraUpdates.assigned_expert;
+      if (expert) {
+        payload.assigned_expert = expert;
+        payload.assignedExpert = expert;
+      }
+    }
+
     const response = await fetchWithTimeout(`${API_URL}/tickets/${ticketId}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ status, action_summary: actionSummary }),
+      body: JSON.stringify(payload),
     });
     if (!response.ok) throw new Error("Failed to update ticket");
     return response.json();

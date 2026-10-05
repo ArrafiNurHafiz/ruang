@@ -294,48 +294,42 @@ export default function App() {
   // Multi-Entity Background Synchronization Engine (Role-Aware)
   const syncAllData = async () => {
     try {
-      const hasAuth = Boolean(getAuthToken());
-
-      // Public endpoints always synced
-      const publicPromises: Promise<any>[] = [
+      // 1. Public regional schools & school profile
+      const [schoolsRes, profileRes] = await Promise.allSettled([
         api.getRegionalSchools(),
         api.getSchoolProfile(),
-      ];
+      ]);
 
-      // Staff endpoints only synced if authenticated
-      if (hasAuth && (activeRole === "guru" || activeRole === "admin")) {
-        publicPromises.push(api.getAllTickets());
-        publicPromises.push(api.getAuditLogs());
-        publicPromises.push(api.getTokensBySchool(SCHOOL_ID));
-      }
-      if (hasAuth && activeRole === "dinas-perlindungan") {
-        publicPromises.push(api.getInterventions());
+      if (schoolsRes.status === "fulfilled" && Array.isArray(schoolsRes.value) && schoolsRes.value.length > 0) {
+        setRegionalSchools(schoolsRes.value);
       }
 
-      const results = await Promise.allSettled(publicPromises);
-
-      const get = <T,>(r: PromiseSettledResult<T>, fallback: T): T =>
-        r && r.status === "fulfilled" ? r.value : fallback;
-
-      const freshSchools = get<SchoolRegionalData[] | null>(results[0], null);
-      if (freshSchools && Array.isArray(freshSchools) && freshSchools.length > 0) {
-        setRegionalSchools(freshSchools);
-      }
-
-      const freshProfile = get<SchoolProfile | null>(results[1], null);
-      if (freshProfile && freshProfile.schoolName) {
+      if (profileRes.status === "fulfilled" && profileRes.value?.schoolName) {
         setSchoolProfile((prev) => {
-          if (prev.updatedAt !== freshProfile.updatedAt) {
-            StorageEngine.saveSchoolProfile(freshProfile);
-            return freshProfile;
+          if (prev.updatedAt !== profileRes.value.updatedAt) {
+            StorageEngine.saveSchoolProfile(profileRes.value);
+            return profileRes.value;
           }
           return prev;
         });
       }
 
-      if (hasAuth && results.length > 2) {
-        const freshTickets = get<ReportTicket[] | null>(results[2], null);
-        if (freshTickets && Array.isArray(freshTickets)) {
+      // 2. Staff roles (Guru, Admin, Dinas Pendidikan, Dinas Perlindungan)
+      const isStaffOrDinas =
+        activeRole === "guru" ||
+        activeRole === "admin" ||
+        activeRole === "dinas-pendidikan" ||
+        activeRole === "dinas-perlindungan";
+
+      if (isStaffOrDinas) {
+        // Fetch tickets & audit logs for all staff & dinas roles
+        const [ticketsRes, logsRes] = await Promise.allSettled([
+          api.getAllTickets(),
+          api.getAuditLogs(),
+        ]);
+
+        if (ticketsRes.status === "fulfilled" && Array.isArray(ticketsRes.value)) {
+          const freshTickets = ticketsRes.value;
           setTickets((prev) => {
             const prevMap = new Map<string, ReportTicket>(prev.map((t) => [t.id, t]));
             let hasDiff = freshTickets.length !== prev.length;
@@ -345,15 +339,31 @@ export default function App() {
                 hasDiff = true;
                 return ft;
               }
+              const isEscalated =
+                ft.isEscalatedToDinas !== undefined
+                  ? ft.isEscalatedToDinas
+                  : existing.isEscalatedToDinas;
+              const escalatedTo = ft.escalatedTo || existing.escalatedTo;
+              const escalationReason = ft.escalationReason || existing.escalationReason;
+
               if (
                 existing.status !== ft.status ||
                 existing.updatedAt !== ft.updatedAt ||
                 (existing.messages?.length || 0) !== (ft.messages?.length || 0) ||
-                existing.isEscalatedToDinas !== ft.isEscalatedToDinas ||
+                existing.isEscalatedToDinas !== isEscalated ||
+                existing.escalatedTo !== escalatedTo ||
+                existing.escalationReason !== escalationReason ||
                 Boolean(existing.resolutionEvidence) !== Boolean(ft.resolutionEvidence)
               ) {
                 hasDiff = true;
-                return { ...existing, ...ft };
+                return {
+                  ...existing,
+                  ...ft,
+                  isEscalatedToDinas: Boolean(isEscalated),
+                  escalatedTo,
+                  escalationReason,
+                  messages: ft.messages && ft.messages.length > 0 ? ft.messages : existing.messages,
+                };
               }
               return existing;
             });
@@ -365,8 +375,8 @@ export default function App() {
           });
         }
 
-        const freshLogs = get<AuditLog[] | null>(results[3], null);
-        if (freshLogs && Array.isArray(freshLogs) && freshLogs.length > 0) {
+        if (logsRes.status === "fulfilled" && Array.isArray(logsRes.value) && logsRes.value.length > 0) {
+          const freshLogs = logsRes.value;
           setAuditLogs((prev) => {
             if (freshLogs.length !== prev.length) {
               StorageEngine.saveAuditLogs(freshLogs);
@@ -376,19 +386,42 @@ export default function App() {
           });
         }
 
-        if (results.length > 4) {
-          const freshTokens = get<SchoolToken[] | null>(results[4], null);
-          if (freshTokens && Array.isArray(freshTokens) && freshTokens.length > 0) {
-            setTokensList((prev) => {
-              const hasDiff =
-                freshTokens.length !== prev.length ||
-                (freshTokens[0] && prev[0] && (freshTokens[0].tokenCode || (freshTokens[0] as any).token_code) !== (prev[0].tokenCode || (prev[0] as any).token_code));
-              if (hasDiff) {
-                StorageEngine.saveTokens(freshTokens);
-                return freshTokens;
-              }
-              return prev;
-            });
+        // Role-specific sync: tokens for school counselors / admin
+        if (activeRole === "guru" || activeRole === "admin") {
+          try {
+            const freshTokens = await api.getTokensBySchool(SCHOOL_ID);
+            if (freshTokens && Array.isArray(freshTokens) && freshTokens.length > 0) {
+              setTokensList((prev) => {
+                const hasDiff =
+                  freshTokens.length !== prev.length ||
+                  (freshTokens[0] && prev[0] && (freshTokens[0].tokenCode || (freshTokens[0] as any).token_code) !== (prev[0].tokenCode || (prev[0] as any).token_code));
+                if (hasDiff) {
+                  StorageEngine.saveTokens(freshTokens);
+                  return freshTokens;
+                }
+                return prev;
+              });
+            }
+          } catch {
+            // silent catch
+          }
+        }
+
+        // Role-specific sync: interventions for Dinas Perlindungan (UPTD PPA)
+        if (activeRole === "dinas-perlindungan") {
+          try {
+            const freshInterventions = await api.getInterventions();
+            if (freshInterventions && Array.isArray(freshInterventions) && freshInterventions.length > 0) {
+              setInterventions((prev) => {
+                if (freshInterventions.length !== prev.length) {
+                  StorageEngine.saveInterventions(freshInterventions);
+                  return freshInterventions;
+                }
+                return prev;
+              });
+            }
+          } catch {
+            // silent catch
           }
         }
       }
@@ -542,6 +575,11 @@ export default function App() {
     } else if (role === "dinas-perlindungan") {
       setCurrentTab("dinas-pppa");
     }
+
+    // Trigger instant background sync for the selected role
+    setTimeout(() => {
+      syncAllData();
+    }, 50);
   };
 
   useEffect(() => {
@@ -971,15 +1009,69 @@ export default function App() {
     const targetTicket = tickets.find((t) => t.id === ticketId);
     if (!targetTicket || !target || !reason) return;
 
+    const timestamp = new Date().toLocaleTimeString("id-ID", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+    const systemMsgText = `[PROTOKOL PERLINDUNGAN]: Kasus ini telah resmi dieskalasi ke ${target}. Tim pengawas dan pendamping lintas sektor telah ditugaskan. Alasan: ${reason}`;
+    const tempMsgId = `sys-esc-${Date.now()}`;
+
+    // 1. Immediate optimistic UI state update
+    setTickets((prev) => {
+      const next = prev.map((t) => {
+        if (t.id === ticketId) {
+          return {
+            ...t,
+            status: "tindakan" as const,
+            isEscalatedToDinas: true,
+            is_escalated_to_dinas: true,
+            escalatedTo: target as any,
+            escalated_to: target as any,
+            escalationReason: reason,
+            escalation_reason: reason,
+            messages: [
+              ...(t.messages ?? []),
+              {
+                id: tempMsgId,
+                sender: "system" as const,
+                text: systemMsgText,
+                timestamp,
+                isEncrypted: true,
+              },
+            ],
+          };
+        }
+        return t;
+      });
+      StorageEngine.saveTickets(next);
+      return next;
+    });
+
+    // Also update school compliance in regionalSchools
+    setRegionalSchools((prev) => {
+      const next = prev.map((s) => {
+        if (s.id === (targetTicket.schoolId || "sch-01")) {
+          return {
+            ...s,
+            complianceStatus: "Perlu Supervisi",
+            lastActive: "Kasus baru dieskalasi ke Dinas",
+          };
+        }
+        return s;
+      });
+      StorageEngine.saveRegionalSchools(next);
+      return next;
+    });
+
     try {
-      // 1. Create intervention if needed
+      // 2. Create intervention in UPTD PPA if target includes Perlindungan or Keduanya
       if (
         typeof target === "string" &&
         (target.includes("Perlindungan") || target === "Keduanya")
       ) {
         const newIntervention: Partial<ProtectionIntervention> = {
           ticketId: targetTicket.id,
-          victimAlias: `Ananda (Korban #${targetTicket.id})`,
+          victimAlias: `Ananda (Korban #${targetTicket.ticketNumber || targetTicket.id})`,
           schoolOrigin: schoolProfile.schoolName || "SMA Negeri 1 Jakarta",
           category: targetTicket.category,
           urgency: targetTicket.urgency,
@@ -992,66 +1084,38 @@ export default function App() {
             "Jadwal asesmen awal psikologi anak dalam 24 jam.",
           ],
         };
-        const created = await api.createIntervention(newIntervention);
-        setInterventions((prev) => {
-          const next = [created, ...prev];
-          StorageEngine.saveInterventions(next);
-          return next;
-        });
+        const created = await api.createIntervention(newIntervention).catch(() => null);
+        if (created) {
+          setInterventions((prev) => {
+            const next = [created, ...prev];
+            StorageEngine.saveInterventions(next);
+            return next;
+          });
+        }
       }
 
-      // 2. Add system reply in the ticket
-      const timestamp = new Date().toLocaleTimeString("id-ID", {
-        hour: "2-digit",
-        minute: "2-digit",
-      });
-
-      const systemMsgText = `[PROTOKOL PERLINDUNGAN]: Kasus ini telah resmi dieskalasi ke ${target}. Tim ahli dan pendamping telah ditugaskan untuk menjamin keselamatan Anda.`;
-
-      const newMessage = await api.sendMessage(ticketId, {
+      // 3. Send system message to backend
+      await api.sendMessage(ticketId, {
         sender: "system",
         text: systemMsgText,
         isEncrypted: true,
+      }).catch((e) => console.warn("Failed sending system msg to backend:", e));
+
+      // 4. Update status & escalation in backend database
+      await api.updateTicketStatus(ticketId, "tindakan", `Eskalasi ke ${target}: ${reason}`, {
+        isEscalatedToDinas: true,
+        escalatedTo: target,
+        escalationReason: reason,
       });
 
-      await api.updateTicketStatus(ticketId, "tindakan");
-
-      setTickets((prev) => {
-        const next = prev.map((t) => {
-          if (t.id === ticketId) {
-            return {
-              ...t,
-              status: "tindakan" as const,
-              isEscalatedToDinas: true,
-              is_escalated_to_dinas: true,
-              escalatedTo: target as any,
-              escalated_to: target as any,
-              escalationReason: reason,
-              escalation_reason: reason,
-              messages: [
-                ...(t.messages ?? []),
-                {
-                  id: newMessage.id,
-                  sender: "system" as const,
-                  text: systemMsgText,
-                  timestamp,
-                  isEncrypted: true,
-                },
-              ],
-            };
-          }
-          return t;
-        });
-        StorageEngine.saveTickets(next);
-        return next;
-      });
-
-      // 3. Refresh audit logs
-      const logs = await api.getAuditLogs();
-      setAuditLogs(logs);
-      StorageEngine.saveAuditLogs(logs);
+      // 5. Refresh audit logs
+      const logs = await api.getAuditLogs().catch(() => []);
+      if (logs && logs.length > 0) {
+        setAuditLogs(logs);
+        StorageEngine.saveAuditLogs(logs);
+      }
     } catch (err) {
-      console.error("Failed to escalate ticket:", err);
+      console.error("Failed to escalate ticket on backend:", err);
     }
   };
 
